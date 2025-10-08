@@ -1,0 +1,15 @@
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
+*.swp
+*.synctex.gz
+*.tex.latexmain
+auto/
+.initialized
+paper.bbl
+paper.pdf
+_region_.*
