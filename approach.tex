@@ -226,17 +226,8 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 \end{itemize}
 %
 
-\paragraph{Open problems/questions}
-\begin{itemize}
-  \item
-  {\color{red} Doest it has a 1:1 relation with an ASP program?}.
-  Should not be true for the \emph{orginal} program.
-  \\
-  But if the starter program is disyunctive and ground, then should be safe to say
-\end{itemize}
-
 \begin{proposition}
-  Given two disyunctive, ground programs $P_1$ and $P_2$ and their respective program graphs $G_{P_1}$ and $G_{P_2}$, then
+  Given two labelled disyunctive, ground programs $P_1$ and $P_2$ and their respective program graphs $G_{P_1}$ and $G_{P_2}$, then
   \[ G_{P_1} = G_{P_2} \rightarrow P_1 = P_2 \]
 \end{proposition}
 
@@ -249,11 +240,8 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \begin{itemize}
     % take all the atoms in the model as nodes and all the supported rules as nodes as welll
     \item $V = I \cup \{ \Lb{r} \mid r \in P \land I \models \Bd{r} \}$
-    % take all outgoing edges from atoms such that the corresponding (neg/pos) literal is supported by the model
-    \item $\forall (a, \ell) \in E_{+}$ such that $a \in I$, then $(a, \ell) \in E$
-    % \item $\forall (a, \ell) \in E_{-}$ such that $a \notin I$, then $(a, \ell) \in Em_{-}$   % we disregard the negative edges
-    % take all outgoing edges from rules if the rule is supported by the model
-    \item $\forall (\ell, a) \in E_{+}$ such that $I \models a \wedge \Bd{\InvLb{\ell}}$, then $(\ell, a) \in E$
+    % any join all the included nodes using positive edges only
+    \item $E = \{ (v_1, v_2) \mid (v_1, v_2 \in V)\ \land\ (v_1, v_2) \in E_{+}  \}$
   \end{itemize}
 \end{definition}
 
@@ -351,7 +339,9 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \item This expectation is called \emph{foil} or \emph{foil world} in the literature, whereas the \emph{reference world} or \emph{fact world} is the asker’s interpretation of observed events where James is not poioned.
   %
   \item A contrastive explanation compares this \emph{reference world} with an \emph{foil world} where the outcome differs.
-  %  %
+  %
+  \item We will be able to use causal relations \emph{hidden} in constraints by using \emph{existential satisfaction}, defined later on.
+  %
 \end{itemize}
 
 \paragraph{Assumptions}
@@ -367,9 +357,9 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 \end{itemize}
 
 \begin{definition}[Existential Satisfaction]
-  Given two sets of atoms $I_1$ and $I_2$ we say that they \emph{existentially satisfy} a term $t$, written
-  \[ I_1,I_2 \models t \]
-  iff:
+  Given two sets of atoms $I_1$ and $I_2$ we define the \emph{existential satisfaction} relation, written
+  \[ I_1,I_2 \models · \]
+  that holds according to the following cases:
   \begin{itemize}
     \item for a literal $l$ of the form $a$ or $\neg a$
     \begin{itemize}
@@ -390,7 +380,7 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 \paragraph{Discussion on Existential Satisfaction}
 \begin{itemize}
   \item Will be used to identify the conflict constraints among the masks used for a contrast.
-  \item Is a very relax notion of satisfaction that can be read as \emph{this constraint would have been fired}.
+  \item Is a relaxed notion of satisfaction that can be read as \emph{this constraint would have been fired}.
 \end{itemize}
 
 \begin{definition}[Contrastive Subgraph]
@@ -402,7 +392,15 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
     two programs $P_r$ and $P_f$,
     \item
     a program graph $G_{P_r \cup P_f} = \langle V_c, V_d, V_a, E_{+}, E_{-} \rangle$,
-    \comment{Problem? the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.}
+    \comment{
+    {\bf Brais:} the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.
+    \\
+    {\bf Son:} This is interesting but how do you know that a specific source of knowledge is appropiate for a query and not another one?
+    It might be better to require that same rule must have the same label?
+    \\
+    {\bf Brais:} we might define a distance function that prefers the contrastive graph that includes a particular label (labels become the box node IDs).
+    But then the distance function has to have access to that...
+    }
     \item
     a program subgraph $MG_{P_r}^{I_r} = \langle V_r, E_r \rangle$
     \item
@@ -416,7 +414,7 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   CM_{P_r, P_f}^{I_r, I_f} =
   \langle
     V_c, % 1. reference nodes, foil nodes, constraint nodes (or conflict nodes?)
-    \langle E_c, E_{-} \rangle  % fact/foil positive edges, negative edges
+    \langle E_c, E_{c-} \rangle  % fact/foil positive edges, negative edges
   \rangle
   \]
   %
@@ -424,6 +422,9 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \begin{itemize}
     \item  $V_c = V_r \cup V_f \cup \{ \Lb{r} \mid (r \in P_r \cup P_f) \land (Cons(r)) \land (I_r, I_f \models \Bd{r}) \}$
     is the set of constraint nodes that are existentially satisfied by both reference and foil models
+    \comment{
+      {\bf Son:} what about other rules whose body is existentially satisfied by $I_r$ and $I_f$, but not by $I_r$ nor $I_f$ alone?
+    }
 
     \item $E_c = E_r \cup E_f$
     \item $E_{c-} = \{ (a, \ell) \mid (a, \ell) \in E_{-} \land [ (I_r \models a) \oplus (I_f \models a)]\}$
@@ -437,7 +438,7 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \begin{itemize}
     \item the \emph{model graph} $MG_{P_r}^{I_r}$ is a subgraph of $CM_{P_r, P_f}^{I_r, I_f}$
     \item the \emph{model graph} $MG_{P_f}^{I_f}$ is a subgraph of $CM_{P_r, P_f}^{I_r, I_f}$
-    \item $CM_{P_r, P_f}^{I_r, I_f}$ is a subgraph of the \emph{program grpah} $G_{P_r \cup P_f}$.
+    \item $CM_{P_r, P_f}^{I_r, I_f}$ is a subgraph of the \emph{program graph} $G_{P_r \cup P_f}$.
   \end{itemize}
 \end{proposition}
 \comment{Might be so trivial}
@@ -461,7 +462,7 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \end{enumerate}
 \end{itemize}
 
-\paragraph{Major Discussion on: Taxonomy/Types of Contrasts}
+\paragraph{Discussion on Types of Contrasts}
 \begin{itemize}
   \item We may separate contrasts in types depending on the (dis)equalities among the programs $P_r$ and $P_f$, and the masks $MG_r$ and $MG_f$.
   \item We propose the following types
