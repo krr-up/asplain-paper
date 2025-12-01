@@ -4,3 +4,6 @@
 [submodule "include/comments"]
 	path = include/comments
 	url = ../latex-style-comments
+[submodule "include/asplain-paper"]
+	path = include/asplain-paper
+	url = ../asplain-paper
