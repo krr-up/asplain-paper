@@ -5,3 +5,31 @@
 \newtheorem{example}{Example}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
+
+
+\newcommand{\Vd}{\ensuremath{V_{d}}} %Disjunctinive vertices
+\newcommand{\Vc}{\ensuremath{V_{c}}} %Choice vertices
+\newcommand{\Va}{\ensuremath{V_{a}}} %Atom vertices
+\newcommand{\Epos}{\ensuremath{E_{+}}} %Positive edges
+\newcommand{\Eneg}{\ensuremath{E_{-}}} %Negative edges
+
+\newcommand{\program}{\ensuremath{P}} %Program
+\newcommand{\pr}{\ensuremath{P_r}} %Program reference
+\newcommand{\pf}{\ensuremath{P_f}} %Program foil
+
+
+\newcommand{\pg}[1]{\ensuremath{G_{#1}}} %Program Graph
+\newcommand{\mpg}[1]{\ensuremath{MG_{#1}}} %Model Graph
+\newcommand{\cpg}[1]{\ensuremath{CG_{#1}}} %Constrast Graph
+
+\newcommand{\isdisj}[1]{\ensuremath{Dis(#1)}} % Rule is a disjunction
+\newcommand{\ischoice}[1]{\ensuremath{Choice(#1)}} % Rule is a choice
+\newcommand{\iscons}[1]{\ensuremath{Cons(#1)}} % Rule is a constraint
+\newcommand{\atoms}[1]{\ensuremath{Atoms(#1)}} % Set of atoms of a program
+
+\newcommand{\lbl}[1]{\ensuremath{Lb(#1)}} %Literal
+
+% \newcommand{\removable}{\ensuremath{R}} %Removable rules
+\newcommand{\removable}{\ensuremath{R^{\mathit{-}}}} %Removable rules
+% \newcommand{\addable}{\ensuremath{A}} %Addable rules
+\newcommand{\addable}{\ensuremath{R^{\mathit{+}}}} %Addable rules
