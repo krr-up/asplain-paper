@@ -6,6 +6,22 @@
 
 
 The present paper is related closely related to work in the research on xAI in ASP or Prolog such as the xASP systems \cite{ly:iclp,ly:spie,trieu2022xasp,alviano2024xai} and the systen  
-s(CASP) \cite{AriasCCG20}. Since xASP2 is a signficant enhancement of its predecesssors described in \cite{ly:iclp,ly:spie,trieu2022xasp}, we will discuss the relationship of \asplain{} with xASP2 and s(CASP). 
-Both xASP2 and s(CASP) compute a trace of the computation of a query given an answer set, thereby providing explanations for atoms in an answer set (true atoms) and atoms not in an answer set (false atoms). 
+s(CASP) \cite{AriasCCG20}. 
+Since xASP2 is a signficant enhancement of its predecesssors described in \cite{ly:iclp,ly:spie,trieu2022xasp}, we will discuss the relationship of \asplain{} with xASP2 and s(CASP). 
+Both xASP2 and s(CASP) provide explanations for atoms in an answer set (true atoms) and
+atoms not in an answer set (false atoms) by computing a justification for the existence or
+(non existence) of an atom in an answer set. 
+xASP2 comes with a user interface that allows users to explore the explanations
+interactively while s(CASP) does not provide such feature. 
+s(CASP) does not ground the programs before computing explanations and thus, it is not 
+affected by the grounding bottleneck of ASP.
+However, s(CASP) may provide different explanations towards the same query when the ordering
+of rules or literals in rules is changed.
+
+\asplain{} provides a graphical interface that allows users to explore different traces of a query. 
+In this sense, it is similar to xASP2 and s(CASP). 
+Furthermore, \asplain{} works with propositional programs, and hence, will need to ground
+programs with variables before providing explanations. 
+The most significant difference between \asplain{} and xASP2 or s(CASP) is that \asplain{} focuses on contrastive explanations.
+
 
