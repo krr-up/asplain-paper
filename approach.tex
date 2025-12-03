@@ -55,6 +55,7 @@
 %
 
 \subsection{Labeled Logic Programs}
+\label{sec:labeled-logic-programs}
 
 %
 \begin{itemize}
@@ -114,6 +115,7 @@ $Atoms(P)$ is the set of all the atoms occuring in $P$.
 \end{itemize}
 
 \subsection{Program Graph}
+\label{sec:program-graph}
 
 %
 \begin{definition}[Program Graph]
@@ -140,7 +142,7 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 %
 
 %
-\begin{example}[Program Graph]
+\begin{example}[Program Graph]\label{ex:example1}
   This is a modified version of the James Bond example from Fandinno
   \comment{TODO: look for the original reference}.
   A drug d in James Bond’s drink causes his paralysis p provided that he was not given an antidote a that day.
@@ -184,6 +186,8 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   %
 \end{example}
 
+$\setminus$
+
 \begin{proposition}
   If two programs have the same program graph, they are strongly equivalent.
 \end{proposition}
@@ -226,21 +230,16 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 \end{itemize}
 %
 
-\paragraph{Open problems/questions}
-\begin{itemize}
-  \item
-  {\color{red} Doest it has a 1:1 relation with an ASP program?}.
-  Should not be true for the \emph{orginal} program.
-  \\
-  But if the starter program is disyunctive and ground, then should be safe to say
-\end{itemize}
-
 \begin{proposition}
-  Given two disyunctive, ground programs $P_1$ and $P_2$ and their respective program graphs $G_{P_1}$ and $G_{P_2}$, then
+  Given two labelled disyunctive, ground programs $P_1$ and $P_2$ and their respective program graphs $G_{P_1}$ and $G_{P_2}$, then
   \[ G_{P_1} = G_{P_2} \rightarrow P_1 = P_2 \]
 \end{proposition}
 
-\subsection{Model Subgraph}
+
+%%%%%%%%%%%%%%%%%%% EXPLAINING MODELS
+
+\subsection{Explaining a model: Model Subgraph}
+\label{sec:model-subgraph}
 
 \begin{definition}[Model Subgraph from Model]
   Given a program graph $G_P = \langle V_c \cup V_d \cup V_a, E_{+} \cup E_{-} \rangle$,
@@ -249,11 +248,8 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \begin{itemize}
     % take all the atoms in the model as nodes and all the supported rules as nodes as welll
     \item $V = I \cup \{ \Lb{r} \mid r \in P \land I \models \Bd{r} \}$
-    % take all outgoing edges from atoms such that the corresponding (neg/pos) literal is supported by the model
-    \item $\forall (a, \ell) \in E_{+}$ such that $a \in I$, then $(a, \ell) \in E$
-    % \item $\forall (a, \ell) \in E_{-}$ such that $a \notin I$, then $(a, \ell) \in Em_{-}$   % we disregard the negative edges
-    % take all outgoing edges from rules if the rule is supported by the model
-    \item $\forall (\ell, a) \in E_{+}$ such that $I \models a \wedge \Bd{\InvLb{\ell}}$, then $(\ell, a) \in E$
+    % any join all the included nodes using positive edges only
+    \item $E = \{ (v_1, v_2) \mid (v_1, v_2 \in V)\ \land\ (v_1, v_2) \in E_{+}  \}$
   \end{itemize}
 \end{definition}
 
@@ -268,16 +264,16 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \includegraphics[width=0.5\textwidth]{resources/mask.png}
   \caption{Example of Model Subgraph.
   The entire program graph $G_{P_{1}} = \langle V_c \cup V_d \cup V_a, E_{+}\cup E_{-} \rangle$ can be seen, but the model subgraph $MG_{P_1}^{M1}$, which is highlighted  the answer set $M1 = \{w,a,d\}$.}
-  \label{fig:model-mask}
+  \label{fig:model-subgraph}
 \end{figure}
 
 
 \paragraph{Discussion Points}
 \begin{itemize}
   \item Intuition: we use a given model to extract a subgraph from the program graph, that highlights (1) supportiveness of atoms in the model; (2) supportiveness of rules; and (3) the truthness of the positive literals in the body.
-  \item In our visualizations, we show the model subgraph coloured over the original program graph.
-  \item How to read a Model Subgraph Visualizations.
+  \item \textbf{Visualization}
   \begin{itemize}
+    \item We show the model subgraph coloured over the original program graph, like in Figure~\ref{fig:model-subgraph}.
     \item Atoms: cirlce node is colored if the corresponding atom is in the model.
     \item Literals: {\color{blue} only positive} literals are highlighted, in the form of the black, solid edges coming out of disjunctive and choice body, box-like, nodes.
     \item Rules: box node is colored if the body of the rule is supported by the model
@@ -318,8 +314,10 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   There should be a 1:1 correspondance between these model subgraphs and xASP explanations \cite{altrsoba23a} \comment{Son: xASP uses only one of the alternative for each atom, CHECK}
 \end{proposition}
 
+%%%%%%%%%%%%%%%%%%%%%%%%% ABDUCTION
 
-\subsection{Contrastive}
+\subsection{Abduction for Explanation}
+\label{sec:abductive-explanations}
 
 %       Extended version
 % \paragraph{Context and Motivation}
@@ -338,11 +336,10 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 %   %
 % \end{itemize}
 
-%       Smaller version
 \paragraph{Context and Motivation}
 \begin{itemize}
   %
-  \item Human explanations are often \emph{contrastive}~\cite{miller19}.
+  \item Humans usually ask for explanations when they expect some event, but are exposed to a different outcome/situation instead.
   %
   \item People ask “why not” questions relative to a reference and hypothetical/alternative scenarios.
   %
@@ -350,26 +347,373 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   %
   \item This expectation is called \emph{foil} or \emph{foil world} in the literature, whereas the \emph{reference world} or \emph{fact world} is the asker’s interpretation of observed events where James is not poioned.
   %
-  \item A contrastive explanation compares this \emph{reference world} with an \emph{foil world} where the outcome differs.
-  %  %
+  \item In ASP context, this happens, for instance, when the users expects something that does not happen in the shown solution.
+  %
+  \item Examples:
+  \begin{itemize}
+    \item User expected $a$ to be in the answer, but it's not.
+    \item User expected $a$ not to be in the answer, but it is.
+    \item User expected $a$ to be in the answer, but there is no answer (UNSAT).
+  \end{itemize}
+  %
+  \item Abduction is the process we refer to find the \emph{foil answer} that satisfies the query.
+  %
+  \item However, other processes could be used to find a valid \emph{foil answer}, and we may study its relation with our notion of abduction.  
 \end{itemize}
+%
 
 \paragraph{Assumptions}
 \begin{itemize}
-  \item {\color{blue} We do not adress abduction here}, instead we just start from what is only neccesary to compute the contrastive graph.
-  \item That is
+  %
+  \item We start from a \emph{reference} program $P_r$.
+  %
+  \item Query $Q$ is a set of literals.
+  %
+  \item \emph{Abduction} is the process of finding a \emph{foil program} $P_f$ and an answer set $I_f$ of $P_f$ such that $I_f \models Q$.
+  %
+  \item The way we obtain $P_f$ and $I_f$ is by adding and removing rules from $P_r$ in a controlled way.
+  %
+\end{itemize}
+%
+
+%
+\begin{definition}[Valid Foil]\label{def:valid-foil}
+  Given
   \begin{itemize}
-    \item The program graph of the union of two programs $G_{P_r \cup P_f} = \langle V_c \cup V_d \cup V_a, E_{+}, E_{-} \rangle$ where $P_r$ and $P_f$ are the \emph{reference} and \emph{foil} programs, respectively.
-    \item A \emph{reference model subgraph} $MG_{P_r}^{I_r} = \langle V_r, E_r \rangle$, for some $I_r$ such that $I_r \models P_r$
-    \item The \emph{foil model subgraph} $MG_{P_f}^{I_f} = \langle V_f, E_f \rangle$, for some $I_f$ such that $I_f \models P_f$
-    \item The query as set of literals $Q$.
+    %
+    \item a set of literals $Q$ refered as \emph{query},
+    %
+    \item a \emph{reference program} $P_r$,
+    %
+    \item a set of \emph{removable} labelled rules $R \subseteq P_r$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
+    %
+    \item and
+    %
+    \item a set of \emph{addable} labelled rules $A$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
+    %
   \end{itemize}
+  %
+  % we say the model subgraph $MG_{P_f}^{I_f}$
+  we say the pair $(P_f, I_f)$
+  is a \emph{valid foil for $P_r$ with respect to some $A$, $R$ and $Q$} iff:
+  \begin{itemize}
+    \item $ P_r \setminus R \subseteq P_f \subseteq (P_r \cup A)$
+    \item $I_f \in AS(P_f)\ \land\ I_f \models Q$
+  \end{itemize}
+  Additionally, we denote $Foils(P_r, A, R, Q)$ as the set of \emph{all valid foils for $P_r$ with respect to $A$, $R$, and $Q$}.
+\end{definition}
+%
+\paragraph{Discussion on Valid Foil (Def. \ref{def:valid-foil})}
+\begin{itemize}
+  \item Intuitively, for obtaining a valid foil you can take $P_r$, and you may add/remove anything from $A$ and $R$ to obtain a new foil program $P_f$. For any model $I_f$ of $P_f$ that satisfies the query $Q$, you can form a valid foil.
+  %
+  \item Also, note that $P_f$ may be equal to $P_r$ meaning that we did not add or remove anything from $P_r$ and we still find a $I_f$ model that satisfies the query. That is, there was another model of $P_r$ that satisfy the query and can be used to explain \emph{why not} $Q$.
+  %
+  \item In the case that the set $Foils(P_r, A, R, Q) = \emptyset$, this means that there is no way to satisfy the query even if removing or adding any combination from $R$ or $A$.
+  %
+  \item Of course, note that there is no restrictions over both the $R$ or $A$ sets, which means that one could put potentially anything there. Therefore, some $A$ or $R$ sets can be weird.
+  \begin{itemize}
+    \item For instance, adding rules which do not interact at all with the rest of rules in $P_r$ (they do not share language).
+  \end{itemize}
+  %
+  % \item Regarding contrastive explanations, from a \emph{reference program} and a query $Q$, the idea is to find a \emph{foil valid subgraph} $MG_{P_f}^{I_f}$ with with respect to $Q$, that will be later used to compute a contrast graph $CG_{P_r, P_f}^{I_r, I_f}$.
+  %
+  \item {\color{blue} This definition does not impose the existence of a \emph{reference model} $I_r \models P_r$ neither that $I_r \nvDash Q$.} It's convenient for allowing particular scenarios:
+  \begin{itemize}
+    \item \emph{unsatisfiable reference programs}: $AS(P_r) = \emptyset$ and $Q = \emptyset$, that is, we only want to recover satisfiability; or (b), $Q \neq \emptyset$, we want it to be sat and force something.
+    \item The reference and foil models may collide $I_r = I_f$, which means that we are in fact doing no contrast. In other words, $I_r$ already satisfy the query.
+  \end{itemize}
+  %
+  \item The sets $R$ and $A$ is what we informally call them \emph{abducibles}, that is, rules that we can add or remove to the original program in order to satisfy the query.
+  %
+  \item The most natural example of the abducibles is \emph{user input}, but any other notion can be abducible if it makes sense for the application.
+  %
+  \item The set $R$ (\emph{removables}) is only restricted to be a subset of $P_r$, while the set $A$ (\emph{addables}) is free, since we want to give full flexibility.
+  %
+  \item The idea is that they are defined for each use-case: the scope will be given as part of the domain, as user preference, as a programmer criteria, etc.
+  %
+  \item There exist two important sets that are not needed in the definition, those are:
+  \begin{itemize}
+    %
+    \item $A_f = P_f \setminus P_r \subseteq A$, that is, the set of rules that were \emph{added}.
+    %
+    \item $R_f = P_r \setminus P_f \subseteq R$, that is, the set of rules that were \emph{removed}.
+    %
+    \item The role of $A_f$ and $R_f$ will play an important role when designing and implementing good explanation preferences.
+  \end{itemize}
+  %
+  \item \textbf{Visualization:}
+  \begin{itemize}
+    \item We now have to handle the removals and the additions, in other words, we have to deal $P_r \neq P_f$.
+    \item To do so, we use the program graph $PG_{P_r \cup Pf}$ as the base of the visualization.
+    \item We highlight $MG_{P_f}^{I_f}$ as an explanation of the foil.
+    \item Finally we also highlight the added and removed rules using the sets $A_f$ and $R_f$.
+    \item Examples: Figures~\ref{fig:example2}, \ref{fig:example3-1} and~\ref{fig:example3-2}.
+  \end{itemize} 
+\end{itemize}
+%
+
+\begin{example}[Removing rules for explaining a query]\label{ex:example2}
+  %
+  Recall $P$~\ref{lst:example1} from Example~\ref{ex:example1}, and consider $P$\ref{lst:example2}, which only adds rule $7$, forcing to be a holiday.
+  %
+  \lstinputlisting[caption={Program $P$\ref{lst:example2}}, label={lst:example2}]{encodings/example2.lp}
+  %
+  Now, imagine that a user is shown $P$\ref{lst:example2}'s unique model $M = \{ h, d, p \}$, and let's say that she is surprised that James is poisoned and wants to know why.
+  %
+
+  %
+  To answer such a question, we can use the abuction process discussed in Definition~\ref{def:valid-foil}.
+  %
+  We first need to define the users query $Q = \{ \neg p \}$, which matches her expectations.
+  %
+  Also, we will consider the actions performed by James as \emph{removables} so that we can reason about what would have happened if James had acted differently.
+  %
+  To that aim, let us consider rule $4$ (James have drank) as a \emph{removable rule} by setting $R = \{ 4 \}$.
+  %
+  In this case, we will not have any \emph{addable rule}, that is $A = \emptyset$.
+  %
+  To generate an explanation, we would take any valid foil $(P_f, I_f) \in Foils(P2, A, R, Q)$ and compute the foil model subgraph $MG_{P_f}^{I_f}$.
+  %
+  For a nicer visualization, this model subgraph can be depicted over the program graph $PG_{P_r \cup P_f}$ as in Figure~\ref{fig:example2}.
+  %
+\end{example}
+%
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{resources/example2.png}
+  \caption{Visualization of the valid foil of Example~\ref{ex:example2}}
+  \label{fig:example2}
+\end{figure}
+
+
+\begin{example}[Abduction for UNSAT]\label{ex:example3}
+  %
+  Let us consider the \emph{unsatisfiable} program $P$\ref{lst:example3}
+  %%
+  \lstinputlisting[caption={Program $P$\ref{lst:example3}}, label={lst:example3}]{encodings/example3.lp}
+  %%
+  Now consider that we want to find reasons why this program is unsatisfiable.
+  %
+  We might find different explanations depending how do we frame it as the problem of finding a valid foil.
+  %
+  First we will consider $P$\ref{lst:example3}$ = P_r$
+  and
+  $Q = \emptyset$ since we are only interested in recovering satisfiability.
+  Also, we will always consider $A = \emptyset$ for this example.
+  %
+
+  %
+  If we say that $R = \{ 4 \}$, then there is only one \emph{valid foil subgraph} depicted in Figure~\ref{fig:example3-1}.
+  %
+  If we however consider $R = \{ 2, 3 \}$, then there are three possible \emph{valid foils} depicted in Figure~\ref{fig:example3-2}.
+\end{example}
+%
+\begin{figure}
+  \centering
+  \includegraphics[width=0.3\textwidth]{resources/example3-1.png}
+  \caption{Valid foil for $P$\ref{lst:example3} with respect to $Q = \emptyset$, when $R = \{ 4 \}$. Only (constraint) rule 4 was removed.}
+  \label{fig:example3-1}
+\end{figure}
+%
+\begin{figure}
+  \centering
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{resources/example3-2-1.png}
+    % \label{fig:example3-2-1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{resources/example3-2-2.png}
+    % \label{fig:example3-2-2}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{resources/example3-2-3.png}
+    % \label{fig:example3-2-3}
+  \end{minipage}
+  \caption{Valid foils for $P$\ref{lst:example3} with respect to $Q = \emptyset$, 
+  when $R = \{ 2, 3 \}$.
+  Foils left and middle correspond to remove only rules $2$ and $3$ respectively, whereas left foil correspond to remove both.}
+  \label{fig:example3-2}
+\end{figure}
+
+\subsubsection{Selecting the best Foil}
+\label{sec:best-foil}
+
+\paragraph{Motivation and Context}
+\begin{itemize}
+  \item Among all possible explanations, humans tend to select the most suitable ones according to different criteria.
+  %
+  \item Since our framework allows full flexibility in generating possible \emph{Foil Worlds}, we also need a good way to identify the most appropriate ones.
+  %
+  \item
+  In the social sciences, several notions of preference or selection criteria have been discussed, ranging from the degree of difference between the fact and foil worlds (the smaller, the better), to temporal or probabilistic considerations.
+  This is well studied in~\cite{miller19}.
+  %
+  \item Other contrastive approaches, such as \cite{eigeoe23a}, only allow to minimize the difference between both worlds or restrict attention to minimal ones.
+  %
+  \item We pursue a more general perspective by introducing an abstract \emph{cost function} that assigns each foil a numerical value, thus establishing an order relation among foils.
+  %
+  \item Each concrete implementation of this function represents a criterion that can be used to select among foils by minimization.
+  %
+  \item Examples of possible criteria include:
+  \begin{itemize}
+    \item the number of rules that must be added or removed,
+    % \item the differences between what holds true or false in the two models,  % this is for contrastive
+    \item the preference for modifying interactively added rules first, and
+    \item domain-specific distances, such as the cost of modifying a plan in planning scenarios.
+  \end{itemize}
+  %
+  \item The identification, definition, and implementation of such criteria deserve dedicated effort, as they directly affect the relevance and usefulness of the explanations from a user’s perspective.
+  %
+  \item In the following, we define the abstraction formally and propose several implementations that, in our view, cover common use cases—while remaining flexible for systems to define their own.
+\end{itemize}
+
+
+\begin{definition}[Foil cost function]\label{def:foil-cost}
+  Given
+  \begin{itemize}
+    \item a query $Q$,
+    %
+    \item a reference program $P_r$,
+    %
+    \item a set of removable labelled rules $R \subseteq P_r$,
+    %
+    \item and a set of addable labelled rules $A$,
+  \end{itemize}
+  %
+  a \emph{foil cost function} for $(P_r, A, R, Q)$ is a function
+  %
+  \[
+    \mathit{foil\_cost}_{P_r,A,R,Q} :
+    \mathrm{Foils}(P_r, A, R, Q) \rightarrow \mathbb{N}.
+  \]
+  that assigns each foil $(P_f, I_f)$ a numerical value representing a cost with respect to the reference program.
+\end{definition}
+
+\begin{definition}[Best foils]\label{def:best-foils}
+  Given
+  \begin{itemize}
+    \item a query $Q$,
+    %
+    \item a reference program $P_r$,
+    %
+    \item a set of removable labelled rules $R \subseteq P_r$,
+    %
+    \item and a set of addable labelled rules $A$,
+    %
+    \item and a foil cost function $\mathit{foil\_cost}_{P_r,A,R,Q}$,
+  \end{itemize}
+  %
+  the set of \emph{best foils} is defined as
+  %
+  \[
+  \mathrm{BestFoils}(P_r, A, R, Q, \mathit{foil\_cost})
+    = \operatorname*{arg\,min}_{(P_f, I_f) \in \mathrm{Foils}(P_r, A, R, Q)}
+      \mathit{foil\_cost}_{P_r,A,R,Q}(P_f, I_f).
+  \]
+\end{definition}
+
+\paragraph{Discussion}
+\begin{itemize}
+  %
+  \item The idea to find good explanations for users is that we first design and implement a good preference for selecting explanations, that is, a good cost function.
+  %
+  \item Then, $\mathrm{BestFoils}$ contains all valid foils that achieve the minimal value of the selected cost function.
+  %
+  \item These represent the preferred foils according to the specified preference.
+\end{itemize}
+
+
+\begin{example}[Program-difference cost function]\label{ex:program-difference-cost-function}
+  For a given abduction setup $(P_r, A, R, Q)$.
+  %
+  We define the particular foil cost function \emph{program difference},
+  % \[
+  %   \mathit{PDiff}_{P_r,A,R,Q} :
+  %   \mathrm{Foils}(P_r,A,R,Q) \rightarrow^{} \mathbb{N}
+  % \]
+  defined as follows:
+  \[
+    \mathit{PDiff}_{P_r,A,R,Q}(P_f, I_f)
+    = |\,P_r \,\triangle\, P_f\,|,
+  \]
+  where $\triangle$ denotes the \emph{symmetric difference} between the sets of rules
+  in $P_r$ and $P_f$.
+  %
+\end{example}
+
+\paragraph{Discussion on Program Difference Function}
+\begin{itemize}
+  \item This cost function reflects how many rules differ between the reference and the foil program i.e. how many rules were added/removed.
+  %
+  \item Minimizing $\mathit{PDiff}$ therefore selects foils that are syntactically closest to the reference program.
+  %
+  \item We belive this is one of the typical preferences that we can use.
+  %
+  \item Also, note that $PDiff$ previous definition is equivalent to
+  \[
+  \mathit{PDiff}_{P_r,A,R,Q}(P_f, I_f)
+    = |R'| + |A'| = |P_r \setminus P_f| + |P_f \setminus P_r|
+  \]
+\end{itemize}
+
+\begin{example}[Selecting minimal foils using the program-difference cost]\label{ex:best-foils}
+  Recall Example~\ref{ex:example3} and the three valid foils depicted in Figure~\ref{fig:example3-2}.
+  %
+  Among these, the rightmost foil is clearly redundant with respect to the other two, as it removes both rules~2 and~3, whereas the left and middle foils remove only one each.
+  %
+  By applying the program-difference cost function
+  $\mathit{PDiff}$
+  we assign each foil a value proportional to the number of rules that differ from the reference program.
+  %
+  In this case, foils that remove a single rule receive a cost of $1$, while the foil removing both rules receives a cost of $2$.
+  %
+  Therefore,
+  \[
+  \mathrm{BestFoils}(P_r, A, R, Q, \mathit{PDiff})
+    = \{(P_f, I_f) \in \mathrm{Foils}(P_r, A, R, Q)
+        \mid |\,P_r \triangle P_f\,| = 1\}.
+  \]
+  %
+  Minimizing $\mathit{PDiff}$ thus selects the left and middle foils from Figure~\ref{fig:example3-2}, which represent the \emph{cardinality}-minimal deviations from the reference program needed to recover satisfiability.
+\end{example}
+
+\paragraph{Discussion on Example~\ref{ex:best-foils}}
+\begin{itemize}
+  \item This example illustrates the use of the preferences to select the foils which made the least changes to the original program.
+\end{itemize}
+
+\paragraph{Open Questions/ Future}
+\begin{itemize}
+  \item {\color{red} Can we write a subset minimal preference on the additions/removals? (related to UNSAT CORE) Might we use asprin for this?}
+  \item Do we need to provide an example of a domain-driven criteria? Where removing/adding certain rules weight more than others?
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%% CONTRASTIVE EXPLANATIONS
+
+\subsection{Contrastive Explanations}
+\label{sec:contrastive-explanations}
+
+\paragraph{Context and Motivation}
+\begin{itemize}
+  %
+  \item On top of using abduction to figure out valid foils, humans tend to leverage from the differences between the \emph{reference} and the \emph{foil} when explaining something.
+  %
+  \item A contrastive explanation compares this \emph{reference world} with an \emph{foil world} where the outcome differs.
+  %
+  \item We will be able to use causal relations \emph{hidden} in constraints by using \emph{existential satisfaction}, defined below.
+  %
 \end{itemize}
 
 \begin{definition}[Existential Satisfaction]
-  Given two sets of atoms $I_1$ and $I_2$ we say that they \emph{existentially satisfy} a term $t$, written
-  \[ I_1,I_2 \models t \]
-  iff:
+  Given two sets of atoms $I_1$ and $I_2$ we define the \emph{existential satisfaction} relation, written
+  \[ I_1,I_2 \models · \]
+  that holds according to the following cases:
   \begin{itemize}
     \item for a literal $l$ of the form $a$ or $\neg a$
     \begin{itemize}
@@ -390,24 +734,28 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 \paragraph{Discussion on Existential Satisfaction}
 \begin{itemize}
   \item Will be used to identify the conflict constraints among the masks used for a contrast.
-  \item Is a very relax notion of satisfaction that can be read as \emph{this constraint would have been fired}.
+  \item Is a relaxed notion of satisfaction that can be read as \emph{this constraint would have been fired}.
 \end{itemize}
 
 \begin{definition}[Contrastive Subgraph]
   Given
   \begin{itemize}
-    \item
-    a set of literals $Q$ refered as \emph{query},
-    \item
-    two programs $P_r$ and $P_f$,
-    \item
-    a program graph $G_{P_r \cup P_f} = \langle V_c, V_d, V_a, E_{+}, E_{-} \rangle$,
-    \comment{Problem? the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.}
-    \item
-    a program subgraph $MG_{P_r}^{I_r} = \langle V_r, E_r \rangle$
-    \item
-    and
-    a program subgraph $MG_{P_f}^{I_f} = \langle V_f, E_f \rangle$ such that $I_f \models Q$
+    \item a set of literals $Q$ refered as \emph{query},
+    %
+    \item a reference program-model pair $\langle P_r, I_r \rangle$ such that $I_r \models P_r$, $I_r \not\models Q$, and its correspondant subgraph $MG_{P_r}^{I_r} = \langle V_r, E_r \rangle$,
+    %
+    \item sets $A$ and $R$, of \emph{addable} (respectively \emph{removable}) rules, a \emph{valid foil program-model pair} $(P_f, I_f) \in Foils(P_r, A, R, Q)$, and its correspondant model subgraph $MG_{P_f}^{I_f} = \langle V_f, E_f \rangle$.
+    %
+    \item a program graph $G_{P_r \cup P_f} = \langle V_c, V_d, V_a, E_{+}, E_{-} \rangle$,
+    \comment{
+    {\bf Brais:} the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.
+    \\
+    {\bf Son:} This is interesting but how do you know that a specific source of knowledge is appropiate for a query and not another one?
+    It might be better to require that same rule must have the same label?
+    \\
+    {\bf Brais:} we might define a distance function that prefers the contrastive graph that includes a particular label (labels become the box node IDs).
+    But then the distance function has to have access to that...
+    }
   \end{itemize}
   then
   %
@@ -415,32 +763,32 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   \[
   CM_{P_r, P_f}^{I_r, I_f} =
   \langle
-    V_c, % 1. reference nodes, foil nodes, constraint nodes (or conflict nodes?)
-    \langle E_c, E_{-} \rangle  % fact/foil positive edges, negative edges
+    Vcon, % 1. reference nodes, foil nodes, constraint nodes (or conflict nodes?)
+    \langle Econ, Econ_{-} \rangle  % fact/foil positive edges, negative edges
   \rangle
   \]
   %
   where
   \begin{itemize}
-    \item  $V_c = V_r \cup V_f \cup \{ \Lb{r} \mid (r \in P_r \cup P_f) \land (Cons(r)) \land (I_r, I_f \models \Bd{r}) \}$
-    is the set of constraint nodes that are existentially satisfied by both reference and foil models
+    \item  $Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in P_r \cup P_f) \land (Cons(r)) \land (I_r, I_f \models \Bd{r}) \}$
+    \comment{
+      {\bf Son:} what about other rules whose body is existentially satisfied by $I_r$ and $I_f$, but not by $I_r$ nor $I_f$ alone?
+    }
 
-    \item $E_c = E_r \cup E_f$
-    \item $E_{c-} = \{ (a, \ell) \mid (a, \ell) \in E_{-} \land [ (I_r \models a) \oplus (I_f \models a)]\}$
-    we additionally add negative edges from the union program graph if that are satisfied by one world and not by the other.
+    \item $Econ_{+} = \{(v1, v2) \mid (v1, v2) \in E_{+} \land v1,v2 \in Vcon\}$
+    \item $Econ_{-} = \{(v1, v2) \mid (v1, v2) \in E_{-} \land v1,v2 \in Vcon\}$
+    \item $Econ_{-} = \{ (a, \ell) \mid (a, \ell) \in E_{-} \land [ (I_r \models a) \oplus (I_f \models a)]\}$
   \end{itemize}
 \end{definition}
-\comment{Use the union of the two graphs instead? What do we do with the negative edges?}
 %
 \begin{proposition}
   Given a \emph{contrastive graph} $CM_{P_r, P_f}^{I_r, I_f}$,
   \begin{itemize}
     \item the \emph{model graph} $MG_{P_r}^{I_r}$ is a subgraph of $CM_{P_r, P_f}^{I_r, I_f}$
     \item the \emph{model graph} $MG_{P_f}^{I_f}$ is a subgraph of $CM_{P_r, P_f}^{I_r, I_f}$
-    \item $CM_{P_r, P_f}^{I_r, I_f}$ is a subgraph of the \emph{program grpah} $G_{P_r \cup P_f}$.
+    \item $CM_{P_r, P_f}^{I_r, I_f}$ is a subgraph of the \emph{program graph} $G_{P_r \cup P_f}$.
   \end{itemize}
 \end{proposition}
-\comment{Might be so trivial}
 %
 
 %% contrastive
@@ -454,163 +802,126 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
 
 \paragraph{Discussion Points}
 \begin{itemize}
-  \item On top of the model subgraphs, the contrastive subgraphs give us two things:
-  \begin{enumerate}
-    \item Ensures that the contrast made answers the query $Q$.
-    \item Uses both models to additionally hihglight \emph{constraint conflicts} and \emph{negative edges}.
-  \end{enumerate}
+  %
+  \item We can build contrastive explanations or contrastive graphs only when we have a {\color{blue} satisfiable reference program}.
+  %
+  \item On top of the model subgraphs, the contrastive subgraphs additionally highlight: (1) \emph{constraint conflicts} and (2) \emph{negative edges}.
+  %
+  \item {\color{blue} Important: asplain allows the reference to fulfill the query. In those case, the reference and the foil are the same and we use that to capture positive justifications of queries as well as contrastive explanations. See below a discussion on that.}
+  %
 \end{itemize}
 
-\paragraph{Major Discussion on: Taxonomy/Types of Contrasts}
+\paragraph{Discussion on Types of Contrasts}
 \begin{itemize}
-  \item We may separate contrasts in types depending on the (dis)equalities among the programs $P_r$ and $P_f$, and the masks $MG_r$ and $MG_f$.
+  \item We may separate contrasts in types depending on the (dis)equalities among the model subgraphs used $MG_{P_r}^{I_r} = \langle V_r, E_r \rangle$ and $MG_{P_f}^{I_f} = \langle V_f, E_f \rangle$.
   \item We propose the following types
   \begin{itemize}
-    \item when $P_r = P_f \land I_r = I_f$ then we call it \emph{positive justification}.
+    \item when $P_r = P_f \land I_r = I_f$, so that $I_r \models Q$ then we call it \emph{positive justification}.
     \item when $P_r = P_f \land I_r \neq I_f$ then we call it \emph{alternative contrastive explanation}.
     \item when $P_r \neq P_f$ then we call it \emph{hypothetical contrastive explanation}.
   \end{itemize}
+  \item Note that, when we start from an unsat program (as in Section~\ref{sec:abductive-explanations}) we can only compute hypothetical contrastive explanations as we need a foil program $P_f$ for having any $I_f \models Q$.
 \end{itemize}
 
-
-
-\subsection{Abduction for Contrastive Explanations}
-
-\paragraph{Context and Motivation}
+\paragraph{Finding Contrastive Explanation for Queries}
 \begin{itemize}
+  \item We first start from the assumption that there exists some referece model $I_r$ of some reference program $P_r$ that has been shown to (or selected by) the user.
   %
-  \item Contrast is intended to be use to answer a user's query $Q$.
+  \item Then the user wonders why some query $Q$ is not true in the reference.
   %
-  \item This query is something that do not hold in the reference world.
+  \item We use abduction to find a $MG_{P_f}^{I_f} \in Foil(P_r, A, R, Q)$, for some $R$ and $A$.
   %
-  \item Abduction is the process we refer to find the \emph{foil world} that satisfies the query.
+  \item Sets $R$ and $A$ can vary depending on the particular application.
   %
-  \item However, other processes could be used to find a valid \emph{foil world}, and we may study its relation with our notion of abduction.
-  %
+  \item Finally, we compute $CM_{P_r, P_f}^{I_r, I_f}$
 \end{itemize}
 
-\paragraph{Assumptions}
+
+\begin{example}[Contrastive Explanations for a query]\label{ex:example4}
+  Please recall Program $P$\ref{lst:example1}
+  %
+  Imagine that the user is shown with a visualization of $M2 = \{h, d, p\}$ and wonders why James has been poisoned, that is, user expected James not to be poisoned.
+  %
+  Now, if we set $Q = \{ \neg p \}$,
+  $A = \emptyset$
+  and
+  $R = \{ 4 \}$ (allowing to remove the fact $d$),
+  %
+  then for any $MG_{P_f}^{I_f} \in Foil(P_r, A, R, Q)$,
+  %
+  we can build a contrastive graph $CM_{P_r, P_f}^{I_r, I_f}$.
+  %
+  
+  %
+  For this particular example, there are three possible contrastive explanations, depicted in Figure~\ref{fig:example4} from left to right respectively: 
+  (1) one consisting on picking $w$ (working day) instead of $h$, which leads to James taking the antidote;
+  (2) another consiting onletting $h$ still true, but removing $d$ (drinking the poison);
+  and finally, (3), we can do both picking $w$ and removing $d$, which would still lead to $\neg p$.
+  %
+  The first is an \emph{alternative contrastive explanation} as the program has not been changed (that is, $P_r = P_f$), the other two are \emph{hypothetical contrastive explanations}
+  %
+\end{example}
+%
+\begin{figure}
+  \centering
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{resources/example4-1.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{resources/example4-2.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{resources/example4-3.png}
+  \end{minipage}
+  \caption{Possible contrastive explanations for the pair $(P1, M2)$ and $Q = \{ \neg p \}$, when $A = \emptyset$ and $R = \{ 4 \}$}
+  \label{fig:example4}
+\end{figure}
+
+%
+\paragraph{Visualization of Contrastive Explanations}
 \begin{itemize}
-  %
-  \item We start from a \emph{reference} program $P_r$ and a particular answer set $I_r$ of $P_r$.
-  %
-  \item Query $Q$ is a set of literals.
-  %
-  \item The process of \emph{abduction} is the process of finding a \emph{foil program} $P_f$ and an answer set $I_f$ of $P_f$ such that $I_f \models Q$.
-  %
-  \item The way we obtain $P_f$ and $I_f$ is by adding and removing rules from $P_r$ in a controlled way.
-  %
+  \item The reference model subgraph $MG_{P_r}^{I_r}$ is coloured in purple whereas the foil model subgraph $MG_{P_f}^{I_f}$ is coloured in green.
+  \item Also, what is not part of $MG_{P_f}^{I_f}$, is shown with less opacity.
+  \item The atom nodes, for any atom used in the query $Q$ are shown with a thicker border.
+  \item As when visualizing foils (for instance, in Figures~\ref{fig:example3-1} and~\ref{fig:example3-2}), removals and additions (e.g. the $R' = P_r \setminus P_f$ and the $A' = P_f \setminus P_r$ sets) are shown in red and blue respectively.
+  \item Finally, for those constraint rule nudes, that are existentially statisfied by $I_r$ and $I_f$ together, we colour them with the orange color.
+  \comment{This case it's maybe not the best example as our interity constraints here only give us that w and h cannot be together}
 \end{itemize}
 %
 
 %
-\begin{definition}{Abducible programs}
-  Given
-  \begin{itemize}
-    %
-    \item a \emph{reference program} $P_r$,
-    %
-    \item a set of \emph{removable} labelled rules $R \subseteq P_r$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-    \item and
-    %
-    \item a set of \emph{addable} labelled rules $A$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-  \end{itemize}
-  we denote $AP(P_r, A, R)$ as the set of all programs $P_f$ that satisfy
-  \[
-    P_r \setminus R \subseteq P_f \subseteq (P_r \cup A)
-  \]
-  Additionally, we say that $P_f$ is a valid \emph{abducible program from $P_r$ with respect to $A$ and $R$} if $P_f \in AP(P_r, A, R)$.
-\end{definition}
-%
-
-%
-\begin{definition}{Abducible Worlds}
-  Given
-  \begin{itemize}
-    %
-    \item a \emph{reference program} $P_r$,
-    %
-    \item a set of \emph{removable} labelled rules $R \subseteq P_r$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-    \item and
-    %
-    \item a set of \emph{addable} labelled rules $A$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-  \end{itemize}
-  we denote $AW(P_r, A, R)$ as the set of all pairs $(P_f, I_f)$ satisfying
-  \begin{itemize}
-    \item $P_f \in AP(P_r, A, R)$
-    \item $I_f \models P_f$
-  \end{itemize}
-  we call any of the pairs in the set as an \emph{abducible world from $P_r$}
-\end{definition}
-%
+\paragraph{Reading of Contrastive Explanations}
 \begin{itemize}
-  \item Note that we allow $P_r = P_f$
+  \item Figure~\ref{fig:example4}, left:
+  \begin{itemize}
+    \item James was poisoned ($p$) because he did not take the antidote ($\neg a$) because it was a holiday ($h$).
+    \item If it had been a weekday ($w$), James would have taken the antidote ($a$) and therefore he would not have been poisoned ($\neg p$).
+  \end{itemize}
+
+  \item Figure~\ref{fig:example4}, center:
+  \begin{itemize}
+    \item James was poisoned ($p$) because he drank the poison ($d$).
+    \item If James had not drunk the poison ($\neg d$), he would not have been poisoned ($p$).
+  \end{itemize}
+
+  \item Figure~\ref{fig:example4}, right:
+  \begin{itemize}
+    \item James was poisoned ($p$) because he drank the poison ($d$), and since it was a holiday ($h$), he did not have the antidote ($\neg a$).
+    \item If James had not drunk the poison ($\neg d$), or if it had not been a holiday ($h$), James would not have been poisoned ($p$).
+  \end{itemize}
+
+  \item Although the explanation in the right contains more information, one could claim that it is redundant with the other two, as the other two need fewer changes and equally explain the query.
+  \item We will use the preferences to select among them
 \end{itemize}
 %
 
-%
-\begin{definition}[Valid Foil World]
-  Given
-  \begin{itemize}
-    %
-    \item a set of literals $Q$ refered as \emph{query},
-    %
-    \item a \emph{reference program} $P_r$,
-    %
-    \item a set of \emph{removable} labelled rules $R \subseteq P_r$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-    \item and
-    %
-    \item a set of \emph{addable} labelled rules $A$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-  \end{itemize}
-  %
-  we say the pair
-  \[(P_f, I_f)\],
-  is a \emph{valid foil world for $P_r$ with respect to $Q$} iff:
-  \begin{itemize}
-    \item $(P_f, I_f) \in AW(P_r, A, R)$
-    \item $I_f \models Q$
-  \end{itemize}
-\end{definition}
-%
-\paragraph{Discussion}
-\begin{itemize}
-  %
-  \item Regarding contrastive explanations, from a \emph{reference world} and a query $Q$, the idea is to find a valid foil world $(P_f, I_f)$ with with respect to $Q$, that will be later used to compute a \emph{model subgraph} $MG_{P_f}^{I_f}$, and then create a contrast graph $CG_{P_r, P_f}^{I_r, I_f}$.
-  %
-  \item {\color{blue} This definition does not impose the existence of a \emph{reference model} $I_r \models P_r$ neither that $I_r \nvDash Q$.} It's convenient as allow particular scenarios:
-  \begin{itemize}
-    \item \emph{unsat reference programs} $M(P_r) = \emptyset$ and $Q = \emptyset$, that is, we only want to recover satisfiability; or (b), $Q \neq \emptyset$, we want it to be sat and force something.
-    \item When doing contrastive, the reference and foil models may collide $I_r = I_f$, which means that we are in fact doing no contrast. In other words, $I_r$ already satisfy the query.
-  \end{itemize}
 
-  %
-  \item The sets $R$ and $A$ is what we informally call the \emph{abducibles}, that is, what we can add or remove to the original program in order to satisfy the query.
-  %
-  \item The most natural example of the abducibles is \emph{user input}, but any other notion can be abducible if it makes sense for the application.
-  %
-  \item The set $R$ (\emph{removables}) is only restricted to be a subset of $P_r$, while the set $A$ (\emph{addables}) is free, since we want to give full flexibility.
-  %
-  \item The idea is that they are defined for each use-case: the scope will be given as part of the domain, as user preference, as a programmer criteria, etc.
-  %
-  \item There exist two important sets that are not needed in the definition, those are:
-  \begin{itemize}
-    %
-    \item $A_f = P_f \setminus P_r \subseteq A$, that is, the set of rules that were \emph{added}.
-    %
-    \item $R_f = P_r \setminus P_f \subseteq R$, that is, the set of rules that were \emph{removed}.
-    %
-    \item The role of $A_f$ and $R_f$ will probably take more importance when designing distances for implementing good explanation preferences.
-  \end{itemize}
-  %
-\end{itemize}
 %
-
 \paragraph{Small Discussion on types of queries}
 \begin{itemize}
   %
@@ -624,86 +935,148 @@ and $E_{+}$ and $E_{-}$ are the sets of edges of the graph such that:
   %
   We do not answer in different ways depending on a taxonomy over a query. Queries are always sets of literals, and are answered always in the same way.
 \end{itemize}
+%
 
 
-\subsection{Abduction Preferences}
+\subsubsection{Selecting the Best Contrastive explanations}
+\label{sec:best-contrastive}
 
-\paragraph{Context and Motivation}
+\paragraph{Motivation}
 \begin{itemize}
-  \item Since we provide full flexibility to find \emph{Foil Worlds}, we need to provide a way to select the appropiate one (or ones).
-  \item In social sciences literature we see different notions of criteria on how to select the best \emph{foil world}: from the differences between the fact and foil worlds (the less the better), to other like temporal difference or probabilities.
-  \item Other contrastive approaches, as \cite{eigeoe23a}, minimize the difference between both worlds or even require the minimals in that sense.
-  \item We aim for a broader approach, by allowing to implement different criteria by defining a \emph{closeness function}.
-  \item Examples of closeness functions:
-  \begin{itemize}
-    \item How many things have be removed/added.
-    \item The differences between what is true and false in both models.
-    \item Give preference to models that first remove things that were added interactively over input.
-    \item ad-hoc distances for particular problems:
-    \begin{itemize}
-      \item In planning: defining a distance in terms of the cost of changing the plan.
-    \end{itemize}
-  \end{itemize}
+  \item In practice, we can still use the $\mathit{foil\_cost}$ plus $\mathit{BestFoils}$ approach to select among the best foil to make a contrast with.
+  %
+  \item However, since those notions are designed without a starting \emph{reference} model in mind, we cannot make interesting differences (semantic based) among the reference and foil models alone.
+  %
+  \item For instance, in Example~\ref{ex:example4}, we cannot notice any difference between contrastive explanations (2) and (3) by using the $\mathit{PDiff}$ foil cost function alone, since they are equivalent in terms of removed rules.
+  %
+  \item However, explanation (2) requires less changes, as in explanation (3) we moreover had to pick $w$ instead of $h$.
+  %
+  \item In the following, we define an extension of the previous definitions~\ref{def:foil-cost} and~\ref{def:best-foils}, for defining preference that include a \emph{reference} model $I_R$.
 \end{itemize}
 
-\begin{definition}{Closeness Function}
+
+\begin{definition}[Contrast cost function]\label{def:contrast-cost}
   Given
   \begin{itemize}
+    \item a query $Q$,
     %
-    \item a program $P_r$
+    \item a reference program-model pair $(P_r, I_r)$,
     %
-    \item a set of \emph{removable} labelled rules $R \subseteq P_r$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
+    \item a set of removable labelled rules $R \subseteq P_r$,
     %
-    \item and
-    %
-    \item a set of \emph{addable} labelled rules $A$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-  \end{itemize},
-  a \emph{closeness function} $cf$ is defined as
+    \item and a set of addable labelled rules $A$,
+  \end{itemize}
+  %
+  a \emph{contrast cost function} for $((P_r, I_r), A, R, Q)$ is a function
+  %
   \[
-  cf : AW(P_r, A, R) \times AW(P_r, A, R) \to \mathbb{Z}
+    \mathit{contrast\_cost}_{(P_r, I_r),A,R,Q} :
+    \mathrm{Foils}(P_r, A, R, Q) \rightarrow \mathbb{N}.
   \]
-  that is, an application which maps a pair of two worlds from each program to an integer value.
+  that maps each foil $(P_f, I_f)$ to a numerical value representing its cost with respect to the reference program-model pair $(P_r, I_r)$.
 \end{definition}
 
-\paragraph{Disucssion on closeness function}
+\begin{definition}[Best constrast]\label{def:best-contrasts}
+  Given
+  \begin{itemize}
+    \item a query $Q$,
+    %
+    \item a reference program $(P_r, I_r)$,
+    %
+    \item a set of removable labelled rules $R \subseteq P_r$,
+    %
+    \item and a set of addable labelled rules $A$,
+    %
+    \item and a contrast cost function $\mathit{contrast\_cost}_{(P_r, I_r),A,R,Q}$,
+  \end{itemize}
+  %
+  the set of \emph{best contrasts} is defined as
+  %
+  \[
+  \mathrm{BestContrasts}((P_r, I_r), A, R, Q, \mathit{contrast\_cost})
+    = \operatorname*{arg\,min}_{(P_f, I_f) \in \mathrm{Foils}(P_r, A, R, Q)}
+      \mathit{contrast\_cost}_{(P_r, I_r),A,R,Q}(P_f, I_f).
+  \]
+\end{definition}
+
+\begin{example}[Model-difference cost function]\label{ex:model-difference-cost-function}
+  For a given abduction setup $(P_r, A, R, Q)$ with reference model $I_r$,
+  we define the \emph{model-difference} contrast cost function as
+  \[
+    \mathit{MDiff}_{(P_r, I_r),A,R,Q}(P_f, I_f)
+      = |\,I_r \,\triangle\, I_f\,|,
+  \]
+  where $\triangle$ denotes the symmetric difference between the models $I_r$ and $I_f$.
+  
+\end{example}
+
+\begin{example}[Reference–Foil difference cost function]\label{ex:reference-foil-difference-cost-function}
+  Extending the previous idea, we define the \emph{reference-foil difference}, contrast cost function as
+  \[
+    \mathit{RFDiff}_{(P_r, I_r),A,R,Q}(P_f, I_f)
+      = \mathit{MDiff}_{(P_r, I_r),A,R,Q}(P_f, I_f)
+      + \mathit{PDiff}_{P_r,A,R,Q}(P_f, I_f).
+  \]
+\end{example}
+
+
+
+\paragraph{Discussion}
 \begin{itemize}
-  \item Intuitively, we start from the \emph{reference world} and a \emph{valid foil world} and we compute a numerical distance.
-  \item We let the definition of the function open to each use case.
-  \item {\color{red} ISSUE: This closeness function requires to provide a reference program-model pair, so it does not work when $P_r$ is unsat. Need to fix this.}
+  \item The setup for finding the best contrastive explanations is the same as for selecting the best foil.
+  \item $\mathit{MDiff}$ is a \emph{semantic difference} measuring how many atoms differ between the reference and foil models.
+  \item $\mathit{RFDiff}$ integrates both syntactic and semantic differences, penalizing foils that diverge from the reference either in their rules or in their resulting models.
+  \item Note, now that we can have alternative and hypothetical explanations.
 \end{itemize}
 
-\begin{definition}[Closest Foil World]
-  Given
-  \begin{itemize}
-    %
-    \item a set of literals $Q$ refered as \emph{query},
-    %
-    \item a \emph{reference} program $P_r$,
-    %
-    \item a set of \emph{removable} labelled rules $R \subseteq P_r$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-    \item a set of \emph{addable} labelled rules $A$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
-    %
-    \item Let $Foils(P_r, A, R, Q)$ be the set of all valid foil worlds $(P_f, I_f) \in AW(P_r, A, R)$ for $P_r$ with respect to $Q$.
-    %
-    and
-    %
-    \item  a valid \emph{closeness function} $cf$
-    %
-  \end{itemize}
-  then
-  the \emph{closest foil world for $P_r$ with respect to $Q$ and $cf$} is given by
+\begin{example}[Selecting the best contrastive explanations]\label{ex:best-contrastive-explanations}
+  Recall Example~\ref{ex:example4} and the three contrastive explanations depicted in Figure~\ref{fig:example4}.
+  %
+  Here, depending of which criteria (i.e. cost function) we use, we may select different best contrastive explanations.
+  %
 
-  \[
-  \mathrm{CFW}(P_r, A, R, Q;cf)
-  := \argmin_{(P_f, I_f) \in Foils(P_r, A, R, Q)} \; cf(I_r, I_f).
-  \]
+  %
+  First, if we use the $\mathit{PDiff}$ foil cost function, only the foil corresponding to explanation (1) would be part of $\mathit{Bestfoils}(P_r, A, R, Q, \mathit{PDiff})$ with a weight of $0$.
+  % 
+  Regarding, explanations (2) and (3), their respective foils will have the same weight $1$ although explanation (3) required two changes: the removal of rule $4$ and the picking of $w$ in the choice rule.
+  %
+  That is, we cannot decide between (2) and (3) counting differences in the programs alone.
+  %
+  In order to notice this latter semantic change, we need to include the \emph{reference model} $I_r$ as well in the preference by using \emph{contrast cost functions} instead.
+  %
 
-\end{definition}
+  %
+  For instance, if we use the $\mathit{MDiff}$, which counts the differences among $I_r$ and $I_f$, is easy to see that contrast we obtain
+  a weight of $4$ for the foil corresponding to explanation (1),
+  $2$ for the foil corresponding to explanation (2),
+  and $5$ corresponding to explanation (3).
+  %
+  Therefore $\mathrm{BestContrasts}((P_r, I_f), A, R, Q, \mathit{MDiff})$ would only include the foil leading to (2) as the preffered explanation.
+  %
+  Note how when using $\mathit{MDiff}$ alone, we do not penalize any addition/removal to the reference program.
+  %
+  
+  %
+  Alternatively, we can use $\mathit{RFDiff}$ instead that can be computed as the sum of the weights previously reported for the other two cost functions, that is:
+  a weight of $0 + 4 = 4$ for (1),
+  a weight of $1 + 2 = 3$ for (2),
+  and a weight of $1 + 5 = 6$ for (3).
+  %
+  The ordering among foil induced by this, better matches the intuition of \emph{closeness} between the reference and foil.
+  %
+  In short, (2) would be the preffered explanation since the hypothetical contrastive world is closer to the reference.
+  \comment{
+    Brais -- my intuition was that for this cost function (1) and (2) would collide
+    however, strange effect: when we use this cost function, removing fact $d.$ effectively leads to increasing of $2$ units in the cost, since we remove the rule and the atom as well...
+    Nevertheless, this effect can be interesting in other cases, where the atom could be derived by other rule?
+  }
+  %
 
-
-
+  %
+  Finally
+  \comment{Brais2All: do you feel this example is too much? we can also add another function where we penalize removing/adding more than semantic differences}
+  \comment{Brais: this notion do not capture the } 
+\end{example}
 
 % \subsection{Relation to Support Graphs~\cite{cabmun24a}}
 % %
