@@ -586,12 +586,13 @@ $\setminus$
     \item and a set of addable labelled rules $A$,
   \end{itemize}
   %
-  a \emph{foil cost function} for $(P_r, A, R, Q)$ is any function
+  a \emph{foil cost function} for $(P_r, A, R, Q)$ is a function
   %
   \[
     \mathit{foil\_cost}_{P_r,A,R,Q} :
     \mathrm{Foils}(P_r, A, R, Q) \rightarrow \mathbb{N}.
   \]
+  that assigns each foil $(P_f, I_f)$ a numerical value representing a cost with respect to the reference program.
 \end{definition}
 
 \begin{definition}[Best foils]\label{def:best-foils}
@@ -631,12 +632,12 @@ $\setminus$
 \begin{example}[Program-difference cost function]\label{ex:program-difference-cost-function}
   For a given abduction setup $(P_r, A, R, Q)$.
   %
-  We define the particular foil cost function
-  \[
-    \mathit{PDiff}_{P_r,A,R,Q} :
-    \mathrm{Foils}(P_r,A,R,Q) \rightarrow^{} \mathbb{N}
-  \]
-  as follows:
+  We define the particular foil cost function \emph{program difference},
+  % \[
+  %   \mathit{PDiff}_{P_r,A,R,Q} :
+  %   \mathrm{Foils}(P_r,A,R,Q) \rightarrow^{} \mathbb{N}
+  % \]
+  defined as follows:
   \[
     \mathit{PDiff}_{P_r,A,R,Q}(P_f, I_f)
     = |\,P_r \,\triangle\, P_f\,|,
@@ -966,12 +967,13 @@ $\setminus$
     \item and a set of addable labelled rules $A$,
   \end{itemize}
   %
-  a \emph{contrast cost function} for $((P_r, I_r), A, R, Q)$ is any function
+  a \emph{contrast cost function} for $((P_r, I_r), A, R, Q)$ is a function
   %
   \[
     \mathit{contrast\_cost}_{(P_r, I_r),A,R,Q} :
     \mathrm{Foils}(P_r, A, R, Q) \rightarrow \mathbb{N}.
   \]
+  that maps each foil $(P_f, I_f)$ to a numerical value representing its cost with respect to the reference program-model pair $(P_r, I_r)$.
 \end{definition}
 
 \begin{definition}[Best constrast]\label{def:best-contrasts}
@@ -1017,6 +1019,8 @@ $\setminus$
   \]
 \end{example}
 
+
+
 \paragraph{Discussion}
 \begin{itemize}
   \item The setup for finding the best contrastive explanations is the same as for selecting the best foil.
@@ -1058,7 +1062,7 @@ $\setminus$
   a weight of $1 + 2 = 3$ for (2),
   and a weight of $1 + 5 = 6$ for (3).
   %
-  This matches better with the intuition of 
+  The ordering among foil induced by this, better matches the intuition of \emph{closeness} between the reference and foil.
   %
   In short, (2) would be the preffered explanation since the hypothetical contrastive world is closer to the reference.
   \comment{
@@ -1069,13 +1073,10 @@ $\setminus$
   %
 
   %
-  Finally, if we are still
+  Finally
+  \comment{Brais2All: do you feel this example is too much? we can also add another function where we penalize removing/adding more than semantic differences}
+  \comment{Brais: this notion do not capture the } 
 \end{example}
-
-\paragraph{Open questions and future}
-\begin{itemize}
-  \item {\color{red} Do we want to provide more functions (and examples?) as for instance preffering semantic changes over syntatic (or the other way around)?}
-\end{itemize}
 
 % \subsection{Relation to Support Graphs~\cite{cabmun24a}}
 % %
