@@ -4,3 +4,6 @@
 [submodule "include/comments"]
 	path = include/comments
 	url = ../latex-style-comments
+[submodule "include/latex-class-tlp"]
+	path = include/latex-class-tlp
+	url = ../latex-class-tlp.git

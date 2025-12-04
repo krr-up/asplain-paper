@@ -1,10 +1,10 @@
-\documentclass[a4paper]{article}
+\documentclass{./include/latex-class-tlp/tlp}
 
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{microtype}
-\usepackage[bibstyle=authoryear,citestyle=authoryear]{biblatex}
+% \usepackage[bibstyle=authoryear,citestyle=authoryear]{biblatex}
 \usepackage{url}\urlstyle{tt}
 \usepackage{comments}
 
@@ -13,22 +13,41 @@
 \usepackage{listings}
 \usepackage{graphicx}
 
-\addbibresource{krr.bib}   % {https://github.com/krr-up/bibliography/blob/master/krr.bib}
-\addbibresource{procs.bib} % {https://github.com/krr-up/bibliography/blob/master/procs.bib}
-\addbibresource{local.bib} % temporary storage facility - just for emergency
-\bibliography{krr,procs}
+% \addbibresource{krr.bib}   % {https://github.com/krr-up/bibliography/blob/master/krr.bib}
+% \addbibresource{procs.bib} % {https://github.com/krr-up/bibliography/blob/master/procs.bib}
+% \addbibresource{local.bib} % temporary storage facility - just for emergency
+% \bibliography{krr,procs}
 
 % Custom macros for this paper
 \input{macro}
 
+
+\lefttitle{Hahn et al.}
+
+\jnlPage{1}{8}
+\jnlDoiYr{2021}
+\doival{10.1017/xxxxx}
+
 \begin{document}
+%
+\title[asplain: An ASP System for Contrastive Explanations]{asplain: An ASP System for Contrastive Explanations}
+%
+\newcommand{\potassco}{Potassco Solutions, Germany}
 
-\title{asplain: A System for Contrastive Explanations in ASP}
-
-\author{%
-  Author\\
-  University of Potsdam, Germany
-}
+\begin{authgrp}
+  \author{\sn{Susana} \gn{Hahn}}
+  \affiliation{University of Potsdam, Germany}\affiliation{\potassco}
+  \author{\sn{Brais} \gn{Mu\~{n}iz}}
+  \affiliation{University of A Coru\~{n}a, Spain}\affiliation{\potassco}
+  \author{\sn{Orkunt} \gn{Sabuncu}}
+  \affiliation{\potassco}
+  \author{\sn{Torsten} \gn{Schaub}}
+  \affiliation{University of Potsdam, Germany}\affiliation{\potassco}
+  \author{\sn{Tran Cao} \gn{Son}}
+  \affiliation{\potassco}
+  \author{\sn{Hannes} \gn{Weichelt}}
+  \affiliation{University of Potsdam, Germany}\affiliation{\potassco}
+\end{authgrp}
 
 \maketitle
 
@@ -39,6 +58,7 @@
 \input{implementation}
 \input{discussion}
 
-\printbibliography{}
+\bibliographystyle{plainnat} % {acmtrans}
+\bibliography{./include/bibliography/krr,./local,./include/bibliography/procs}
 
 \end{document}
