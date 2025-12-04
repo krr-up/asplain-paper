@@ -131,16 +131,16 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \begin{example}[Program Graph]\label{ex:example1}
   This is a modified version of the James Bond example from Fandinno
   \comment{TODO: look for the original reference}.
-  A drug d in James Bond’s drink causes his paralysis p
+  A drug $d$ in James Bond’s drink causes his paralysis $p$
   \comment{In the examples we say poisoned and not paralysis. Which one is right?}
-  provided that he was not given an antidote a that day.
+  provided that he was not given an antidote $a$ that day.
   We know that Bond’s enemy, Dr. No, poured the drug. He gets the antidote if he is not on holiday $h$.
   Unlike in the original example, we add $w$ to indicate a working day,
   and a choice to decide if James is on holiday or working,
   where the constraints in rules 2 and 3 ensuring exactly one of them is true.
   \comment{Note that adding the choice with bounds would have introduced auxiliary atoms as explained before, and would not be part of our restricted input.}
   %%
-  \lstinputlisting[caption={Modified James Bond Example. Program $P_1$}, label={lst:example1}]{encodings/example1.lp}
+  \lstinputlisting[caption={Modified James Bond Example. Program $P_1$}, language=clingos, label={lst:example1}]{encodings/example1.lp}
   %%
   $P_1$ has two models, namely $\m_1 = \{w, d, a\}$ and $\m_2 = \{h, d, p\}$,
   where James is not poisoned in $\m_1$ since he is working and gets the antidote, and he is poisoned in $\m_2$ since he is on holiday and does not get the antidote.
@@ -203,7 +203,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
   \item
   This notion will be useful for mappping different approaches to explanations in ASP.
-®
+
   \item How to read the program graph \comment{Todo: CONNECT this with the sets/notation used}
   \begin{itemize}
     \item Circle nodes are atoms mentioned in the program.
@@ -276,8 +276,9 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item However, we can not include and edge that lacks its origin (breaks graph definition), so we would need to include the atom that is not in the model as well, which breaks the intuition of the model subgraph.
     \item Find below an enumeration of some types of explanations related to this, and if we can provide those answers without the negative literals in the \emph{model subgraph}. We need to discuss if we are interested on them or not.
     \begin{enumerate}
-      \item For the rule $a \leftarrow b, not c$. With the model $\{ a, b\}$ we cannot answer \emph{a because b and not c}, because we do not include $c$ in the subgraph. We could however define an operation that use both the model graph and the program graph to do this.
-      \comment{This is not what asplain is intended to do, but we can study this.}
+      \item For the rule $a \leftarrow b,\; not\; c$. With the model $\{ a, b\}$ we cannot answer \emph{a because b and not c}, because we do not include $c$ in the subgraph. We could however define an operation that use both the model graph and the program graph to do this.
+      \comment{This is not what asplain is intended to do, but we can study this.
+      S2B: Wouldn't we get this when we do the contrast?}
       \item Answering \emph{a is not true because is not supported} is trivial and can be done.
       \item Considering the program
       \[
@@ -345,8 +346,12 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \end{itemize}
   %
   \item Abduction is the process we refer to find the \emph{foil answer} that satisfies the query.
+  \comment{S: Below we have foil pair, and just foil, I think we need to clearly distinguish this.
+  The bellow it would be "an a foil answer set ...".
+  In this part I guess foil world would be the \pf and foil answer set would be $\m_f$? }
   %
   \item However, other processes could be used to find a valid \emph{foil answer}, and we may study its relation with our notion of abduction.
+  \comment{S: What kind of process?}
 \end{itemize}
 %
 
@@ -373,11 +378,12 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item a \emph{reference program} $\pr$,
     %
-    \item a set of \emph{removable} labelled rules $\removable \subseteq \pr$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
+    \item a set of \emph{removable} labelled rules $\removable \subseteq \pr$
+    \DEL{of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule}},
     %
     \item and
     %
-    \item a set of \emph{addable} labelled rules $\addable$ of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule},
+    \item a set of \emph{addable} labelled rules $\addable$ \DEL{of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule}},
     %
   \end{itemize}
   %
@@ -389,7 +395,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item $\m_f \in AS(\pf)\ \land\ \m_f \models Q$
     \comment{Can we say $\m_f\models \pf$? \m think we do this in other papers}
   \end{itemize}
-  Additionally, we denote $Foils(\pr, \addable, \removable, Q)$ as the set of \emph{all valid foils for $\pr$ with respect to $\addable$, $\removable$, and $Q$}.
+  Additionally, we denote $\foils(\pr, \addable, \removable, Q)$ as the set of \emph{all valid foils for $\pr$ with respect to $\addable$, $\removable$, and $Q$}.
 \end{definition}
 %
 \paragraph{Discussion on Valid Foil (Def. \ref{def:valid-foil})}
@@ -398,7 +404,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item Also, note that $\pf$ may be equal to $\pr$ meaning that we did not add or remove anything from $\pr$ and we still find a $\m_f$ model that satisfies the query. That is, there was another model of $\pr$ that satisfy the query and can be used to explain \emph{why not} $Q$.
   %
-  \item In the case that the set $Foils(\pr, \addable, \removable, Q) = \emptyset$, this means that there is no way to satisfy the query even if removing or adding any combination from $\removable$ or $\addable$.
+  \item In the case that the set $\foils(\pr, \addable, \removable, Q) = \emptyset$, this means that there is no way to satisfy the query even if removing or adding any combination from $\removable$ or $\addable$.
   %
   \item Of course, note that there is no restrictions over both the $\removable$ or $\addable$ sets, which means that one could put potentially anything there. Therefore, some $\addable$ or $\removable$ sets can be weird.
   \begin{itemize}
@@ -416,8 +422,9 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \item The sets $\removable$ and $\addable$ is what we informally call them \emph{abducibles}, that is, rules that we can add or remove to the original program in order to satisfy the query.
   %
   \item The most natural example of the abducibles is \emph{user input}, but any other notion can be abducible if it makes sense for the application.
-  %
-  \item The set $\removable$ (\emph{removables}) is only restricted to be a subset of $\pr$, while the set $\addable$ (\emph{addables}) is free, since we want to give full flexibility.
+  \item For instance, one could set the removable rules as all constraints, $\removable=\{r \mid r\in P\wedge\iscons{r}\}$, for debugging purposes to find out why the program is unsatisfiable.
+  %$
+  \item The set $\removable$ (\emph{removables}) is restricted to be a subset of $\pr$, while the set $\addable$ (\emph{addables}) is free, since we want to give full flexibility.
   %
   \item The idea is that they are defined for each use-case: the scope will be given as part of the domain, as user preference, as a programmer criteria, etc.
   %
@@ -428,10 +435,11 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item $\removed = \pr \setminus \pf \subseteq \removable$, that is, the set of rules that were \emph{removed}.
     %
-    \item The role of $\added$ and $\removed$ will play an important role when designing and implementing good explanation preferences.
+    \item $\added$ and $\removed$ will play an important role when designing and implementing good explanation preferences.
   \end{itemize}
   %
   \item \textbf{Visualization:}
+  \comment{S: This is how we visualize the contast, the valid foil is just the foil model subgraph}
   \begin{itemize}
     \item We now have to handle the removals and the additions, in other words, we have to deal $\pr \neq \pf$.
     \item To do so, we use the program graph $\pg{\pr \cup \pf}$ as the base of the visualization.
@@ -462,7 +470,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   In this case, we will not have any \emph{addable rule}, that is $\addable = \emptyset$.
   %
-  To generate an explanation, we would take any valid foil $(\pf, \m_f) \in Foils(P2, \addable, \removable, Q)$ and compute the foil model subgraph $\mgpi{\pf}{\m_f}$.
+  To generate an explanation, we would take any valid foil $(\pf, \m_f) \in \foils(P2, \addable, \removable, Q)$ and compute the foil model subgraph $\mgpi{\pf}{\m_f}$.
   %
   For a nicer visualization, this model subgraph can be depicted over the program graph $\pg{\pr \cup \pf}$ as in Figure~\ref{fig:example2}.
   %
@@ -579,7 +587,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \[
     \mathit{foil\_cost}_{\pr,\addable,\removable,Q} :
-    \mathrm{Foils}(\pr, \addable, \removable, Q) \rightarrow \mathbb{N}.
+    \foils(\pr, \addable, \removable, Q) \rightarrow \mathbb{N}.
   \]
   that assigns each foil $(\pf, \m_f)$ a numerical value representing a cost with respect to the reference program.
 \end{definition}
@@ -602,7 +610,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \[
   \mathrm{BestFoils}(\pr, \addable, \removable, Q, \mathit{foil\_cost})
-    = \operatorname*{arg\,min}_{(\pf, \m_f) \in \mathrm{Foils}(\pr, \addable, \removable, Q)}
+    = \operatorname*{arg\,min}_{(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)}
       \mathit{foil\_cost}_{\pr,\addable,\removable,Q}(\pf, \m_f).
   \]
 \end{definition}
@@ -624,7 +632,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   We define the particular foil cost function \emph{program difference},
   % \[
   %   \pdiff_{\pr,\addable,\removable,Q} :
-  %   \mathrm{Foils}(\pr,\addable,\removable,Q) \rightarrow^{} \mathbb{N}
+  %   \foils(\pr,\addable,\removable,Q) \rightarrow^{} \mathbb{N}
   % \]
   defined as follows:
   \[
@@ -665,7 +673,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   Therefore,
   \[
   \mathrm{BestFoils}(\pr, \addable, \removable, Q, \pdiff)
-    = \{(\pf, \m_f) \in \mathrm{Foils}(\pr, \addable, \removable, Q)
+    = \{(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)
         \mid |\,\pr \triangle \pf\,| = 1\}.
   \]
   %
@@ -733,7 +741,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item a reference program-model pair $\langle \pr, \m_r \rangle$ such that $\m_r \models \pr$, $\m_r \not\models Q$, and its correspondant subgraph $\mgpi{\pr}{\m_r} = \langle V_r, E_r \rangle$,
     %
-    \item sets $\addable$ and $\removable$, of \emph{addable} (respectively \emph{removable}) rules, a \emph{valid foil program-model pair} $(\pf, \m_f) \in Foils(\pr, \addable, \removable, Q)$, and its correspondant model subgraph $\mgpi{\pf}{\m_f} = \langle V_f, E_f \rangle$.
+    \item sets $\addable$ and $\removable$, of \emph{addable} (respectively \emph{removable}) rules, a \emph{valid foil program-model pair} $(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)$, and its correspondant model subgraph $\mgpi{\pf}{\m_f} = \langle V_f, E_f \rangle$.
     %
     \item a program graph $\pg{\pr \cup \pf} = \langle \Vc, \Vd, \Va, \Epos, \Eneg \rangle$,
     \comment{
@@ -960,7 +968,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \[
     \mathit{contrast\_cost}_{(\pr, \m_r),\addable,\removable,Q} :
-    \mathrm{Foils}(\pr, \addable, \removable, Q) \rightarrow \mathbb{N}.
+    \foils(\pr, \addable, \removable, Q) \rightarrow \mathbb{N}.
   \]
   that maps each foil $(\pf, \m_f)$ to a numerical value representing its cost with respect to the reference program-model pair $(\pr, \m_r)$.
 \end{definition}
@@ -983,7 +991,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \[
   \mathrm{BestContrasts}((\pr, \m_r), \addable, \removable, Q, \mathit{contrast\_cost})
-    = \operatorname*{arg\,min}_{(\pf, \m_f) \in \mathrm{Foils}(\pr, \addable, \removable, Q)}
+    = \operatorname*{arg\,min}_{(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)}
       \mathit{contrast\_cost}_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f).
   \]
 \end{definition}

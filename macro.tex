@@ -37,10 +37,10 @@
 \newcommand{\mgpi}[2]{\ensuremath{\mg_{#1}^{#2}}} %Model Graph for a given program and interpretation
 \newcommand{\cg}[4]{\ensuremath{CM_{#1, #2}^{#3, #4}}} %Constrast Graph
 
-\newcommand{\isdisj}[1]{\ensuremath{Dis(#1)}} % Rule is a disjunction
-\newcommand{\ischoice}[1]{\ensuremath{Choice(#1)}} % Rule is a choice
-\newcommand{\iscons}[1]{\ensuremath{Cons(#1)}} % Rule is a constraint
-\newcommand{\atoms}[1]{\ensuremath{Atoms(#1)}} % Set of atoms of a program
+\newcommand{\isdisj}[1]{\ensuremath{\mathit{dis}(#1)}} % Rule is a disjunction
+\newcommand{\ischoice}[1]{\ensuremath{\mathit{choice}(#1)}} % Rule is a choice
+\newcommand{\iscons}[1]{\ensuremath{\mathit{cons}(#1)}} % Rule is a constraint
+\newcommand{\atoms}[1]{\ensuremath{\mathit{Atoms}(#1)}} % Set of atoms of a program
 
 \newcommand{\lbl}[1]{\ensuremath{Lb(#1)}} %Literal
 
@@ -51,3 +51,11 @@
 
 \newcommand{\pdiff}{\ensuremath{P{\mathit{diff}}}} %Program difference
 \newcommand{\m}{\ensuremath{M}} %Model
+
+
+\newcommand{\foils}{\ensuremath{\mathit{Foils}}} %Set of foils
+
+\lstdefinelanguage{clingos}{%
+  language=clingo,%
+  basicstyle=\small\ttfamily%
+}

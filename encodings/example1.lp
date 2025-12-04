@@ -1,7 +1,7 @@
-    1: {h;w}.
-    2: :- not h, not w.
-    3: :- h, w.
+    r2: {h;w}.
+    r5: :- not h, not w.
+    r6: :- h, w.
 
-    4: d.
-    5: a :- w.
-    6: p :- d, not a.
+    r1: d.
+    r3: p :- d, not a.
+    r4: a :- w.

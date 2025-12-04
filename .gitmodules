@@ -7,3 +7,6 @@
 [submodule "include/latex-class-tlp"]
 	path = include/latex-class-tlp
 	url = ../latex-class-tlp.git
+[submodule "include/asp-macros"]
+	path = include/asp-macros
+	url = ../asp-macros.git
