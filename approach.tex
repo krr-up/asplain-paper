@@ -106,7 +106,7 @@ $\atoms{P}$ is the set of all the atoms occuring in $P$.
 %
 \begin{definition}[Program Graph]
 %
-Given a labelled logic program $P$, its \emph{program graph} is a directed graph
+Given a labelled logic program $P$, its corresponding \emph{program graph} is a directed graph
 $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos \cup \Eneg \rangle$
 where
 %
@@ -140,27 +140,27 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   where the constraints in rules 2 and 3 ensuring exactly one of them is true.
   \comment{Note that adding the choice with bounds would have introduced auxiliary atoms as explained before, and would not be part of our restricted input.}
   %%
-  \lstinputlisting[caption={Modified James Bond Example. Program $P_1$}, language=clingos, label={lst:example1}]{encodings/example1.lp}
+  \lstinputlisting[caption={Modified James Bond Example. Program $P1$}, language=clingos, label={lst:example1}]{encodings/example1.lp}
   %%
-  $P_1$ has two models, namely $\m_1 = \{w, d, a\}$ and $\m_2 = \{h, d, p\}$,
+  $P1$ has two models, namely $\m_1 = \{w, d, a\}$ and $\m_2 = \{h, d, p\}$,
   where James is not poisoned in $\m_1$ since he is working and gets the antidote, and he is poisoned in $\m_2$ since he is on holiday and does not get the antidote.
   %
-  Figure~\ref{fig:program-graph} shows the program graph corresponding to program $P_1$.
-  \comment{TODO: match labels with $P_1$, also remove the natural language, also remove optional input}
+  Figure~\ref{fig:program-graph} shows the program graph corresponding to program $P1$.
+  \comment{TODO: match labels with $P1$, also remove the natural language, also remove optional input}
   %
   \begin{figure}
     \centering
     % \includegraphics[width=0.75\textwidth]{resources/program-graph.png}
     % \includesvg[width=\textwidth]{resources/pg.svg}   %%% fails to scale text: asplain's or latex's problem?
-    \includegraphics[width=0.5\textwidth]{resources/pg.png}
+    \includegraphics[scale=0.05]{resources/pg.png}
     \label{fig:program-graph}
-    \caption{Program Graph $G_{P_{1}}$ corresponding to program in Listing~\ref{lst:example1}. }
+    \caption{Program graph $G_{P_{1}}$ corresponding to program in Listing~\ref{lst:example1}. }
   \end{figure}\comment{What do we do with optional nodes, that is abduction...}
   %
-  Circle-nodes in graph $G_{P_{1}}$ represent atoms appearing in $P_1$, that is, the set $\Va = \{d,a,h,w,p\}$.
+  Circle-nodes in graph $G_{P_{1}}$ represent atoms appearing in $P1$, that is, the set $\Va = \{d,a,h,w,p\}$.
   %
-  Rectangle-nodes in graph $G_{P_{1}}$ represent the body of some rule in $P_1$, in particular, sets $\Vc = \{1\}$
-  and $\Vd = \{2,3,4,5,6\}$ correspond to the set of rules in $P_1$ whose head is a choice, respectively a disjunction.
+  Rectangle-nodes in graph $G_{P_{1}}$ represent the body of some rule in $P1$, in particular, sets $\Vc = \{1\}$
+  and $\Vd = \{2,3,4,5,6\}$ correspond to the set of rules in $P1$ whose head is a choice, respectively a disjunction.
   %
   Edges in $E^{+}$ are represented by solid arrows, while edges in $E^{-}$ are represented by dashed arrows.
   % For any atom (circle-node) $a \in \Vc$ for which it exists some rule $r$
@@ -183,7 +183,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \paragraph{Discussion points}
 \begin{itemize}
   \item
-  $\Vc$, $\Vd$, $\Va$ are pairwise disjoint \comment{S: This would be simpler to show (I think) if the sets for \isdisj{r} is rather Dis(P)}
+  $\Vc$, $\Vd$, $\Va$ are pairwise disjoint \comment{S: This would be simpler to show (I think) if the sets for \isdisj{r} is rather Dis(P), for now I am trying to be consistent and if it an upper case like Atoms or Foils then is a set}
   \item
   A program graph is a directed graph that represents a logic program, in a solely syntactic way.
 
@@ -210,7 +210,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item Box nodes are rule bodies. Note: after grounding aux rules are created for conditional literals, and others.
     \item Edges
     \begin{itemize}
-      \item The graph is directed but directions are ommited so it must be read top-down. \comment{S: I think it might be best to add direction to all edges.}
       \item From rule (box) to atom (circle): atom is in the head of the rule
       \item From atom to rule: represent a literal. Positive when solid line, negative when dashed line.
     \end{itemize}
@@ -219,8 +218,8 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 %
 
 \begin{proposition}
-  Given two labelled disyunctive, ground programs $P_1$ and $P_2$ and their respective program graphs $\pg{P_1}$ and $\pg{P_2}$, then
-  \[ \pg{P_1} = \pg{P_2} \rightarrow P_1 = P_2 \]
+  Given two labelled disyunctive, ground programs $P1$ and $P2$ and their respective program graphs $\pg{P1}$ and $\pg{P2}$, then
+  \[ \pg{P1} = \pg{P2} \rightarrow P1 = P2 \]
 \end{proposition}
 
 
@@ -232,7 +231,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \begin{definition}[Model Subgraph from Model]
   Given a program graph $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos \cup \Eneg \rangle$,
   and an answer set $\m \subseteq \Va$ of $P$,
-  a \emph{Model Subgraph} is a pair $\mgpi{P}{\m} = \langle V, E \rangle$ such that
+  a \emph{model subgraph} is a pair $\mgpi{P}{\m} = \langle V, E \rangle$ such that
   \begin{itemize}
     % take all the atoms in the model as nodes and all the supported rules as nodes as welll
     \item $V = \m \cup \{ \Lb{r} \mid r \in P \land \m \models \Bd{r} \}$
@@ -244,14 +243,13 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 %
 \begin{proposition}
   Given a program $P$ and a model $\m$ of $P$,
-  the \emph{Model Subgraph} $MG_P^\m$ is a subgraph of the \emph{Program Graph} $\pg{P}$.
+  the \emph{model subgraph} $MG_P^\m$ is a subgraph of the \emph{program graph} $\pg{P}$.
 \end{proposition}
 %
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{resources/mask.png}
-  \caption{Example of Model Subgraph.
-  The entire program graph $G_{P_{1}} = \langle \Vc \cup \Vd \cup \Va, \Epos\cup \Eneg \rangle$ can be seen, but the model subgraph $\mgpi{P_1}{\m_1}$, which is highlighted  the answer set $\m_1 = \{w,a,d\}$.}
+  \includegraphics[scale=0.05]{resources/foil.png}
+  \caption{Visualization of model subgraph $\mgpi{P1}{\m_1}$.}
   \label{fig:model-subgraph}
 \end{figure}
 
@@ -259,15 +257,23 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \paragraph{Discussion Points}
 \begin{itemize}
   \item Intuition: we use a given model to extract a subgraph from the program graph, that highlights (1) supportiveness of atoms in the model; (2) supportiveness of rules; and (3) the truthness of the positive literals in the body.
-  \item \textbf{Visualization}
-  \begin{itemize}
-    \item We show the model subgraph coloured over the original program graph, like in Figure~\ref{fig:model-subgraph}.
-    \item Atoms: cirlce node is colored if the corresponding atom is in the model.
-    \item Literals: {\color{blue} only positive} literals are highlighted, in the form of the black, solid edges coming out of disjunctive and choice body, box-like, nodes.
-    \item Rules: box node is colored if the body of the rule is supported by the model
-    \item Derivations: black arrows going from bodies to atoms show that the atom could be derivated by that supported rule.
-  \end{itemize}
-  \item However, it {\color{blue} does not select any particular derivation} when alternative causes emerge (that is, is not causal) (is not equivalent to \cite{cabmun24a} but could be equivalent to \cite{altrsoba23a})
+  \item
+  A visualization example for $\mgpi{P1}{\m_1}$ with is shown in Figure~\ref{fig:model-subgraph}.
+  We show the program graph $\pg{P}$ in the background, and highlight the model subgraph $\mgpi{P}{\m}$ for the given model $\m$ on top of it.
+  As such, atoms are colored if they appear in the model and
+  rules are colored if their body is supported by the model.
+  Edges for positive literals are highlighted if they are satisfied by the model.
+  While edges from rules to atoms are highlighted if the atom is in the model, indicating that it could be derivated by that supported rule.
+
+  % \item \textbf{Visualization}
+  % \begin{itemize}
+  %   \item We show the model subgraph coloured over the original program graph, like in Figure~\ref{fig:model-subgraph}.
+  %   \item Atoms: cirlce node is colored if the corresponding atom is in the model.
+  %   \item Literals: {\color{blue} only positive} literals are highlighted, in the form of the black, solid edges coming out of disjunctive and choice body, box-like, nodes.
+  %   \item Rules: box node is colored if the body of the rule is supported by the model
+  %   \item Derivations: black arrows going from bodies to atoms show that the atom could be derivated by that supported rule.
+  % \end{itemize}
+  \item Notice, it {\color{blue} does not select any particular derivation} when alternative causes emerge (that is, is not causal) (is not equivalent to \cite{cabmun24a} but could be equivalent to \cite{altrsoba23a})
 \end{itemize}
 
 \paragraph{Discussion on having or not negative literals in the model subgraph}
@@ -413,11 +419,17 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   % \item Regarding contrastive explanations, from a \emph{reference program} and a query $Q$, the idea is to find a \emph{foil valid subgraph} $MG_{\pf}^{\m_f}$ with with respect to $Q$, that will be later used to compute a contrast graph $CG_{\pr, \pf}^{\m_r, \m_f}$.
   %
-  \item {\color{blue} This definition does not impose the existence of a \emph{reference model} $\m_r \models \pr$ neither that $\m_r \nvDash Q$.} It's convenient for allowing particular scenarios:
-  \begin{itemize}
-    \item \emph{unsatisfiable reference programs}: $AS(\pr) = \emptyset$ and $Q = \emptyset$, that is, we only want to recover satisfiability; or (b), $Q \neq \emptyset$, we want it to be sat and force something.
-    \item The reference and foil models may collide $\m_r = \m_f$, which means that we are in fact doing no contrast. In other words, $\m_r$ already satisfy the query.
-  \end{itemize}
+  \item {\color{blue} This definition does not impose the existence of a \emph{reference model} $\m_r \models \pr$}
+  This allows finding foils for unsatisfiable reference programs, $AS(\pr) = \emptyset$.
+  If $Q = \emptyset$ then we are simply recovering satisfiability.
+  Otherwise, if $Q \neq \emptyset$, we are recovering satisfiability and forcing something to be true in the process.
+  \item {\color{blue} This definition does not impose that $\m_r \nvDash Q$.}
+  Therefore, the reference and foil models may collide $\m_r = \m_f$,
+  which means that we are in fact doing no contrast.
+  In other words, $\m_r$ already satisfy the query.
+  Analyzing the the model subgraph $\mgpi{\pr}{\m_r}$ in comparison to $\pg{P}$,
+  can then provide a causal explanation for \emph{why} $Q$.
+  \comment{S: This would be like the other approaches, right brais?}
   %
   \item The sets $\removable$ and $\addable$ is what we informally call them \emph{abducibles}, that is, rules that we can add or remove to the original program in order to satisfy the query.
   %
@@ -429,6 +441,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \item The idea is that they are defined for each use-case: the scope will be given as part of the domain, as user preference, as a programmer criteria, etc.
   %
   \item There exist two important sets that are not needed in the definition, those are:
+  \comment{We add this sets here but latter on when defining a cost there is no reference to them, are they really relevant then?, I think we can just remove this part here}
   \begin{itemize}
     %
     \item $\added = \pf \setminus \pr \subseteq \addable$, that is, the set of rules that were \emph{added}.
@@ -438,105 +451,118 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item $\added$ and $\removed$ will play an important role when designing and implementing good explanation preferences.
   \end{itemize}
   %
-  \item \textbf{Visualization:}
-  \comment{S: This is how we visualize the contast, the valid foil is just the foil model subgraph}
-  \begin{itemize}
-    \item We now have to handle the removals and the additions, in other words, we have to deal $\pr \neq \pf$.
-    \item To do so, we use the program graph $\pg{\pr \cup \pf}$ as the base of the visualization.
-    \item We highlight $\mgpi{\pf}{\m_f}$ as an explanation of the foil.
-    \item Finally we also highlight the added and removed rules using the sets $\added$ and $\removed$.
-    \item Examples: Figures~\ref{fig:example2}, \ref{fig:example3-1} and~\ref{fig:example3-2}.
-  \end{itemize}
+  % \item \textbf{Visualization:}
+  % \comment{S: This is how we visualize the contast, the valid foil is just the foil model subgraph}
+  % \begin{itemize}
+  %   \item We now have to handle the removals and the additions, in other words, we have to deal $\pr \neq \pf$.
+  %   \item To do so, we use the program graph $\pg{\pr \cup \pf}$ as the base of the visualization.
+  %   \item We highlight $\mgpi{\pf}{\m_f}$ as an explanation of the foil.
+  %   \item Finally we also highlight the added and removed rules using the sets $\added$ and $\removed$.
+  %   \item Examples: Figures~\ref{fig:example2}, \ref{fig:example3-1} and~\ref{fig:example3-2}.
+  % \end{itemize}
 \end{itemize}
 %
 
-\begin{example}[Removing rules for explaining a query]\label{ex:example2}
-  %
-  Recall $P$\ref{lst:example1} from Example~\ref{ex:example1}, and consider $P$\ref{lst:example2}, which only adds rule $7$, forcing to be a holiday.
-  %
-  \lstinputlisting[caption={Program $P$\ref{lst:example2}}, label={lst:example2}]{encodings/example2.lp}
-  %
-  Now, imagine that a user is shown $P$\ref{lst:example2}'s unique model $\m = \{ h, d, p \}$, and let's say that she is surprised that James is poisoned and wants to know why.
-  %
+\begin{example}[Abduction]\label{ex:example2}
+  Consider $P2$ as the extension of $P1$ with the following rule which ensures that James is on holiday.
+  \comment{S: This rule works like an assumption which can be a user input}
+  \begin{lstlisting}[language=clingos]
+    r7: :- not h.
+  \end{lstlisting}
 
+  % %
+  % Recall $P$\ref{lst:example1} from Example~\ref{ex:example1}, and consider $P$\ref{lst:example2}, which only adds rule $7$, forcing to be a holiday.
+  % %
+  % \lstinputlisting[caption={Program $P$\ref{lst:example2}}, label={lst:example2}]{encodings/example2.lp}
+  % %
+  Now, imagine that a user is shown $P2$'s unique model $\m_2$,
+  and let's say that they are surprised that James is poisoned and want to know why.
+  To answer the question we can preform abduction by calculating $\foils(P2, \emptyset, \{r6, r7\}, \{ \neg p \})$,
+  % where $Q = \{ \neg p \}$ which is the expected outcome from the user's point of view,
+  % $\removable = $ and $\addable = \emptyset$.
+  This yields four valid foils that satisfy the query, namely,
+  $(P2\setminus \{r7\}, \{w, d, a\})$,
+  $(P2\setminus \{r6\}, \{h\})$,
+  $(P2\setminus \{r6, r7\}, \{h\})$ and
+  $(P2\setminus \{r6, r7\}, \{w, a\})$.
+  These foils can be visualized using their corresponding model subgraphs as shown in Figure~\ref{fig:foils}.
   %
-  To answer such a question, we can use the abuction process discussed in Definition~\ref{def:valid-foil}.
-  %
-  We first need to define the users query $Q = \{ \neg p \}$, which matches her expectations.
-  %
-  Also, we will consider the actions performed by James as \emph{removables} so that we can reason about what would have happened if James had acted differently.
-  %
-  To that aim, let us consider rule $4$ (James have drank) as a \emph{removable rule} by setting $\removable = \{ 4 \}$.
-  %
-  In this case, we will not have any \emph{addable rule}, that is $\addable = \emptyset$.
-  %
-  To generate an explanation, we would take any valid foil $(\pf, \m_f) \in \foils(P2, \addable, \removable, Q)$ and compute the foil model subgraph $\mgpi{\pf}{\m_f}$.
-  %
-  For a nicer visualization, this model subgraph can be depicted over the program graph $\pg{\pr \cup \pf}$ as in Figure~\ref{fig:example2}.
-  %
+  We use the color green to highlight foil models to latter distinguish them from the reference model.
+
 \end{example}
 %
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{resources/example2.png}
-  \caption{Visualization of the valid foil of Example~\ref{ex:example2}}
-  \label{fig:example2}
+  \begin{tabular}{cc}
+    \includegraphics[scale=0.05]{resources/f1.png} &
+    \includegraphics[scale=0.05]{resources/f2.png} \\
+    \includegraphics[scale=0.05]{resources/f3.png} &
+    \includegraphics[scale=0.05]{resources/f4.png} \\
+  \end{tabular}
+  \caption{Visualizations of the four valid foils for $P2$ in Example~\ref{ex:example2}.
+  Top figures remove rule $7$ (left) and rule $6$ (right).
+  Bottom figures remove both rules, with different models.}
+  \label{fig:foils}
 \end{figure}
 
 
-\begin{example}[Abduction for UNSAT]\label{ex:example3}
-  %
-  Let us consider the \emph{unsatisfiable} program $P$\ref{lst:example3}
-  %%
-  \lstinputlisting[caption={Program $P$\ref{lst:example3}}, label={lst:example3}]{encodings/example3.lp}
-  %%
-  Now consider that we want to find reasons why this program is unsatisfiable.
-  %
-  We might find different explanations depending how do we frame it as the problem of finding a valid foil.
-  %
-  First we will consider $P$\ref{lst:example3}$ = \pr$
-  and
-  $Q = \emptyset$ since we are only interested in recovering satisfiability.
-  Also, we will always consider $\addable = \emptyset$ for this example.
-  %
+% \subsubsection{Abduction for unsat instances}
 
-  %
-  If we say that $\removable = \{ 4 \}$, then there is only one \emph{valid foil subgraph} depicted in Figure~\ref{fig:example3-1}.
-  %
-  If we however consider $\removable = \{ 2, 3 \}$, then there are three possible \emph{valid foils} depicted in Figure~\ref{fig:example3-2}.
-\end{example}
+
+
+% \begin{example}[Abduction for UNSAT]\label{ex:example3}
+%   %
+%   Let us consider the \emph{unsatisfiable} program $P$\ref{lst:example3}
+%   %%
+%   \lstinputlisting[caption={Program $P$\ref{lst:example3}}, label={lst:example3}]{encodings/example3.lp}
+%   %%
+%   Now consider that we want to find reasons why this program is unsatisfiable.
+%   %
+%   We might find different explanations depending how do we frame it as the problem of finding a valid foil.
+%   %
+%   First we will consider $P$\ref{lst:example3}$ = \pr$
+%   and
+%   $Q = \emptyset$ since we are only interested in recovering satisfiability.
+%   Also, we will always consider $\addable = \emptyset$ for this example.
+%   %
+
+%   %
+%   If we say that $\removable = \{ 4 \}$, then there is only one \emph{valid foil subgraph} depicted in Figure~\ref{fig:example3-1}.
+%   %
+%   If we however consider $\removable = \{ 2, 3 \}$, then there are three possible \emph{valid foils} depicted in Figure~\ref{fig:example3-2}.
+% \end{example}
 %
-\begin{figure}
-  \centering
-  \includegraphics[width=0.3\textwidth]{resources/example3-1.png}
-  \caption{Valid foil for $P$\ref{lst:example3} with respect to $Q = \emptyset$, when $\removable = \{ 4 \}$. Only (constraint) rule 4 was removed.}
-  \label{fig:example3-1}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=0.3\textwidth]{resources/example3-1.png}
+%   \caption{Valid foil for $P$\ref{lst:example3} with respect to $Q = \emptyset$, when $\removable = \{ 4 \}$. Only (constraint) rule 4 was removed.}
+%   \label{fig:example3-1}
+% \end{figure}
 %
-\begin{figure}
-  \centering
-  \begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{resources/example3-2-1.png}
-    % \label{fig:example3-2-1}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{resources/example3-2-2.png}
-    % \label{fig:example3-2-2}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{resources/example3-2-3.png}
-    % \label{fig:example3-2-3}
-  \end{minipage}
-  \caption{Valid foils for $P$\ref{lst:example3} with respect to $Q = \emptyset$,
-  when $\removable = \{ 2, 3 \}$.
-  Foils left and middle correspond to remove only rules $2$ and $3$ respectively, whereas left foil correspond to remove both.}
-  \label{fig:example3-2}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \begin{minipage}[b]{0.32\textwidth}
+%     \centering
+%     \includegraphics[width=\textwidth]{resources/example3-2-1.png}
+%     % \label{fig:example3-2-1}
+%   \end{minipage}
+%   \hfill
+%   \begin{minipage}[b]{0.32\textwidth}
+%     \centering
+%     \includegraphics[width=\textwidth]{resources/example3-2-2.png}
+%     % \label{fig:example3-2-2}
+%   \end{minipage}
+%   \hfill
+%   \begin{minipage}[b]{0.32\textwidth}
+%     \centering
+%     \includegraphics[width=\textwidth]{resources/example3-2-3.png}
+%     % \label{fig:example3-2-3}
+%   \end{minipage}
+%   \caption{Valid foils for $P$\ref{lst:example3} with respect to $Q = \emptyset$,
+%   when $\removable = \{ 2, 3 \}$.
+%   Foils left and middle correspond to remove only rules $2$ and $3$ respectively, whereas left foil correspond to remove both.}
+%   \label{fig:example3-2}
+% \end{figure}
 
 \subsubsection{Selecting the best Foil}
 \label{sec:best-foil}
@@ -545,7 +571,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \begin{itemize}
   \item Among all possible explanations, humans tend to select the most suitable ones according to different criteria.
   %
-  \item Since our framework allows full flexibility in generating possible \emph{Foil Worlds}, we also need a good way to identify the most appropriate ones.
+  \item Since our framework allows full flexibility in generating possible foils, we also need a good way to identify the most appropriate ones.
   %
   \item
   In the social sciences, several notions of preference or selection criteria have been discussed, ranging from the degree of difference between the fact and foil worlds (the smaller, the better), to temporal or probabilistic considerations.
@@ -559,9 +585,9 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item Examples of possible criteria include:
   \begin{itemize}
-    \item the number of rules that must be added or removed,
+    \item the number of rules that were added or removed and the type of such rules (e.g., constraints vs. standard rules),
     % \item the differences between what holds true or false in the two models,  % this is for contrastive
-    \item the preference for modifying interactively added rules first, and
+    \item the difference between the two models in terms of atoms that are true in one but not the other,
     \item domain-specific distances, such as the cost of modifying a plan in planning scenarios.
   \end{itemize}
   %
@@ -586,7 +612,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   a \emph{foil cost function} for $(\pr, \addable, \removable, Q)$ is a function
   %
   \[
-    \mathit{foil\_cost}_{\pr,\addable,\removable,Q} :
+    \foilcost_{\pr,\addable,\removable,Q} :
     \foils(\pr, \addable, \removable, Q) \rightarrow \mathbb{N}.
   \]
   that assigns each foil $(\pf, \m_f)$ a numerical value representing a cost with respect to the reference program.
@@ -603,15 +629,15 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item and a set of addable labelled rules $\addable$,
     %
-    \item and a foil cost function $\mathit{foil\_cost}_{\pr,\addable,\removable,Q}$,
+    \item and a foil cost function $\foilcost$,
   \end{itemize}
   %
   the set of \emph{best foils} is defined as
   %
   \[
-  \mathrm{BestFoils}(\pr, \addable, \removable, Q, \mathit{foil\_cost})
+  \bestfoils(\pr, \addable, \removable, Q, \foilcost)
     = \operatorname*{arg\,min}_{(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)}
-      \mathit{foil\_cost}_{\pr,\addable,\removable,Q}(\pf, \m_f).
+      \foilcost_{\pr,\addable,\removable,Q}(\pf, \m_f).
   \]
 \end{definition}
 
@@ -620,7 +646,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item The idea to find good explanations for users is that we first design and implement a good preference for selecting explanations, that is, a good cost function.
   %
-  \item Then, $\mathrm{BestFoils}$ contains all valid foils that achieve the minimal value of the selected cost function.
+  \item Then, $\bestfoils$ contains all valid foils that achieve the minimal value of the selected cost function.
   %
   \item These represent the preferred foils according to the specified preference.
 \end{itemize}
@@ -628,15 +654,16 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \begin{example}[Program-difference cost function]\label{ex:program-difference-cost-function}
   For a given abduction setup $(\pr, \addable, \removable, Q)$.
+  \comment{S: This abduction setup is something we use a lot before already, perhaps we want to define it before}
   %
-  We define the particular foil cost function \emph{program difference},
+  We define the particular foil cost function \emph{program difference} $\varphi$,
   % \[
   %   \pdiff_{\pr,\addable,\removable,Q} :
   %   \foils(\pr,\addable,\removable,Q) \rightarrow^{} \mathbb{N}
   % \]
   defined as follows:
   \[
-    \pdiff_{\pr,\addable,\removable,Q}(\pf, \m_f)
+    \pdiff(\pf, \m_f)
     = |\,\pr \,\triangle\, \pf\,|,
   \]
   where $\triangle$ denotes the \emph{symmetric difference} between the sets of rules
@@ -652,43 +679,39 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item We belive this is one of the typical preferences that we can use.
   %
-  \item Also, note that $PDiff$ previous definition is equivalent to
-  \[
-  \pdiff_{\pr,\addable,\removable,Q}(\pf, \m_f)
-    = |\removable'| + |\addable'| = |\pr \setminus \pf| + |\pf \setminus \pr|
-  \]
+  % \item Also, note that $\pdiff$ previous definition is equivalent to
+  % \[
+  % \pdiff(\pf, \m_f)
+  %   = |\removable'| + |\addable'| = |\pr \setminus \pf| + |\pf \setminus \pr|
+  % \]
 \end{itemize}
 
 \begin{example}[Selecting minimal foils using the program-difference cost]\label{ex:best-foils}
-  Recall Example~\ref{ex:example3} and the three valid foils depicted in Figure~\ref{fig:example3-2}.
-  %
-  Among these, the rightmost foil is clearly redundant with respect to the other two, as it removes both rules~2 and~3, whereas the left and middle foils remove only one each.
-  %
-  By applying the program-difference cost function
-  $\pdiff$
+  By applying
+  $\pdiff$ to the foils obtained in  Example~\ref{ex:example2}
   we assign each foil a value proportional to the number of rules that differ from the reference program.
   %
-  In this case, foils that remove a single rule receive a cost of $1$, while the foil removing both rules receives a cost of $2$.
+  In this case, the first two foils that remove a single rule receive a cost of $1$, while the foils removing both rules receives a cost of $2$.
   %
   Therefore,
   \[
-  \mathrm{BestFoils}(\pr, \addable, \removable, Q, \pdiff)
-    = \{(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)
-        \mid |\,\pr \triangle \pf\,| = 1\}.
+  \bestfoils(P2, \emptyset, \{r6, r7\}, \{ \neg p \}, \pdiff)
+    = \{(\pf, \m_f) \in \foils(P2, \emptyset, \{r6, r7\}, \{ \neg p \})
+        \mid |\,P2 \triangle \pf\,| = 1\}.
   \]
   %
-  Minimizing $\pdiff$ thus selects the left and middle foils from Figure~\ref{fig:example3-2}, which represent the \emph{cardinality}-minimal deviations from the reference program needed to recover satisfiability.
+  Minimizing $\pdiff$ thus selects the two top foils from Figure~\ref{fig:foils},
+  which represent the \emph{cardinality}-minimal deviations \comment{S2B: What do you mean here?} from the reference program needed to recover satisfiability.
+  %
+  This example illustrates the use of the preferences to select the foils which made the least changes to the original program.
 \end{example}
 
-\paragraph{Discussion on Example~\ref{ex:best-foils}}
-\begin{itemize}
-  \item This example illustrates the use of the preferences to select the foils which made the least changes to the original program.
-\end{itemize}
 
 \paragraph{Open Questions/ Future}
 \begin{itemize}
   \item {\color{red} Can we write a subset minimal preference on the additions/removals? (related to UNSAT CORE) Might we use asprin for this?}
   \item Do we need to provide an example of a domain-driven criteria? Where removing/adding certain rules weight more than others?
+  \comment{S: Do we have to? or can we just say that these can be maped back into a single cost function? @Son perhaps you can help with this?}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%% CONTRASTIVE EXPLANATIONS
@@ -701,9 +724,9 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item On top of using abduction to figure out valid foils, humans tend to leverage from the differences between the \emph{reference} and the \emph{foil} when explaining something.
   %
-  \item \addable contrastive explanation compares this \emph{reference world} with an \emph{foil world} where the outcome differs.
+  \item A contrastive explanation compares this \emph{reference world} with an \emph{foil world} where the outcome differs.
   %
-  \item We will be able to use causal relations \emph{hidden} in constraints by using \emph{existential satisfaction}, defined below.
+  \item With this comparison we  will be able to use causal relations \emph{hidden} in constraints by using \emph{existential satisfaction}, defined below.
   %
 \end{itemize}
 
@@ -743,7 +766,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item sets $\addable$ and $\removable$, of \emph{addable} (respectively \emph{removable}) rules, a \emph{valid foil program-model pair} $(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)$, and its correspondant model subgraph $\mgpi{\pf}{\m_f} = \langle V_f, E_f \rangle$.
     %
-    \item a program graph $\pg{\pr \cup \pf} = \langle \Vc, \Vd, \Va, \Epos, \Eneg \rangle$,
+    \item a program graph $\pg{\pr \cup \pf} = \langle \Vc\cup \Vd\cup \Va, \Epos\cup \Eneg \rangle$,
     \comment{
     {\bf Brais:} the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.
     \\
@@ -760,30 +783,30 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \[
   \cg{\pr}{\pf}{\m_r}{\m_f} =
   \langle
-    Vcon, % 1. reference nodes, foil nodes, constraint nodes (or conflict nodes?)
-    \langle Econ, Econ_{-} \rangle  % fact/foil positive edges, negative edges
+    \Vcon, % 1. reference nodes, foil nodes, constraint nodes (or conflict nodes?)
+    \langle \Eposcon, \Enegcon \rangle  % fact/foil positive edges, negative edges
   \rangle
   \]
   %
   where
   \begin{itemize}
-    \item  $Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in \pr \cup \pf) \land (\iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
+    \item  $\Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in \pr \cup \pf) \land (\iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
     \comment{
       {\bf Son:} what about other rules whose body is existentially satisfied by $\m_r$ and $\m_f$, but not by $\m_r$ nor $\m_f$ alone?
     }
 
-    \item $Econ_{+} = \{(v1, v2) \mid (v1, v2) \in \Epos \land v1,v2 \in Vcon\}$
-    \item $Econ_{-} = \{(v1, v2) \mid (v1, v2) \in \Eneg \land v1,v2 \in Vcon\}$
-    \item $Econ_{-} = \{ (a, \ell) \mid (a, \ell) \in \Eneg \land [ (\m_r \models a) \oplus (\m_f \models a)]\}$
+    \item $\Eposcon = \{(v1, v2) \mid (v1, v2) \in \Epos \land v1,v2 \in \Vcon\}$
+    \item $\Enegcon = \{(v1, v2) \mid (v1, v2) \in \Eneg \land v1,v2 \in \Vcon\}$
+    \item $\Enegcon = \{ (a, \ell) \mid (a, \ell) \in \Eneg \land [ (\m_r \models a) \oplus (\m_f \models a)]\}$
   \end{itemize}
 \end{definition}
 %
 \begin{proposition}
   Given a \emph{contrastive graph} $\cg{\pr}{\pf}{\m_r}{\m_f}$,
   \begin{itemize}
-    \item the \emph{model graph} $\mgpi{\pr}{\m_r}$ is a subgraph of $\cg{\pr}{\pf}{\m_r}{\m_f}$
-    \item the \emph{model graph} $\mgpi{\pf}{\m_f}$ is a subgraph of $\cg{\pr}{\pf}{\m_r}{\m_f}$
-    \item $\cg{\pr}{\pf}{\m_r}{\m_f}$ is a subgraph of the \emph{program graph} $\pg{\pr \cup \pf}$.
+    \item $\mgpi{\pr}{\m_r}$ is a subgraph of $\cg{\pr}{\pf}{\m_r}{\m_f}$
+    \item $\mgpi{\pf}{\m_f}$ is a subgraph of $\cg{\pr}{\pf}{\m_r}{\m_f}$
+    \item $\cg{\pr}{\pf}{\m_r}{\m_f}$ is a subgraph of $\pg{\pr \cup \pf}$.
   \end{itemize}
 \end{proposition}
 %
@@ -834,89 +857,48 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \end{itemize}
 
 
-\begin{example}[Contrastive Explanations for a query]\label{ex:example4}
-  Please recall Program $P$\ref{lst:example1}
-  %
-  Imagine that the user is shown with a visualization of $\m_2 = \{h, d, p\}$ and wonders why James has been poisoned, that is, user expected James not to be poisoned.
-  %
-  Now, if we set $Q = \{ \neg p \}$,
-  $\addable = \emptyset$
-  and
-  $\removable = \{ 4 \}$ (allowing to remove the fact $d$),
-  %
-  then for any $\mgpi{\pf}{\m_f} \in Foil(\pr, \addable, \removable, Q)$,
-  %
-  we can build a contrastive graph $\cg{\pr}{\pf}{\m_r}{\m_f}$.
-  %
-
-  %
-  For this particular example, there are three possible contrastive explanations, depicted in Figure~\ref{fig:example4} from left to right respectively:
-  (1) one consisting on picking $w$ (working day) instead of $h$, which leads to James taking the antidote;
-  (2) another consiting onletting $h$ still true, but removing $d$ (drinking the poison);
-  and finally, (3), we can do both picking $w$ and removing $d$, which would still lead to $\neg p$.
-  %
-  The first is an \emph{alternative contrastive explanation} as the program has not been changed (that is, $\pr = \pf$), the other two are \emph{hypothetical contrastive explanations}
-  %
-\end{example}
-%
 \begin{figure}
   \centering
-  \begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{resources/example4-1.png}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{resources/example4-2.png}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.32\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{resources/example4-3.png}
-  \end{minipage}
-  \caption{Possible contrastive explanations for the pair $(P1, \m_2)$ and $Q = \{ \neg p \}$, when $\addable = \emptyset$ and $\removable = \{ 4 \}$}
-  \label{fig:example4}
+  \begin{tabular}{cc}
+    \includegraphics[scale=0.05]{resources/c1.png} &
+    \includegraphics[scale=0.05]{resources/c2.png} \\
+  \end{tabular}
+  \caption{Visualizations of the two contrastive graphs for the best foils of $P2$ in Example~\ref{ex:example2}.}
+  \label{fig:contrastive}
 \end{figure}
 
-%
+\begin{example}[Contrastive Explanations for a query]\label{ex:example4}
+  Following our examples, let be $(P2_f, \m 2_f)$ be a foil in
+  $\bestfoils(P2, \emptyset, \{r6, r7\}, \{ \neg p \}, \pdiff)$
+  %
+  we can build a contrastive graph $\cg{P2}{P2_f}{\m 2}{\m 2_f}$.
+  The visualization of these graphs is shown in Figure~\ref{fig:contrastive}.
+  %
+  The first contrastive graph (left) corresponds to the foil that removes rule $7$,
+  and can be read as if James had not been forced to be on holiday,
+  he would have been working, otherwise it would have violated the constraint of being either on holiday or working.
+  If he had been working, he would have taken the antidote and therefore not been poisoned.
+  %
+  The second contrastive graph (right) corresponds to the foil that removes rule $6$,
+  and can be read as if James had not drunk the poison,
+  he would not have been poisoned.
+  % %
+  % The first is an \emph{alternative contrastive explanation} as the program has not been changed (that is, $\pr = \pf$), the other two are \emph{hypothetical contrastive explanations}
+  % %
+\end{example}
+
+
 \paragraph{Visualization of Contrastive Explanations}
 \begin{itemize}
-  \item The reference model subgraph $\mgpi{\pr}{\m_r}$ is coloured in purple whereas the foil model subgraph $\mgpi{\pf}{\m_f}$ is coloured in green.
-  \item Also, what is not part of $\mgpi{\pf}{\m_f}$, is shown with less opacity.
-  \item The atom nodes, for any atom used in the query $Q$ are shown with a thicker border.
-  \item As when visualizing foils (for instance, in Figures~\ref{fig:example3-1} and~\ref{fig:example3-2}), removals and additions (e.g. the $\removable' = \pr \setminus \pf$ and the $\addable' = \pf \setminus \pr$ sets) are shown in red and blue respectively.
-  \item Finally, for those constraint rule nudes, that are existentially statisfied by $\m_r$ and $\m_f$ together, we colour them with the orange color.
-  \comment{This case it's maybe not the best example as our interity constraints here only give us that w and h cannot be together}
+  \item As before, the reference model subgraph $\mgpi{\pr}{\m_r}$ is coloured in purple whereas the foil model subgraph $\mgpi{\pf}{\m_f}$ is coloured in green.
+  \item Nodes and eges that are not in $\mgpi{\pf}{\m_f}$, is shown with less opacity.
+  \item Rule nodes that can be removed (i.e., that are in $\removable$) are shown with a dashed border.
+  \item The atom nodes, for any atom used in the query $Q$ are shown with a thicker border. \comment{Not in the image yet, need to update}
+  \item Removed rules \removed are shown with a red border, whereas added rules \added are shown with a blue border.
+  \item Finally, for those constraint rule nudes, that are existentially statisfied by $\m_r$ and $\m_f$ together, have a red background.
+  % \comment{This case it's maybe not the best example as our interity constraints here only give us that w and h cannot be together}
 \end{itemize}
 %
-
-%
-\paragraph{Reading of Contrastive Explanations}
-\begin{itemize}
-  \item Figure~\ref{fig:example4}, left:
-  \begin{itemize}
-    \item James was poisoned ($p$) because he did not take the antidote ($\neg a$) because it was a holiday ($h$).
-    \item If it had been a weekday ($w$), James would have taken the antidote ($a$) and therefore he would not have been poisoned ($\neg p$).
-  \end{itemize}
-
-  \item Figure~\ref{fig:example4}, center:
-  \begin{itemize}
-    \item James was poisoned ($p$) because he drank the poison ($d$).
-    \item If James had not drunk the poison ($\neg d$), he would not have been poisoned ($p$).
-  \end{itemize}
-
-  \item Figure~\ref{fig:example4}, right:
-  \begin{itemize}
-    \item James was poisoned ($p$) because he drank the poison ($d$), and since it was a holiday ($h$), he did not have the antidote ($\neg a$).
-    \item If James had not drunk the poison ($\neg d$), or if it had not been a holiday ($h$), James would not have been poisoned ($p$).
-  \end{itemize}
-
-  \item Although the explanation in the right contains more information, one could claim that it is redundant with the other two, as the other two need fewer changes and equally explain the query.
-  \item We will use the preferences to select among them
-\end{itemize}
-%
-
 
 %
 \paragraph{Small Discussion on types of queries}
@@ -940,7 +922,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \paragraph{Motivation}
 \begin{itemize}
-  \item In practice, we can still use the $\mathit{foil\_cost}$ plus $\mathit{BestFoils}$ approach to select among the best foil to make a contrast with.
+  \item In practice, we can still use the $\foilcost$ plus $\mathit{BestFoils}$ approach to select among the best foil to make a contrast with.
   %
   \item However, since those notions are designed without a starting \emph{reference} model in mind, we cannot make interesting differences (semantic based) among the reference and foil models alone.
   %

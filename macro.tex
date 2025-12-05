@@ -24,8 +24,13 @@
 \newcommand{\Vd}{\ensuremath{V_{d}}} %Disjunctinive vertices
 \newcommand{\Vc}{\ensuremath{V_{c}}} %Choice vertices
 \newcommand{\Va}{\ensuremath{V_{a}}} %Atom vertices
+
 \newcommand{\Epos}{\ensuremath{E_{+}}} %Positive edges
 \newcommand{\Eneg}{\ensuremath{E_{-}}} %Negative edges
+
+\newcommand{\Vcon}{\ensuremath{\mathbb{V}}} %Vertex for contrastive explanations
+\newcommand{\Eposcon}{\ensuremath{\mathbb{E}_{+}}} %Positive edges
+\newcommand{\Enegcon}{\ensuremath{\mathbb{E}_{-}}} %Negative edges
 
 \newcommand{\program}{\ensuremath{P}} %Program
 \newcommand{\pr}{\ensuremath{P_r}} %Program reference
@@ -49,11 +54,16 @@
 \newcommand{\addable}{\ensuremath{R_{\mathit{add}}}} %Addable rules
 \newcommand{\added}{\ensuremath{R_{\mathit{add}}^f}} %Added rules
 
-\newcommand{\pdiff}{\ensuremath{P{\mathit{diff}}}} %Program difference
+% \newcommand{\pdiff}{\ensuremath{P{\mathit{diff}}}} %Program difference
+\newcommand{\pdiff}{\ensuremath{\varphi}} %Program difference
 \newcommand{\m}{\ensuremath{M}} %Model
 
 
 \newcommand{\foils}{\ensuremath{\mathit{Foils}}} %Set of foils
+\newcommand{\bestfoils}{\ensuremath{\mathit{BestFoils}}} %Set of best foils
+% \newcommand{\foilcost}{\mathit{foil\_cost}} %Set of foils
+\newcommand{\foilcost}{\delta} %Foil cost function
+
 
 \lstdefinelanguage{clingos}{%
   language=clingo,%
