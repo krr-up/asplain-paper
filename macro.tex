@@ -21,6 +21,7 @@
 \def\eqdef{\stackrel{\text{df}}{=}}
 
 
+\newcommand{\asplain}{\textit{asplain}}
 \newcommand{\Vd}{\ensuremath{V_{d}}} %Disjunctinive vertices
 \newcommand{\Vc}{\ensuremath{V_{c}}} %Choice vertices
 \newcommand{\Va}{\ensuremath{V_{a}}} %Atom vertices
@@ -34,8 +35,9 @@
 
 \newcommand{\program}{\ensuremath{P}} %Program
 \newcommand{\pr}{\ensuremath{P_r}} %Program reference
-\newcommand{\pf}{\ensuremath{P_f}} %Program foil
+\newcommand{\pf}{\ensuremath{P_{\mathit{f}}}} %Program foil
 
+\newcommand{\m}{\ensuremath{M}} %Model
 
 \newcommand{\pg}[1]{\ensuremath{G_{#1}}} %Program Graph
 \newcommand{\mg}{\ensuremath{MG}} %Model Graph
@@ -54,15 +56,19 @@
 \newcommand{\addable}{\ensuremath{R_{\mathit{add}}}} %Addable rules
 \newcommand{\added}{\ensuremath{R_{\mathit{add}}^f}} %Added rules
 
-% \newcommand{\pdiff}{\ensuremath{P{\mathit{diff}}}} %Program difference
-\newcommand{\pdiff}{\ensuremath{\varphi}} %Program difference
-\newcommand{\m}{\ensuremath{M}} %Model
 
 
 \newcommand{\foils}{\ensuremath{\mathit{Foils}}} %Set of foils
 \newcommand{\bestfoils}{\ensuremath{\mathit{BestFoils}}} %Set of best foils
+\newcommand{\bestcontrasts}{\ensuremath{\mathit{BestContrasts}}} %Set of best contrasts
 % \newcommand{\foilcost}{\mathit{foil\_cost}} %Set of foils
 \newcommand{\foilcost}{\delta} %Foil cost function
+\newcommand{\contrastcost}{\varphi} %Foil cost function
+
+% \newcommand{\pdiff}{\ensuremath{P{\mathit{diff}}}} %Program difference
+\newcommand{\pdiff}{\ensuremath{\delta^p}} %Program difference
+\newcommand{\mdiff}{\ensuremath{\varphi^m}} %Program difference
+\newcommand{\rdiff}{\ensuremath{\varphi^{\mathit{rf}}}} %Program difference
 
 
 \lstdefinelanguage{clingos}{%

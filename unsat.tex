@@ -1,0 +1,33 @@
+\subsection{Explaining Unsatisfiability}
+
+\begin{itemize}
+    \item {\color{blue} This definition does not impose the existence of a \emph{reference model} $\m_r \models \pr$}
+    This allows finding foils for unsatisfiable reference programs, $AS(\pr) = \emptyset$.
+    If $Q = \emptyset$ then we are simply recovering satisfiability.
+    Otherwise, if $Q \neq \emptyset$, we are recovering satisfiability and forcing something to be true in the process.
+    \item This might not be considered a \emph{contrastive explanation} in the strict sense, as there is no reference model to contrast with.
+    \item It is very useful in practice.
+    \item We need a different definition for the contrast.
+\end{itemize}
+
+
+\begin{example}{Unsatisfiablity}
+    Consider $P3$ as $P2$ extended with the rule:
+    \begin{lstlisting}[language=clingos]
+    r8 :- not w.
+    \end{lstlisting}
+    $P3$ is unsatisfiable as there is no answer set that can satisfy rules $r8$,$r7$ and $r3$ at the same time.
+    We can compute
+    \[
+    \bestfoils(P3, \emptyset, \{r8, r7, r3\}, \emptyset, \pdiff)
+    \]
+    to obtain three foils that make the program satisfiable again by removing one of the conflicting constraints.
+\end{example}
+
+\comment{Here we migth want a different definition of contrastive explanation for unsat programs without the reference model.}
+
+\comment{A preference function that does the same as UNSAT CORE subset minimization might be a good example here, if it is even possible.
+At the moment this is in the future work.}
+
+
+

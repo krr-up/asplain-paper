@@ -18,24 +18,8 @@
   anonymous variables,
   conditional literals,
   and choice rules with bounds or conditional literals within them.
-  \item For instance, a choice rule written by the user as
-  \item $1 \{ h;w \} 1\leftarrow a$ would be transformed into
-  \begin{align*}
-    aux\_0 &\leftarrow a \\
-    \{ h;w \} &\leftarrow aux\_0 \\
-    aux\_1 &\leftarrow 1\ \#sum\{1:h;\ 1:w\} \\
-    aux\_2 &\leftarrow 2\ \#sum\{1:h;\ 1:w\} \\
-    aux\_3 &\leftarrow aux\_1,\ \neg aux\_2 \\
-    &\leftarrow\ aux\_0,\ \neg aux\_3
-  \end{align*}
-  \item In this case $aux\_0$ represents the body of the original choice rule,
-  $aux\_1$ represents the lower bounds of the choice,
-  $aux\_2$ represents the violation of the upper bound of the choice,
-  $aux\_3$ represents the conjunction of the bounds,
-  and the last rule is a constraint that ensures that if the body holds, then the bounds must hold as well.
-  \item While one could provide meaningful names to some of these auxiliary atoms, we will not consider that analysis in this work.
   \item Furthermore, we do not consider sum aggregates, as this would require a more complex graph with weighted edges, and a special type of node to sum them up.
-
+  \item We don't consider double negation.
   %
 \end{itemize}
 %
@@ -85,7 +69,7 @@ and so, we denote the rule $r$ corresponding to a label $\ell$ as $\InvLb{\ell}$
 %
 Finally, we denote $\Lbs{P} \eqdef \{ \Lb{r} \mid r \in P \}$ as the set of all labels of the rules in a labelled program $P$.
 \medskip
-\comment{S: I think we should do all these as sets like $Dis(P)$ to be more consistent with the fact that we are defining many sets in this section, and have set operations below.}
+\comment{S: Brais will change this to all be sets.}
 %
 $\isdisj{r}$: denotes that rule $r$'s head is a disjunction, that is, a rule of the form \eqref{f:disjunctive-rule}.
 $\iscons{r}$: denotes that a disjunctive rule $r$'s head is empty, that is, a constraint rule.
@@ -93,16 +77,13 @@ $\ischoice{r}$: denotes that rule $r$'s head is a choice, that is, a rule of the
 $\atoms{P}$ is the set of all the atoms occuring in $P$.
 %
 
-\paragraph{Open problems/questions}
-\begin{itemize}
-  \item
-  {\color{red} We don't consider double negation.}
-  TODO: to add a discussion somewhere in the paper on how this could affect
-\end{itemize}
 
 \subsection{Program Graph}
 \label{sec:program-graph}
 
+\comment{I am worried about this graph definition,
+because if you have a program graph $\langle V, E \rangle$ then we can't know the types of nodes and edges.
+Perhaps having $\pg{P} = \langle (\Vc , \Vd , \Va), (\Epos , \Eneg) \rangle$?}
 %
 \begin{definition}[Program Graph]
 %
@@ -127,12 +108,21 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \end{definition}
 %
 
+
+
+\paragraph{Discussion points}
+\begin{itemize}
+  \item
+  A program graph is a directed graph that syntactically represents a logic program,
+  capturing all details specified by the ASP developer.
+  It serves as the foundational structure for generating explanations.
+\end{itemize}
+
 %
 \begin{example}[Program Graph]\label{ex:example1}
   This is a modified version of the James Bond example from Fandinno
-  \comment{TODO: look for the original reference}.
   A drug $d$ in James Bond’s drink causes his paralysis $p$
-  \comment{In the examples we say poisoned and not paralysis. Which one is right?}
+  \comment{ırais will fix this example and add reference}
   provided that he was not given an antidote $a$ that day.
   We know that Bond’s enemy, Dr. No, poured the drug. He gets the antidote if he is not on holiday $h$.
   Unlike in the original example, we add $w$ to indicate a working day,
@@ -146,7 +136,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   where James is not poisoned in $\m_1$ since he is working and gets the antidote, and he is poisoned in $\m_2$ since he is on holiday and does not get the antidote.
   %
   Figure~\ref{fig:program-graph} shows the program graph corresponding to program $P1$.
-  \comment{TODO: match labels with $P1$, also remove the natural language, also remove optional input}
   %
   \begin{figure}
     \centering
@@ -159,10 +148,12 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   Circle-nodes in graph $G_{P_{1}}$ represent atoms appearing in $P1$, that is, the set $\Va = \{d,a,h,w,p\}$.
   %
-  Rectangle-nodes in graph $G_{P_{1}}$ represent the body of some rule in $P1$, in particular, sets $\Vc = \{1\}$
-  and $\Vd = \{2,3,4,5,6\}$ correspond to the set of rules in $P1$ whose head is a choice, respectively a disjunction.
+  Rectangle-nodes in graph $G_{P_{1}}$ represent the body of some rule in $P1$, in particular, sets $\Vc = \{r1\}$
+  and $\Vd = \{r2,r3,r4,r5,r6\}$ correspond to the set of rules in $P1$ whose head is a choice, respectively a disjunction.
   %
   Edges in $E^{+}$ are represented by solid arrows, while edges in $E^{-}$ are represented by dashed arrows.
+  Edges from atoms to rules correspond to positive and negative literals.
+
   % For any atom (circle-node) $a \in \Vc$ for which it exists some rule $r$
   % for which $a \in \HH(r)$, it must exist a solid edge $(r,a) \in E^{+}$.
   % %
@@ -178,43 +169,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \begin{proposition}
   If two programs have the same program graph, they are strongly equivalent.
 \end{proposition}
-
-
-\paragraph{Discussion points}
-\begin{itemize}
-  \item
-  $\Vc$, $\Vd$, $\Va$ are pairwise disjoint \comment{S: This would be simpler to show (I think) if the sets for \isdisj{r} is rather Dis(P), for now I am trying to be consistent and if it an upper case like Atoms or Foils then is a set}
-  \item
-  A program graph is a directed graph that represents a logic program, in a solely syntactic way.
-
-  \item
-  We use this notion of graph as a basis for obtaining the explanations.
-
-  \item
-  It's intended to contain the full detail of what the ASP developer specified in the program.
-
-  \item
-  This notion its not intended to be used for the end-user, but we will see how to obtain user-oriented explanations from them once we have a answer set.
-
-  \item
-  As an additional advantage, this graph is easy to generate using  clingo's metaprogramming features~\cite{kamrom23a}.
-  That is, it resembles the meta program obtained by the grounder (gringo) from the original program.
-  This is discussed in detail in the implementation section.
-
-  \item
-  This notion will be useful for mappping different approaches to explanations in ASP.
-
-  \item How to read the program graph \comment{Todo: CONNECT this with the sets/notation used}
-  \begin{itemize}
-    \item Circle nodes are atoms mentioned in the program.
-    \item Box nodes are rule bodies. Note: after grounding aux rules are created for conditional literals, and others.
-    \item Edges
-    \begin{itemize}
-      \item From rule (box) to atom (circle): atom is in the head of the rule
-      \item From atom to rule: represent a literal. Positive when solid line, negative when dashed line.
-    \end{itemize}
-  \end{itemize}
-\end{itemize}
 %
 
 \begin{proposition}
@@ -256,7 +210,12 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \paragraph{Discussion Points}
 \begin{itemize}
-  \item Intuition: we use a given model to extract a subgraph from the program graph, that highlights (1) supportiveness of atoms in the model; (2) supportiveness of rules; and (3) the truthness of the positive literals in the body.
+  \item Intuition: we use a given model to extract a subgraph from the program graph,
+  that highlights (1) supportiveness of atoms in the model; (2) supportiveness of rules; and (3) the truthness of the positive literals in the body.
+  \item Negative edges are not included in the model subgraph
+  since their origin atom would not be in the model and thus not part of the model subgraph.
+  \item To include the information of negative literals in an explanation, we can compare the model subgraph with the program graph.
+  This comparison is relevant as it gives us the information to provide causal explanations which include negative implications.
   \item
   A visualization example for $\mgpi{P1}{\m_1}$ with is shown in Figure~\ref{fig:model-subgraph}.
   We show the program graph $\pg{P}$ in the background, and highlight the model subgraph $\mgpi{P}{\m}$ for the given model $\m$ on top of it.
@@ -264,50 +223,10 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   rules are colored if their body is supported by the model.
   Edges for positive literals are highlighted if they are satisfied by the model.
   While edges from rules to atoms are highlighted if the atom is in the model, indicating that it could be derivated by that supported rule.
-
-  % \item \textbf{Visualization}
-  % \begin{itemize}
-  %   \item We show the model subgraph coloured over the original program graph, like in Figure~\ref{fig:model-subgraph}.
-  %   \item Atoms: cirlce node is colored if the corresponding atom is in the model.
-  %   \item Literals: {\color{blue} only positive} literals are highlighted, in the form of the black, solid edges coming out of disjunctive and choice body, box-like, nodes.
-  %   \item Rules: box node is colored if the body of the rule is supported by the model
-  %   \item Derivations: black arrows going from bodies to atoms show that the atom could be derivated by that supported rule.
-  % \end{itemize}
-  \item Notice, it {\color{blue} does not select any particular derivation} when alternative causes emerge (that is, is not causal) (is not equivalent to \cite{cabmun24a} but could be equivalent to \cite{altrsoba23a})
+  \item Notice, does not select any particular derivation when alternative causes emerge.
+  (that is, is not causal) (is not equivalent to \cite{cabmun24a} but could be equivalent to \cite{altrsoba23a})
 \end{itemize}
 
-\paragraph{Discussion on having or not negative literals in the model subgraph}
-  \begin{itemize}
-    \item Since dashed edges represent negative literals, we could include them when the model does not support the literal.
-    \item However, we can not include and edge that lacks its origin (breaks graph definition), so we would need to include the atom that is not in the model as well, which breaks the intuition of the model subgraph.
-    \item Find below an enumeration of some types of explanations related to this, and if we can provide those answers without the negative literals in the \emph{model subgraph}. We need to discuss if we are interested on them or not.
-    \begin{enumerate}
-      \item For the rule $a \leftarrow b,\; not\; c$. With the model $\{ a, b\}$ we cannot answer \emph{a because b and not c}, because we do not include $c$ in the subgraph. We could however define an operation that use both the model graph and the program graph to do this.
-      \comment{This is not what asplain is intended to do, but we can study this.
-      S2B: Wouldn't we get this when we do the contrast?}
-      \item Answering \emph{a is not true because is not supported} is trivial and can be done.
-      \item Considering the program
-      \[
-      \begin{array}{c}
-        a \leftarrow body_1 \\
-        a \leftarrow body_2 \\
-        \dots               \\
-        a \leftarrow body_n \\
-      \end{array}
-      \]
-      answering \emph{$a$ is not true because $\neg body_1 \land \neg body_2 \land \dots \land \neg body_n$} cannot be answered by using a \emph{model subgraph} only (we do not have those bodies), but that conjunction can be obtained using the \emph{program graph} only.
-    \end{enumerate}
-    \item Latter type 3 however, lacks of some features that contrastive explanations give us. This is actually part of the motivation behind contrastive explanations:
-    \begin{itemize}
-      \item How a particular model interacts with some of the member of the conjunction $\neg body_1 \land \neg body_2 \land \dots \land \neg body_n$.
-      \item How constraints in the proram interact with the conjunction, they could be prunning the scenarios where some of the $body_i$ holds.
-      \item Preferences on which of the $body_i$ is more relevant (explnation preferences).
-    \end{itemize}
-  \end{itemize}
-
-\begin{proposition}
-  There should be a 1:1 correspondance between these model subgraphs and xASP explanations \cite{altrsoba23a} \comment{Son: xASP uses only one of the alternative for each atom, CHECK}
-\end{proposition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%% ABDUCTION
 
@@ -341,6 +260,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \item Example: \textit{Why isn’t James poisoned?} — the asker \emph{assumes} or \emph{expects} a hypothetical world where James is poisoned.
   %
   \item This expectation is called \emph{foil} or \emph{foil world} in the literature, whereas the \emph{reference world} or \emph{fact world} is the asker’s interpretation of observed events where James is not poioned.
+  \comment{Brais will re-think these terms to make them more clear and consistent.}
   %
   \item In ASP context, this happens, for instance, when the users expects something that does not happen in the shown solution.
   %
@@ -386,6 +306,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item a set of \emph{removable} labelled rules $\removable \subseteq \pr$
     \DEL{of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule}},
+    \comment{If we say the the vertex are labels then these should also be labels?}
     %
     \item and
     %
@@ -399,7 +320,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \begin{itemize}
     \item $ \pr \setminus \removable \subseteq \pf \subseteq (\pr \cup \addable)$
     \item $\m_f \in AS(\pf)\ \land\ \m_f \models Q$
-    \comment{Can we say $\m_f\models \pf$? \m think we do this in other papers}
+    \comment{Make sure AS is well defined before.}
   \end{itemize}
   Additionally, we denote $\foils(\pr, \addable, \removable, Q)$ as the set of \emph{all valid foils for $\pr$ with respect to $\addable$, $\removable$, and $Q$}.
 \end{definition}
@@ -440,26 +361,17 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item The idea is that they are defined for each use-case: the scope will be given as part of the domain, as user preference, as a programmer criteria, etc.
   %
-  \item There exist two important sets that are not needed in the definition, those are:
-  \comment{We add this sets here but latter on when defining a cost there is no reference to them, are they really relevant then?, I think we can just remove this part here}
-  \begin{itemize}
-    %
-    \item $\added = \pf \setminus \pr \subseteq \addable$, that is, the set of rules that were \emph{added}.
-    %
-    \item $\removed = \pr \setminus \pf \subseteq \removable$, that is, the set of rules that were \emph{removed}.
-    %
-    \item $\added$ and $\removed$ will play an important role when designing and implementing good explanation preferences.
-  \end{itemize}
-  %
-  % \item \textbf{Visualization:}
-  % \comment{S: This is how we visualize the contast, the valid foil is just the foil model subgraph}
+  % \item There exist two important sets that are not needed in the definition, those are:
+  % \comment{We add this sets here but latter on when defining a cost there is no reference to them, are they really relevant then?, I think we can just remove this part here}
   % \begin{itemize}
-  %   \item We now have to handle the removals and the additions, in other words, we have to deal $\pr \neq \pf$.
-  %   \item To do so, we use the program graph $\pg{\pr \cup \pf}$ as the base of the visualization.
-  %   \item We highlight $\mgpi{\pf}{\m_f}$ as an explanation of the foil.
-  %   \item Finally we also highlight the added and removed rules using the sets $\added$ and $\removed$.
-  %   \item Examples: Figures~\ref{fig:example2}, \ref{fig:example3-1} and~\ref{fig:example3-2}.
+  %   %
+  %   \item $\added = \pf \setminus \pr \subseteq \addable$, that is, the set of rules that were \emph{added}.
+  %   %
+  %   \item $\removed = \pr \setminus \pf \subseteq \removable$, that is, the set of rules that were \emph{removed}.
+  %   %
+  %   \item $\added$ and $\removed$ will play an important role when designing and implementing good explanation preferences.
   % \end{itemize}
+
 \end{itemize}
 %
 
@@ -707,13 +619,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \end{example}
 
 
-\paragraph{Open Questions/ Future}
-\begin{itemize}
-  \item {\color{red} Can we write a subset minimal preference on the additions/removals? (related to UNSAT CORE) Might we use asprin for this?}
-  \item Do we need to provide an example of a domain-driven criteria? Where removing/adding certain rules weight more than others?
-  \comment{S: Do we have to? or can we just say that these can be maped back into a single cost function? @Son perhaps you can help with this?}
-\end{itemize}
-
 %%%%%%%%%%%%%%%%%% CONTRASTIVE EXPLANATIONS
 
 \subsection{Contrastive Explanations}
@@ -890,11 +795,11 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \paragraph{Visualization of Contrastive Explanations}
 \begin{itemize}
+  \item This visualization show the comparison of all involved graphs.
   \item As before, the reference model subgraph $\mgpi{\pr}{\m_r}$ is coloured in purple whereas the foil model subgraph $\mgpi{\pf}{\m_f}$ is coloured in green.
-  \item Nodes and eges that are not in $\mgpi{\pf}{\m_f}$, is shown with less opacity.
+  \item Nodes and eges that are not in $\mgpi{\pf}{\m_f}$, are shown with less opacity.
   \item Rule nodes that can be removed (i.e., that are in $\removable$) are shown with a dashed border.
-  \item The atom nodes, for any atom used in the query $Q$ are shown with a thicker border. \comment{Not in the image yet, need to update}
-  \item Removed rules \removed are shown with a red border, whereas added rules \added are shown with a blue border.
+  \item Removed rules are shown with a red border, whereas added rules are shown with a blue border.
   \item Finally, for those constraint rule nudes, that are existentially statisfied by $\m_r$ and $\m_f$ together, have a red background.
   % \comment{This case it's maybe not the best example as our interity constraints here only give us that w and h cannot be together}
 \end{itemize}
@@ -949,7 +854,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   a \emph{contrast cost function} for $((\pr, \m_r), \addable, \removable, Q)$ is a function
   %
   \[
-    \mathit{contrast\_cost}_{(\pr, \m_r),\addable,\removable,Q} :
+    \contrastcost_{(\pr, \m_r),\addable,\removable,Q} :
     \foils(\pr, \addable, \removable, Q) \rightarrow \mathbb{N}.
   \]
   that maps each foil $(\pf, \m_f)$ to a numerical value representing its cost with respect to the reference program-model pair $(\pr, \m_r)$.
@@ -966,15 +871,15 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item and a set of addable labelled rules $\addable$,
     %
-    \item and a contrast cost function $\mathit{contrast\_cost}_{(\pr, \m_r),\addable,\removable,Q}$,
+    \item and a contrast cost function $\contrastcost_{(\pr, \m_r),\addable,\removable,Q}$,
   \end{itemize}
   %
   the set of \emph{best contrasts} is defined as
   %
   \[
-  \mathrm{BestContrasts}((\pr, \m_r), \addable, \removable, Q, \mathit{contrast\_cost})
+  \bestcontrasts((\pr, \m_r), \addable, \removable, Q, \contrastcost)
     = \operatorname*{arg\,min}_{(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)}
-      \mathit{contrast\_cost}_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f).
+      \contrastcost_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f).
   \]
 \end{definition}
 
@@ -982,7 +887,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   For a given abduction setup $(\pr, \addable, \removable, Q)$ with reference model $\m_r$,
   we define the \emph{model-difference} contrast cost function as
   \[
-    \mathit{MDiff}_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
+   \mdiff_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
       = |\,\m_r \,\triangle\, \m_f\,|,
   \]
   where $\triangle$ denotes the symmetric difference between the models $\m_r$ and $\m_f$.
@@ -992,58 +897,43 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \begin{example}[Reference–Foil difference cost function]\label{ex:reference-foil-difference-cost-function}
   Extending the previous idea, we define the \emph{reference-foil difference}, contrast cost function as
   \[
-    \mathit{RFDiff}_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
-      = \mathit{MDiff}_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
+    \rdiff_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
+      =\mdiff_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
       + \pdiff_{\pr,\addable,\removable,Q}(\pf, \m_f).
   \]
 \end{example}
 
-
+\comment{Brais2All: do you feel this example is too much? we can also add another function where we penalize removing/adding more than semantic differences
+  S: I liked the example and tried to make it simpler, but could be made even simpler,
+  perhaps we leave the \mdiff\ and  just make a comment about creating another combined function and introduce the need for priorities.}
 
 \paragraph{Discussion}
 \begin{itemize}
   \item The setup for finding the best contrastive explanations is the same as for selecting the best foil.
-  \item $\mathit{MDiff}$ is a \emph{semantic difference} measuring how many atoms differ between the reference and foil models.
-  \item $\mathit{RFDiff}$ integrates both syntactic and semantic differences, penalizing foils that diverge from the reference either in their rules or in their resulting models.
+  \item $\mdiff$ is a \emph{semantic difference} measuring how many atoms differ between the reference and foil models.
+  \item $\rdiff$ integrates both syntactic and semantic differences, penalizing foils that diverge from the reference either in their rules or in their resulting models.
   \item Note, now that we can have alternative and hypothetical explanations.
+  \item We can consider different priorities among those cost functions.
+  In our case, \rdiff\ gives equal importance to both syntactic and semantic differences, but we could also define a weighted sum to prioritize one over the other.
+  \comment{S: Can we argue that this can be mapped into a single function @Son perhaps you can help with this?}
 \end{itemize}
 
 \begin{example}[Selecting the best contrastive explanations]\label{ex:best-contrastive-explanations}
-  Recall Example~\ref{ex:example4} and the three contrastive explanations depicted in Figure~\ref{fig:example4}.
+  Following our example, the two contrastive explanations depicted in Figure~\ref{fig:contrastive},
+  have the same cost according to the $\pdiff$ function, that is, a weight of $1$ each.
+  However, if compared using $\mdiff$, which counts the differences among $\m_r$ and $\m_f$,
+  is easy to see that contrast we obtain
+  a weight of $6$ for the foil corresponding first explanation removing rule $r7$,
+  $4$ for the foil corresponding to second explanation removing rule $r6$.
   %
-  Here, depending of which criteria (i.e. cost function) we use, we may select different best contrastive explanations.
-  %
-
-  %
-  First, if we use the $\pdiff$ foil cost function, only the foil corresponding to explanation (1) would be part of $\mathit{Bestfoils}(\pr, \addable, \removable, Q, \pdiff)$ with a weight of $0$.
-  %
-  Regarding, explanations (2) and (3), their respective foils will have the same weight $1$ although explanation (3) required two changes: the removal of rule $4$ and the picking of $w$ in the choice rule.
-  %
-  That is, we cannot decide between (2) and (3) counting differences in the programs alone.
-  %
-  In order to notice this latter semantic change, we need to include the \emph{reference model} $\m_r$ as well in the preference by using \emph{contrast cost functions} instead.
+  Note how when using $\mdiff$ alone, we do not penalize any addition/removal to the reference program.
   %
 
   %
-  For instance, if we use the $\mathit{MDiff}$, which counts the differences among $\m_r$ and $\m_f$, is easy to see that contrast we obtain
-  a weight of $4$ for the foil corresponding to explanation (1),
-  $2$ for the foil corresponding to explanation (2),
-  and $5$ corresponding to explanation (3).
-  %
-  Therefore $\mathrm{BestContrasts}((\pr, \m_f), \addable, \removable, Q, \mathit{MDiff})$ would only include the foil leading to (2) as the preffered explanation.
-  %
-  Note how when using $\mathit{MDiff}$ alone, we do not penalize any addition/removal to the reference program.
-  %
-
-  %
-  Alternatively, we can use $\mathit{RFDiff}$ instead that can be computed as the sum of the weights previously reported for the other two cost functions, that is:
-  a weight of $0 + 4 = 4$ for (1),
-  a weight of $1 + 2 = 3$ for (2),
-  and a weight of $1 + 5 = 6$ for (3).
-  %
+  Alternatively, we can use $\rdiff$ instead that can be computed as the sum of the weights previously reported for the other two cost functions.
   The ordering among foil induced by this, better matches the intuition of \emph{closeness} between the reference and foil.
   %
-  In short, (2) would be the preffered explanation since the hypothetical contrastive world is closer to the reference.
+  In short, the second explanation would be the preferred explanation since the hypothetical contrastive world is closer to the reference.
   \comment{
     Brais -- my intuition was that for this cost function (1) and (2) would collide
     however, strange effect: when we use this cost function, removing fact $d.$ effectively leads to increasing of $2$ units in the cost, since we remove the rule and the atom as well...
@@ -1052,9 +942,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
 
   %
-  Finally
-  \comment{Brais2All: do you feel this example is too much? we can also add another function where we penalize removing/adding more than semantic differences}
-  \comment{Brais: this notion do not capture the }
+
 \end{example}
 
 % \subsection{Relation to Support Graphs~\cite{cabmun24a}}
