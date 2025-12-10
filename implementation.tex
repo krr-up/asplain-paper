@@ -1,0 +1,121 @@
+
+\section{Implementation}
+
+\emph{Motivation}
+\begin{itemize}
+    \item For the implementation of our approach we created a system called \asplain.
+    \item We build upon the clingo ASP system~\cite{gebser2014clingo},
+          leveraging its API and metaprogramming capabilities to construct program graphs and model subgraphs.
+    \item In the implementation we use the graph representation for models and programs and represent them using facts \texttt{node/2} and \texttt{edge/3},
+          where the first argument is an identifier for the graph.
+    \item The \asplain\ system is implemented as a set of clingo encodings and Python scripts that call \clingo to generate explanations.
+    \item Some of the encodings are shown in the paper, but all python integration is ommited for brevity.
+    \item It also includes a user interface for visualizing the program graphs, model subgraphs, and contrast graphs.
+    \item The implementation can be found at \url{https://github.com/potassco/asplain}.
+    \item An image for the workflow of the system can be found in Figure~?.
+\end{itemize}
+
+
+\com{Placeholder for Workflow diagram}
+
+
+\subsection{Program Graph Construction}
+\begin{itemize}
+    \item We use the clingo's metaprogramming features~\cite{kamrom23a} to construct the program graphs.
+    \item The normal form used in the reified output of clingo can be easily translated into a program graph.
+    \item All graphs a
+    \item A program graph \pg{P} is represented using the following facts:
+          \begin{itemize}
+              \item \texttt{node(reference, atom(A))} represents \Va,
+              \item \texttt{node(reference, rule(choice(H),B))} represents \Vc,
+              \item \texttt{node(reference, rule(disjunction(H),B))} represents \Vd,
+              \item \texttt{edge(reference, T, (From, To))} where T is either positive or negative, representing \Epos and \Eneg.
+          \end{itemize}
+    \item We keep the same identifiers for rules as in the reified output of clingo since this gives unique identifiers for each grounded rule.
+    \item If the user provides a non-ground program, this program is grounded together with the instance to obtain the reified representation.
+\end{itemize}
+
+
+
+
+
+\subsection{Model Subgraph Construction}
+\begin{itemize}
+    \item The user can provide a set of atoms representing the reference model.
+    \item Using meta programming we can also give asp semantics to the program graph
+          to obtain all stable models and their corresponding subgraphs (Listing here).
+    \item A model subgraph \mgpi{P}{\m} is represented using the same facts as the program graph
+          but with a different identifier \texttt{model(reference)}.
+\end{itemize}
+
+
+
+\subsection{Tags for user preferences}
+
+\emph{Motivation}
+\begin{itemize}
+    \item We use the concept of \emph{tags} to allow users to add information to atoms and rules in the program.
+    \item Tags are used to indicate which rules can be removed or added in the process of generating foils.
+    \item We also use them to provide natural langue descriptions for the rules and atoms in the program.
+          This allows us to generate natural language explanations for the foils and a better user experience when exploring the graphs.
+\end{itemize}
+
+\begin{itemize}
+    \item Syntax of tags via comments
+    \item Translation of tags into theory atoms
+    \item Example of tags in the program
+    \item Automatic tags for rules in first order
+    \item Since tags are theory atoms it serves as a mean to avoid simplification when grounding,
+          keeping a distinct body for each rule.
+          %
+    \item Signaling addable and removable rules
+    \item To provide rules that can be added to a program,
+          we need to include them in the original program so that they are reified together.
+          Thus we signal such rules as disabled and separate them under a different program directive.
+          All rules in this section are considered addable.
+    \item Example of addable and removable rules with tags.
+          %
+    \item Rules that can be removed can be directly tagged in the original program.
+    \item Example of removable rules with tags for one of the constraints
+          %
+    \item Some tags can't be directly added in the program, for instance,
+          we might want to tag rules that are in the instance as removable.
+          We don't want the user to have to modify the instance file.
+    \item For this we provide the option to include a separate file where tags are created dynamically based on the input via rules.
+          We provide some of these dynamic tags in our implementation to easily identify facts and constraints.
+    \item Example of dynamic tags for removable rules in the instance.
+          %
+\end{itemize}
+
+\subsection{Abduction}
+
+\begin{itemize}
+    \item The abduction process is implemented by providing
+          the facts representing \pr\,
+          optional facts for the \mgpi{\pr}{\m},
+          and facts \texttt{query(A, exclude/include)} for the query atoms that must be excluded or included in the foil.
+    \item The sets for \removable and \addable are defined by tags.
+    \item To construct \pf\ we add choices that allow for choosing which rules to remove from \pr\ and which rules to add from \addable.
+          Then the facts for the foil program graph \pf are constructed using the identifier \texttt{foil}.
+    \item We use the same encoding as before for obtaining stable models for \pf.
+          Additionally, we include rules that make sure the query holds in the obtained model.
+    \item Example of the abduction encoding.
+    \item After calling clingo with these files, each stable model will correspond to an element $(\pf, \m_f)$ of \foils,
+          defined by graph facts with \texttt{foil} for \pf\ and \texttt{model(foil)} for $\m_f$.
+\end{itemize}
+
+\subsection{Contrastive Explanation}
+
+\begin{itemize}
+    \item Using the facts for \pr, $\mgpi{\pr}{\m}$ and foil $(\pf, \m_f)$,
+          we can construct the contrast graph \cg{\pr}{\m_r}{\pf}{\m_f}
+          using the identifier \texttt{contrast}.
+    \item This process only requires combining the facts from the program graphs and model subgraphs and calculating the constraints that would have fired.
+\end{itemize}
+
+
+\subsection{Preferences for best foils}
+
+\begin{itemize}
+    \item The user can also provide preferences to obtain \bestfoils\ by using a minimize statement \comment{Not yet implemented, we need to decide on the name for these predicates}
+\end{itemize}
