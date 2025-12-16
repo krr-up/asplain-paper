@@ -49,12 +49,6 @@ explanation graphs derived from minimal assumption sets of $M$,
 we can conclude that $(V_a, E_a)$ correponds to potentially many explanation derivations
 of $a$ in $M$ as defined in \cite{alviano2024xai}. 
 
-
-It is worth mentioing that \cite{alviano2024xai} also provides explanations for false
-atoms in $M$, i.e., atoms that do not belong to $M$. By design, the present paper provides
-explanation for $a \not\in M$ by identifying a contrastive model that supports $a$.  
-
-
 s(CASP) is a top-down, goal-directed system, and works at the predicate level. 
 Built on top of Prolog with ASP features such as constraints or choice atoms, s(CASP)
 inherits the advantages of Prolog such as the ability to work with non-grounded atoms,
@@ -65,6 +59,11 @@ can provide explanations for atoms with variables.
 However, due to its Prolog-based implementation, this process may
 return different explanations for the same query when the order of rules or literals in
 rules is changed. 
+
+It is worth mentioing that xASP2 or s(CASP) also provide explanations for false
+atoms in $M$, i.e., atoms that do not belong to $M$. By design, the present paper provides
+explanation for $a \not\in M$ by identifying a contrastive model that supports $a$.  
+
 
     
 
