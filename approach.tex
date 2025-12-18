@@ -67,14 +67,14 @@ Given a rule $r$ like \eqref{f:disjunctive-rule} or \eqref{f:choice-rule}, we de
 %
 and so, we denote the rule $r$ corresponding to a label $\ell$ as $\InvLb{\ell}$.
 %
-Finally, we denote $\Lbs{P} \eqdef \{ \Lb{r} \mid r \in P \}$ as the set of all labels of the rules in a labelled program $P$.
-\medskip
-\comment{S: Brais will change this to all be sets.}
+We denote $\Lbs{P} \eqdef \{ \Lb{r} \mid r \in P \}$ as the set of all labels of the rules in a labelled program $P$.
 %
-$\isdisj{r}$: denotes that rule $r$'s head is a disjunction, that is, a rule of the form \eqref{f:disjunctive-rule}.
-$\iscons{r}$: denotes that a disjunctive rule $r$'s head is empty, that is, a constraint rule.
-$\ischoice{r}$: denotes that rule $r$'s head is a choice, that is, a rule of the form \eqref{f:choice-rule}.
-$\atoms{P}$ is the set of all the atoms occuring in $P$.
+$\isdisj{P} \subseteq P$ is the set of rules whose head is a (non-empty) disjunction,
+whereas
+$\iscons{P} \subseteq P$ is the set of rules whose head is an empty disjunction, that is, constraint rules.
+Therefores, rules in $\isdisj{P} \cup \iscons{P}$ are rules of the form \eqref{f:disjunctive-rule} and $\isdisj{P} \cap \iscons{P} = \emptyset$.
+$\ischoice{P} \subseteq P$ is the set of ulres whose head is a choice, that is, rules of the form \eqref{f:choice-rule}.
+Finally, $\atoms{P}$ is the set of all the atoms occuring in $P$.
 %
 
 
@@ -93,8 +93,8 @@ where
 %
 $\Vc$, $\Vd$ and $\Va$ are nodes in the graph following the definitions below:
 \begin{itemize}
-    \item $\Vd = \{ \Lb{r} \mid r \in P \land (\isdisj{r} \vee \iscons{r})      \}$ is the set of rules's labels, whose head is a dijunction;
-    \item $\Vc = \{ \Lb{r} \mid r \in P \land \ischoice{r}    \}$ is the set of rules's labels, whose head is a choice;
+    \item $\Vd = \{ \Lb{r} \mid r \in P \cap (\isdisj{P} \cup \iscons{P}) \}$ is the set of rules's labels, whose head is a dijunction;
+    \item $\Vc = \{ \Lb{r} \mid r \in P \cap \ischoice{P} \}$ is the set of rules's labels, whose head is a choice;
     \item $\Va = \{ a      \mid a \in \atoms{P} \}$ is the set atoms which occur within any head of any rule in $P$.
 \end{itemize}
 
@@ -355,7 +355,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \item The sets $\removable$ and $\addable$ is what we informally call them \emph{abducibles}, that is, rules that we can add or remove to the original program in order to satisfy the query.
   %
   \item The most natural example of the abducibles is \emph{user input}, but any other notion can be abducible if it makes sense for the application.
-  \item For instance, one could set the removable rules as all constraints, $\removable=\{r \mid r\in P\wedge\iscons{r}\}$, for debugging purposes to find out why the program is unsatisfiable.
+  \item For instance, one could set the removable rules as all constraints, $\removable=\{r \mid r \in \iscons{r}\}$, for debugging purposes to find out why the program is unsatisfiable.
   %$
   \item The set $\removable$ (\emph{removables}) is restricted to be a subset of $\pr$, while the set $\addable$ (\emph{addables}) is free, since we want to give full flexibility.
   %
@@ -695,7 +695,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   where
   \begin{itemize}
-    \item  $\Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in \pr \cup \pf) \land (\iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
+    \item  $\Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in (\pr \cup \pf) \cap \iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
     \comment{
       {\bf Son:} what about other rules whose body is existentially satisfied by $\m_r$ and $\m_f$, but not by $\m_r$ nor $\m_f$ alone?
     }
