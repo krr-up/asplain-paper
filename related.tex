@@ -36,10 +36,10 @@ $B^+(r_i) \subseteq \bigcup_{1 \le j< i} (H(r_j) \cap M)$; and
 
 It is easy to see that a derivation of $a$ in $MG^M_P = (V,E_+ \cup E_-)$ creates 
 a subgraph $(V_a, E_a)$ of $MG^M_P$ 
-where  $V_a = Lb(r_i) \cup \bigcup_{1 \le j le n} B^+(r_i) \cup \{a\}$ 
+where  $V_a = Lb(r_i) \cup \bigcup_{1 \le j \le n} B^+(r_i) \cup \{a\}$ 
 and $E_a = \{(v,v') \mid v, v' \in V_a, (v,v') \in E_+\}$. 
 This graph explains why $a$ belongs to $M$ which is similar to an explaination graph
-defined in \cite{ly:iclp,ly:spie,trieu2022xasp}. 
+defined in \cite{ly:iclp,ly:spie,trieu2022xasp} or 
 Because $(V_a, E_a)$ does not include explanations for negative atoms in $M$ whose non-presence
 supports the presence of $a$ in $M$, it corresponds, therefore, to possibly many,
 explanation graphs of $a$ according to the definition in
@@ -65,7 +65,83 @@ atoms in $M$, i.e., atoms that do not belong to $M$. By design, the present pape
 explanation for $a \not\in M$ by identifying a contrastive model that supports $a$.  
 
 
-    
+\subsection{Constructing Explanation Graphs for Negative Literals}     
+
+Given a program $P$ and an answer set $M$ of $P$,  
+for an atom $x \in M$, let $T_x = (V_x, E_x)$ be the subgraph of $MG^M_P$ 
+that explains $x$ as defined in the previous section.   
+
+We next construct a graph $T_a = (V_a, E_a)$, where $V_a = \bigcup_{i=0}^\infty (V_i^+ \cup
+V_i^-)$ and  $E_a = \bigcup_{i=0}^\infty E_i$,  that explains why $a \not\in M$. 
+Let $V_i = V_i^+ \cup V_i^-$ and $\Omega = \emptyset$. 
+Intuitively, $V^+_i$ (resp. $V^-_i$) contains atoms that are true (resp. false) in $M$
+whose explanations are needed for explaining why $a \not\in M$;
+
+\begin{itemize} 
+    \item $V^+_0 = V^-_0 = \emptyset$ and $E_0 = \emptyset$; 
+    \item $V^+_1 = \emptyset$, $V^-_1 = \{a\}$, and $E_1 = \emptyset$; and 
+    \item for $i > 1$, let $x \in V_{i} \setminus (V_{i-1} \cup \Omega)$,   
+      \begin{itemize} 
+        \item if $x \in V^+_{i+1}$, then let $T_x = (V_x, E_x)$ be the subgraph of $MG^M_P$ 
+        that explains $x \in M$ and $R(x) = \{r \mid r \in P, Lb(r) \in V_x\}$. 
+        Let 
+        \begin{itemize} 
+            \item $V_{i+1}^+ = V_i^+ \cup V_x$, 
+            \item $V_{i+1}^- = V_i^- \cup \bigcup_{r \in R(x)} B^-(r)$, 
+            \item $E_{i+1} = E_i \cup E_x \cup \{(y, Lb(r)) \mid r \in R(x), y \in B^-(r)\}$, and
+            \item $\Omega = \Omega \cup V_x$; 
+        \end{itemize}    
+        \comment{
+        $V^+$ (resp. $V^-$) contains atoms that are true (resp. false) 
+        in $M$ and needed for the explaination of $a \not\in M$;
+        $\Omega$ is the set of atoms that have been explained, i.e., the 
+        construction upto $V_i$ contains the explaination for every $z \in \Omega$; 
+        $V_x$ in this case are already explained by $T_x$; 
+        $B^-(r)$ are atoms that are false in $M$ and needed for the explaination of $x$ 
+        which need to be explained because $T_x$ only explains positive atoms;
+        $(y, Lb(r))$ is added to $E_{i+1}$ because $y \in B^-(r)$ and $Lb(r) \in V_x$.         
+        }
+
+        \item if $x \in V^-_{i+1}$, then let $R(x) = \{r \mid r \in P, x \in H(r), M
+          \not\models B(r)\}$. 
+        %   For each $r \in R(x)$, we have that there exists some 
+        %   $y \in B^+(r)$ such that $y \not\in M$ or $y \in B^-(r)$ such that $y \in M$.
+          Let $Y$ be a minimal (w.r.t. set inclusion) set of atoms such that for each $r \in R(x)$, 
+          there existis at least one $y \in Y$ such that $y \in B^+(r) \setminus M$ 
+          or $y \in B^-(r) \cap M$. 
+        \begin{itemize} 
+            \item $V_{i+1}^+ = V_i^+ \cup (Y \cap \bigcup_{r \in R(x)} B^-(r))$, 
+            \item $V_{i+1}^- = V_i^- \cup (Y \cap \bigcup_{r \in R(x)} B^+(r))$, and 
+            \item $E_{i+1} = E_i \cup \{(y, Lb(r)) \mid r \in R(x), y \in Y, (y, Lb(r)) \in E_+
+            \cup E_{-}\}$.  
+        \end{itemize}    
+        \comment{
+        Atoms in $Y$ represent the reasons for the inapplicability of rules in $R(x)$;
+        If $y \in B^+(r) \setminus M$, then $y$ is added to $V^-$ because it is false in $M$;
+        If $y \in B^-(r) \cap M$, then $y$ is added to $V^+$ because it is true in $M$;
+        $(y, Lb(r))$ is added to $E_{i+1}$.          
+        }
+      \end{itemize} 
+\end{itemize}
+Because $P$ is finite, the construction terminates after finitely many steps. 
+
+
+
+% Let $a_0 = a$ and $i = 0, \ldots, $ and $S^-_0 = \{a_0\}$, 
+% and we construct a sequence of sets  
+% \begin{itemize} 
+%     \item $R^+_i$ is the set of rules that can be used to derive some atom in $S^-_i$ but are not applicable in $M$ 
+%   $R^+_i = \{r \mid r \in P, \exists x \in S^-_i, x \in H(r), M \not\models B(r)\}$  
+% --- these are the rules that are not applicable in $M$ and so $(Lb(r), x) \not\in MG^M_P$
+% becaus $Lb(r) \not\in MG^M_P$;  
+  
+%     \item $R^-_i$ is the set of rules that can be used to derive some atom in $S^-_i$ and are applicable in $M$ 
+%   $R_i = \{r \mid r \in P, \exists x \in S^-_i, x \in H(r), M \models B(r)\}$  
+%   --- these are the rules that are applicable in $M$ and but $x \in S^-i$ implies that 
+%     $(Lb(r), x) \not\in MG^M_P$. 
+
+%     \item   
+% \end{itemize}
 
 % \begin{observation}
 % \begin{itemize} 
