@@ -38,12 +38,16 @@ It is easy to see that a derivation of $a$ in $MG^M_P = (V,E_+ \cup E_-)$ create
 a subgraph $(V_a, E_a)$ of $MG^M_P$ 
 where  $V_a = Lb(r_i) \cup \bigcup_{1 \le j \le n} B^+(r_i) \cup \{a\}$ 
 and $E_a = \{(v,v') \mid v, v' \in V_a, (v,v') \in E_+\}$. 
-This graph explains why $a$ belongs to $M$ which is similar to an explaination graph
-defined in \cite{ly:iclp,ly:spie,trieu2022xasp} or 
-Because $(V_a, E_a)$ does not include explanations for negative atoms in $M$ whose non-presence
+We will denote this subgraph by $MG^M_P(a)$.
+This graph explains why $a$ belongs to $M$ which is similar to an \emph{explaination
+graph} 
+defined in \cite{ly:iclp,ly:spie,trieu2022xasp}, which we will
+refer to as \emph{exp-graph} of $a$ in $M$.  
+$MG^M_P(a)$ differs from an exp-graph of $a$ in $M$ in that it contains the nodes
+corresponding to the rules in $P$. Moreover,  
+because $(V_a, E_a)$ does not include explanations for negative atoms in $M$ whose non-presence
 supports the presence of $a$ in $M$, it corresponds, therefore, to possibly many,
-explanation graphs of $a$ according to the definition in
-\cite{ly:iclp,ly:spie,trieu2022xasp}. 
+exp-graphs of $a$ in $M$. 
 Since the notion of explanation derivation in \cite{alviano2024xai} considers only
 explanation graphs derived from minimal assumption sets of $M$,  
 we can conclude that $(V_a, E_a)$ correponds to potentially many explanation derivations
@@ -67,23 +71,21 @@ explanation for $a \not\in M$ by identifying a contrastive model that supports $
 
 \subsection{Constructing Explanation Graphs for Negative Literals}     
 
-Given a program $P$ and an answer set $M$ of $P$,  
-for an atom $x \in M$, let $T_x = (V_x, E_x)$ be the subgraph of $MG^M_P$ 
-that explains $x$ as defined in the previous section.   
-
+Given a program $P$, an answer set $M$ of $P$, and $a \not\in M$.   
 We next construct a graph $T_a = (V_a, E_a)$, where $V_a = \bigcup_{i=0}^\infty (V_i^+ \cup
-V_i^-)$ and  $E_a = \bigcup_{i=0}^\infty E_i$,  that explains why $a \not\in M$. 
+V_i^-)$ and  $E_a = \bigcup_{i=0}^\infty E_i$,  that explains ``why $a \not\in M$?.'' 
 Let $V_i = V_i^+ \cup V_i^-$ and $\Omega = \emptyset$. 
 Intuitively, $V^+_i$ (resp. $V^-_i$) contains atoms that are true (resp. false) in $M$
-whose explanations are needed for explaining why $a \not\in M$;
+whose explanations are needed for explaining why $a \not\in M$. $\Omega$ contains atoms
+whos explanations have been constructed. 
 
 \begin{itemize} 
     \item $V^+_0 = V^-_0 = \emptyset$ and $E_0 = \emptyset$; 
     \item $V^+_1 = \emptyset$, $V^-_1 = \{a\}$, and $E_1 = \emptyset$; and 
     \item for $i > 1$, let $x \in V_{i} \setminus (V_{i-1} \cup \Omega)$,   
       \begin{itemize} 
-        \item if $x \in V^+_{i+1}$, then let $T_x = (V_x, E_x)$ be the subgraph of $MG^M_P$ 
-        that explains $x \in M$ and $R(x) = \{r \mid r \in P, Lb(r) \in V_x\}$. 
+        \item if $x \in V^+_{i}$, then let $T_x = (V_x, E_x)$ be a $MG^M_P(a)$, a subgraph of $MG^M_P$ 
+        that explains $x \in M$, and $R(x) = \{r \mid r \in P, Lb(r) \in V_x\}$. 
         Let 
         \begin{itemize} 
             \item $V_{i+1}^+ = V_i^+ \cup V_x$, 
@@ -102,30 +104,52 @@ whose explanations are needed for explaining why $a \not\in M$;
         $(y, Lb(r))$ is added to $E_{i+1}$ because $y \in B^-(r)$ and $Lb(r) \in V_x$.         
         }
 
-        \item if $x \in V^-_{i+1}$, then let $R(x) = \{r \mid r \in P, x \in H(r), M
-          \not\models B(r)\}$. 
+        \item if $x \in V^-_{i}$, then let $R(x) = \{r \mid r \in P, x \in H(r), M
+          \not\models B(r)\}$ and $C(x) = \{r \mid r \in P, x \in H(r), M
+          \models B(r)\}$. 
         %   For each $r \in R(x)$, we have that there exists some 
         %   $y \in B^+(r)$ such that $y \not\in M$ or $y \in B^-(r)$ such that $y \in M$.
           Let $Y$ be a minimal (w.r.t. set inclusion) set of atoms such that for each $r \in R(x)$, 
           there existis at least one $y \in Y$ such that $y \in B^+(r) \setminus M$ 
           or $y \in B^-(r) \cap M$. 
         \begin{itemize} 
-            \item $V_{i+1}^+ = V_i^+ \cup (Y \cap \bigcup_{r \in R(x)} B^-(r))$, 
-            \item $V_{i+1}^- = V_i^- \cup (Y \cap \bigcup_{r \in R(x)} B^+(r))$, and 
+            \item $V_{i+1}^+ = V_i^+ \cup (Y \cap \bigcup_{r \in R(x)} B^-(r)) \cup (\bigcup_{r \in C(x)} B^+(r))$, 
+            \item $V_{i+1}^- = V_i^- \cup (Y \cap \bigcup_{r \in R(x)} B^+(r)) \cup (\bigcup_{r \in C(x)} B^-(r))$, and 
             \item $E_{i+1} = E_i \cup \{(y, Lb(r)) \mid r \in R(x), y \in Y, (y, Lb(r)) \in E_+
-            \cup E_{-}\}$.  
+            \cup E_{-}\} \cup \{(Lb(r), x) \mid r \in C(x)\} \cup 
+            \{(y, Lb(r)) \mid r \in C(x), y \in B^+(r) \cup B^-(r), (y, Lb(r)) \in E_+ \cup E_{-}\}  $.  
         \end{itemize}    
         \comment{
-        Atoms in $Y$ represent the reasons for the inapplicability of rules in $R(x)$;
+        Atoms in $Y$ represent the reasons for the inapplicability of rules in $R(x)$; 
+        $C(x)$ is the set of rules whose head contains $x$ and are applicable in $M$. 
+        $x$ is not selected to be in $M$. 
         If $y \in B^+(r) \setminus M$, then $y$ is added to $V^-$ because it is false in $M$;
         If $y \in B^-(r) \cap M$, then $y$ is added to $V^+$ because it is true in $M$;
         $(y, Lb(r))$ is added to $E_{i+1}$.          
         }
       \end{itemize} 
+      Finally, update $\Omega = \Omega \cup \{x\}$.
 \end{itemize}
-Because $P$ is finite, the construction terminates after finitely many steps. 
-
-
+$T_a$ has the following properties: 
+\begin{itemize} 
+    \item $T_a$ is well-defined: because $P$ is finite, the construction terminates 
+    after finitely many steps.  
+    \item for each atom $x \in V_a$, 
+    \begin{itemize} 
+    \item if $x \in M$ then there exists  some $MG^M_P(x)$ 
+    which is a subgraph of $T_a$.  
+    \item if $x \not\in M$ then for every rule $r \in P$ such that $x \in H(r)$,  
+    if $M \not\models B(r)$ then there exists some $y \in V_a$ such that 
+    $y \in B^+(r) \setminus M$ or $y \in B^-(r) \cap M$ and $(y, Lb(r)) \in E_a$;
+    if $M \models B(r)$ then $Lb(r) \in V_a$ and $(Lb(r), x) \in E_a$;    
+    \item $V_i^+ \cap V_i^- = \emptyset$.  
+    \end{itemize}         
+\end{itemize}
+Some observations about $T_a$: 
+\begin{itemize} 
+    \item 
+\end{itemize} 
+ 
 
 % Let $a_0 = a$ and $i = 0, \ldots, $ and $S^-_0 = \{a_0\}$, 
 % and we construct a sequence of sets  
