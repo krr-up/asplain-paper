@@ -1,0 +1,112 @@
+
+\begin{tikzpicture}
+
+
+% ================= Construct PG =================
+\node[input-file] (enc) {$\pr$: \texttt{encoding.lp} (tagged)};
+\node[input-file, below=of enc] (inst) { $\pr$: \texttt{instance.lp}};
+\node[input-file, below=of inst] (ass) { $\pr$: User assumptions};
+
+% \begin{pgfonlayer}{background}
+% \node[subsection, fit=(enc)(inst)(ass), label=above:{Program $\pr$}, fill=gray!20] (program) {};
+% \end{pgfonlayer}
+
+
+\node[ctl, right=10mm of inst] (meta-tools) {\textit{Reify}};
+
+\node[encoding, right=10mm of meta-tools] (reify) {\texttt{reified.lp}};
+\node[encoding, below=of reify] (reifypg) {\texttt{reify-to-pg.lp}};
+\node[input-file, above=of reify] (dyn) {\texttt{dynamic-tags.lp}};
+
+\node[ctl, right=10mm of reify] (constructpg) {\textit{clingo}};
+
+\node[element, right=10mm of constructpg] (pg) {
+  $\pg{\pr}$ (reference)\\ \texttt{node/2}\\ \texttt{edge/3}\\ \texttt{tag/3}
+  };
+  \node[element, below = of pg] (abd) {\removable\ and \addable\\\texttt{abducible/2}};
+
+
+\draw[arrw] (enc) -| (meta-tools);
+\draw[arrw] (inst) -- (meta-tools);
+\draw[subarrw] (ass) -|  (meta-tools);
+\draw[arrw] (meta-tools) -- (reify);
+\draw[arrw] (reify.east) -- (constructpg);
+\draw[arrw] (reifypg) -| (constructpg);
+\draw[subarrw] (dyn) -| (constructpg);
+\draw[arrw] (constructpg.east) -- (pg);
+\draw[arrw] (constructpg.east) |- (abd.west);
+
+\begin{pgfonlayer}{sections}
+\node[subsection, fit=(enc)(inst)(ass)(reify)(reifypg)(dyn)(constructpg)(pg)(abd), label=above:{Construct \pg{P}}] (pgbox) {};
+\end{pgfonlayer}
+
+% ================= Reference Model (top right) =================
+\node[input-file, right=125mm of enc] (model) {$\m_r$: \texttt{model.lp}};
+\node[encoding, below=of model] (pgforce) {\texttt{pg-force-model.lp}};
+\node[below=of pgforce] (ph){};
+\node[encoding, below=of ph] (subg) {\texttt{model-subgraph.lp}\\\texttt{-c graph=reference}};
+
+\node[ctl, right=20mm of ph] (constructref) {
+  \textit{clingo}
+};
+
+\node[element, right=30mm of subg] (mgref) {$\mgpi{\pr}{\m_r}$ \\\texttt{node/2}\\\texttt{edge/3}};
+\node[ above= 15mm of mgref] (unsat) {No model};
+
+\draw[subarrw] (model.east) -| (constructref);
+\draw[subarrw] (pgforce.east) -| (constructref);
+\draw[arrw] (subg) -| (constructref);
+\draw[arrw] (constructref.east) -- ++(0.5,0) |-  node[below]{SAT} (mgref);
+\draw[arrw] (constructref.east) -- ++(0.5,0) |- node[above]{UNSAT} (unsat.west);
+
+\begin{pgfonlayer}{sections}
+\node[subsection, fit=(model)(pgforce)(subg)(constructref)(mgref)(unsat), label=above:{Construct $\mgpi{P}{\m}$}] (refbox) {};
+\end{pgfonlayer}
+
+% ================= Foils (bottom left) =================
+\node[encoding, below=20mm of pgbox] (subgfoil) {\texttt{model-subgraph.lp}\\\texttt{-c graph=foil}};
+\node[encoding, below=of subgfoil] (constructfoil) {\texttt{construct-foil.lp}};
+
+\node[input-file, below=of constructfoil] (query) {$Q$: \texttt{query/2}};
+\node[encoding, below=of query] (cost) {\texttt{cost.lp}};
+\node[input-file, below=of cost] (costfn) {$\foilcost$: \texttt{cost-function.lp}};
+
+\node[ctl, right=10mm of query] (clingofoil) {\textit{clingo}};
+
+\node[element, right=25mm of constructfoil] (pgfoil) {$(\pg{\pf}, \mgpi{\pf}{\m_f})$ \\\texttt{node/2}\\\texttt{edge/3}};
+\node[ below=10mm of pgfoil] (noex) {No explanation};
+% \node[element, below=of pgfoil] (mgfoil) {$\mgpi{\pf}{\m_f}$ \\\texttt{node/2}\\\texttt{edge/3}};
+
+\draw[arrw] (subgfoil) -| (clingofoil);
+\draw[arrw] (constructfoil) -| (clingofoil);
+\draw[arrw] (query) -- (clingofoil);
+\draw[subarrw] (cost) -| (clingofoil);
+\draw[subarrw] (costfn) -| (clingofoil);
+\draw[arrw] (clingofoil.east) -- ++(0.5,0) |- node[above]{SAT} (pgfoil);
+\draw[arrw] (clingofoil.east) -- ++(0.5,0) |- node[below]{UNSAT} (noex.west);
+
+% \draw[arrw] (clingofoil) -- (mgfoil);
+
+\begin{pgfonlayer}{sections}
+\node[subsection, fit=(subgfoil)(constructfoil)(query)(cost)(costfn)(clingofoil)(pgfoil), label=above:{Construct $\bestfoils(\pr, \addable, \removable, Q, \foilcost)$}] (foilbox) {};
+\end{pgfonlayer}
+
+% ================= Contrastive (bottom right) =================
+\node[ctl, right=45mm of foilbox] (contrast) {\textit{clingo}};
+\node[encoding, right= 75mm of constructfoil] (contrastenc) {\texttt{contrast.lp}};
+\node[element, right=8mm of contrast] (cg) {\cg{\pr}{\m_r}{\pf}{\m_f}};
+
+\draw[arrw] (contrastenc) -| (contrast);
+
+\begin{pgfonlayer}{sections}
+\node[subsection, fit=(contrastenc)(contrast)(cg),  label=above:{Construct \cg{\pr}{\m_r}{\pf}{\m_f}}] (contrastbox) {};
+\end{pgfonlayer}
+
+
+\draw[subarrw] (mgref.south) -- ++(0,-3) -| (contrast);
+\draw[arrw] (pgfoil.east) -- ++(1,0) |- (contrast);
+\draw[arrw] (contrast) -- (cg);
+\draw[arrw] (pg.east) -- ++(1,0) -- ++(0,-0.9) -- (constructref);
+\draw[arrw] (pg.east) -- ++(1,0) -- ++(0,-4.9) -| (clingofoil.north);
+\draw[arrw] (abd.east) -- ++(0.7,0) -- ++(0,-3.3) -| (clingofoil.north);
+\end{tikzpicture}

@@ -1,0 +1,73 @@
+\documentclass[tikz,10pt]{standalone}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+% \usepackage[bibstyle=authoryear,citestyle=authoryear]{biblatex}
+\usepackage{url}\urlstyle{tt}
+\usepackage{xcolor}
+\usepackage{listings}
+\input{../macro}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usetikzlibrary{positioning}
+\usetikzlibrary{fit}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{sections}
+\pgfsetlayers{sections,background,main}
+\definecolor{stylegreen}{HTML}{D7ECD9}
+\definecolor{stylegreen}{HTML}{D7ECD9}
+\definecolor{styleyellow}{HTML}{F6F6EB}
+\definecolor{stylepurple}{HTML}{D5D6EA}
+\definecolor{styleblue}{HTML}{D9EBF6}
+\tikzset{
+  node distance=6mm and 8mm,
+  every node/.style={font=\scriptsize},
+  element/.style={
+    font=\scriptsize,
+    fill=styleyellow,
+    draw=black,
+    % rounded corners,
+    inner sep=3pt,
+    align=center
+  },
+  encoding/.style={
+    element,
+    fill=stylepurple
+  },
+  input-file/.style={
+    element,
+    fill=stylegreen,
+    align=left,
+    inner sep=3pt
+  },
+  ctl/.style={
+    element,
+    double, rounded corners, font=\scriptsize, fill=gray!20, draw=black, inner sep=5pt, align=center
+  },
+  subsection/.style={
+    draw=gray,
+    rounded corners,
+    fill=gray!10,
+    inner sep=10pt
+  },
+  arrw/.style={
+    -latex,
+    font=\tiny
+  },
+  subarrw/.style={
+    blue,
+    densely dotted,
+    -latex
+  }
+}
+
+\begin{document}
+
+
+
+\input{workflow.tex}
+
+\end{document}

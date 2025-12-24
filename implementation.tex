@@ -5,50 +5,62 @@
 \begin{itemize}
       \item We implemented our approach in a system called \asplain.
       \item \asplain\ builds on the \clingo\ system,
-      utilizing its API and meta-programming features~\citep{karoscwa21a}
-      to construct explanations.
+            utilizing its API and meta-programming features~\citep{karoscwa21a}
+            to construct explanations.
       \item Each part of the formalization is represented by facts in ASP.
       \item The system consists of a collection of clingo encodings taking those facts as input,
-       and Python scripts that orchestrate the explanation generation process.
+            and Python scripts that orchestrate the explanation generation process.
       \item While some ASP encodings are presented in this paper,
-      Python integration details are omitted for brevity.
+            Python integration details are omitted for brevity.
       \item \asplain\ also provides a user interface for visualizing program graphs, model subgraphs, and contrast graphs.
       \item The implementation is available at \url{https://github.com/potassco/asplain}.
       \item An overview of the system workflow is illustrated in Figure~?.
 \end{itemize}
 
 
-\com{Placeholder for Workflow diagram}
+\begin{figure}[!h]
+    \includegraphics[width=\textwidth]{diagrams/asplain.pdf}
+    \caption{Architecture and Workflow of \asplain\ divided in stages.
+    Green nodes correspond to user input,
+    purple nodes correspond to ASP encodings,
+    gray nodes represent control components,
+    and yellow nodes represent internal fact representation of elements.
+    Dashed blue arrows represent optional inputs.
+    }
+    \label{fig:asplain}
+\end{figure}
 
 
 \subsection{Program Graph Construction}
 \begin{itemize}
       \item We use the \clingo's meta-programming features to construct the program graphs.
       \item These features allow us to access a linearized representation of a given ASP program
-      in the form of facts,
-      which includes all grounded rules and atoms.
+            in the form of facts,
+            which includes all grounded rules and atoms.
       \item For details on the reified representation provided by clingo,
-      we refer the reader to~\cite{karoscwa21a}.
+            we refer the reader to~\cite{karoscwa21a}.
       \item The normal form used in this representation can be easily translated into a program graph.
-      \item We keep the same identifiers for rules as in the reified output of clingo since this gives unique identifiers for each grounded rule.
-      \item If the user provides a non-ground program, this program is grounded together with the instance to obtain the reified representation.
-      \item Program graphs and model subgraphs are represented using facts of the form \texttt{node/2} and \texttt{edge/3},
-      where the first argument identifies the graph instance.
-      \item The \texttt{reference} program graph \pg{P} is represented using the following facts:
-      \begin{itemize}
-      \item \texttt{node(reference, atom(A))} encodes an atom $A$ as a node in $\mathcal{V}_a$,
-      \item \texttt{node(reference, rule(choice(H),B))} encodes a choice rule as a node in $\mathcal{V}_c$,
-      \item \texttt{node(reference, rule(disjunction(H),B))} encodes a disjunctive rule as a node in $\mathcal{V}_d$,
-      \item \texttt{edge(reference, T, (From, To))} encodes an edge from \texttt{From} to \texttt{To} in $\mathcal{E}_{\text{pos}}$ or $\mathcal{E}_{\text{neg}}$, depending on whether $T$ is \texttt{positive} or \texttt{negative}.
-      \end{itemize}
+      \item We keep the same identifiers for rules as in the reified output of clingo
+            since this gives unique identifiers for each grounded rule and differentiates disjunctive rules from choice rules.
+            \item If the user provides a non-ground program, this program is grounded together with the instance to obtain the reified representation.
+            \item Program graphs and model subgraphs are represented using facts of the form \texttt{node/2} and \texttt{edge/3},
+            where the first argument identifies the graph instance.
+            \item The \texttt{reference} program graph \pg{P} is represented using the following facts:
+            \begin{itemize}
+                  \item \texttt{node(reference, atom(A))} encodes an atom $A$ as a node in $\mathcal{V}_a$,
+                  \item \texttt{node(reference, rule(choice(H),B))} encodes a choice rule as a node in $\mathcal{V}_c$,
+                  \item \texttt{node(reference, rule(disjunction(H),B))} encodes a disjunctive rule as a node in $\mathcal{V}_d$,
+                  \item \texttt{edge(reference, T, (From, To))} encodes an edge from \texttt{From} to \texttt{To} in $\mathcal{E}_{\text{pos}}$ or $\mathcal{E}_{\text{neg}}$, depending on whether $T$ is \texttt{positive} or \texttt{negative}.
+            \end{itemize}
       \item The facts representing the program graph from Figure~\ref{fig:program-graph} are shown in Listing~\ref{lst:ex:pg}.
-      \comment{S: We might want to put this in an appendix}
+      For simplicity, we replace the rule identifiers, by the labels used in the formalization, $r1$ to $r6$.
+      \comment{S: We might want to put this in an appendix and I am not sure about this simplification, makes the fact format easier to read but also harder to compare to the actual encoding.}
       \item These facts are generated using the encoding in Listing~\ref{lst:reify-to-pg}.
       \item Line \ref{reify:rule} creates nodes in $\Vd$ and $\Vc$ from the rules in the reification,
-      while line \ref{reify:atom} generates nodes for the atoms using an auxiliary predicate \texttt{symbol\_literal}
-      mapping atom names into internal literal numbers which are used in the reification.
+            while line \ref{reify:atom} generates nodes for the atoms using an auxiliary predicate \texttt{symbol\_literal}
+            mapping atom names into internal literal numbers which are used in the reification.
       \item The rule in Lines \ref{reify:edge:start} to \ref{reify:edge:end} creates positive edges from atoms in $\Va$ to rule nodes in $\Vc \cup \Vd$,
-      (the generation of negative edges is done analogously and is omitted for brevity).
+            (the generation of negative edges is done analogously and is omitted for brevity).
       \item The last two rules create positive edges from disjunctive and choice rule nodes to their head atoms, respectively.
       \item Notice that rules of form \texttt{rule(H,sum(B))} are currently not supported.
 
@@ -62,23 +74,27 @@
 \subsection{Model Subgraph Construction}
 \begin{itemize}
       \item A model subgraph $\mgpi{P}{\m}$ is represented using the same facts as the program graph
-          but with a different identifier \texttt{model(reference)}.
+            but with a different identifier \texttt{model(reference)}.
       \item Facts for the model subgraph $\mgpi{P1}{\m 1}$ from Figure~\ref{fig:model-subgraph} are shown in Listing~\ref{lst:ex:model-subgraph}.
       \item To generate a model subgraph,
-       we can adapted the meta encoding from \cite{karoscwa21a},
-       to give asp semantics to the program graph facts
-       and obtain all stable models as their corresponding model subgraphs.
-       \item For this, we use Listing~\ref{lst:model-subgraph},
-       where the rule in Line~\ref{model:rule} states that a rule node $R\in\Vd\cup\Vc$
-       holds if
-       atoms from positive edges hold
-       and atoms from negative edges do not hold.
-       \item The two rules in Lines~\ref{model:disjunction:start} to \ref{model:choice:end}
-       state that an atom node $A$ holds if supported by a choice or a disjunction.
-       The expected semantics are given by mapping the head to a disjunction or choice respectively.
-       \item Finally, the last two rules create the facts for the model subgraph, including all nodes that hold and all edges between them.
+            we can adapted the meta encoding from \cite{karoscwa21a},
+            to give asp semantics to the program graph facts
+            and obtain all stable models as their corresponding model subgraphs.
+      \item For this, we use Listing~\ref{lst:model-subgraph},
+            where a constant \texttt{graph} is used to identify the graph instance to be solved.
+            In this case \texttt{graph} is substituted by \texttt{reference},
+            but during abduction we use \texttt{foil} to obtain the model subgraph for the foil program.
+      \item
+            The rule in Line~\ref{model:rule:start} to \ref{model:rule:end} states that a rule node $R\in\Vd\cup\Vc$
+            holds if
+            atoms from positive edges hold
+            and atoms from negative edges do not hold.
+      \item The two rules in Lines~\ref{model:disjunction:start} to \ref{model:choice:end}
+            state that an atom node $A$ holds if supported by a choice or a disjunction.
+            The expected semantics are given by mapping the head to a disjunction or choice respectively.
+      \item Finally, the last two rules create the facts for the model subgraph, including all nodes that hold and all edges between them.
       \item The user can also provide a fixed an answer set $\m$ using predicate \texttt{models/1},
-      which is then enforced via integrity constraints.
+            which is then enforced via integrity constraints.
 \end{itemize}
 
 \lstinputlisting[caption={Encoding to generate model subgraphs (\texttt{model-subgraph.lp})}, language=clingos, label={lst:model-subgraph}, numbers=left]{encodings/model-subgraph.lp}
@@ -89,88 +105,161 @@
 
 \emph{Motivation}
 \begin{itemize}
-    \item We use the concept of \emph{tags} to allow users to add information to atoms and rules in the program.
-    \footnote{Tags were implemented in an external a meta programming toolset for ASP \url{https://github.com/potassco/meta-tools}.}
-    \item In our case, we use them to specify which the abducible rules,
-    as well as  to provide natural language descriptions for the rules and atoms in the program
-    \footnote{This allows us to generate natural language explanations for the foils and a better user experience when exploring the graphs. }.
+      \item We use the concept of \emph{tags} to allow users to add information to atoms and rules in the program.
+            \footnote{Tags were implemented in an external a meta programming toolset for ASP \url{https://github.com/potassco/meta-tools}.}
+      \item In our case, we use them to specify which the abducible rules,
+            as well as  to provide natural language descriptions for the rules and atoms in the program
+            \footnote{This allows us to generate natural language explanations for the foils and a better user experience when exploring the graphs. }.
 \end{itemize}
 
 \begin{itemize}
-    \item Tags are specified as comments in the encoding starting with \texttt{\% @}.
-    \item These comments are internally translated into a special theory atom similarly to the approach of \xclingo in \cite{cafamu20a}.
-    \item Using an ASP encoding, the reification of the theory atoms is translated into facts that extend the usual reification of the program.
-    %
-    \item Listing~\ref{lst:ex:tags} shows some tags that can be added to our program P1 from Listing~\ref{lst:ex:pg}.
-    The comment from Line~\ref{tags:label} adds a tag with natural language to next rule on Line~\ref{tags:rule}.
-    Line~\ref{tags:removable} adds a tag \texttt{removable} to the fact indicating that james drinks the drug.
-    Finally, tags can also be associated to an atom using \texttt{::}, as shown in Line~\ref{tags:atom},
-    where a tag with natural language is added to atom \texttt{h}.
-    \item Using some simple rules,
-    the tag facts in the reification are linked nodes in the graph,
-    extending the program graph representation from Listing~\ref{lst:ex:pg} with predicate \texttt{tag/3}.
-    \item Example of the facts generated from the comments in Listing~\ref{lst:ex:tags} are shown in Listing~\ref{lst:ex:tags-facs}.
-    %
-    \item The system in charge of tags, also provides some useful automatic tags for
-    the first order representation of the rule, the location in the source file, and the program directive where they appear.
-    \comment{Background should mention program directives}
-    \item Using these built-in tags, ensures that all rules are tagged.
-    \item Since tags are treated as theory atoms, this also serves as a mean to avoid simplification when grounding,
-          keeping a distinct body for each rule.
-      %
+      \item Tags are specified as comments in the encoding starting with \texttt{\% @}.
+      \item These comments are internally translated into a special theory atom similarly to the approach of \xclingo in \cite{cafamu20a}.
+      \item Using an ASP encoding, the reification of the theory atoms is translated into facts that extend the usual reification of the program.
+            %
+      \item Listing~\ref{lst:ex:tags} shows some tags that can be added to our program P1 from Listing~\ref{lst:ex:pg}.
+            The comment from Line~\ref{tags:label} adds a tag with natural language to next rule on Line~\ref{tags:rule}.
+            Line~\ref{tags:removable} adds a tag \texttt{removable} to the fact indicating that james drinks the drug.
+            Finally, tags can also be associated to an atom using \texttt{::}, as shown in Line~\ref{tags:atom},
+            where a tag with natural language is added to atom \texttt{h}.
+      \item Using some simple rules,
+            the tag facts in the reification are linked nodes in the graph,
+            extending the program graph representation from Listing~\ref{lst:ex:pg} with predicate \texttt{tag/3}.
+      \item Example of the facts generated from the comments in Listing~\ref{lst:ex:tags} are shown in Listing~\ref{lst:ex:tags-facs}.
+            %
+      \item The system in charge of tags, also provides some useful automatic tags for
+            the first order representation of the rule, the location in the source file, and the program directive where they appear.
+            \comment{Background should mention program directives}
+      \item Using these built-in tags, ensures that all rules are tagged.
+      \item Since tags are treated as theory atoms, this also serves as a mean to avoid simplification when grounding,
+            keeping a distinct body for each rule.
+            %
       \item Utilizing the tags implementation,
-      we gather the set of removable and addable rules, namely \removable\ and \addable,
-      using atoms of the form \texttt{abducible(remove, R)} and \texttt{abducible(add, R)} respectively.
+            we gather the set of removable and addable rules, namely \removable\ and \addable,
+            using atoms of the form \texttt{abducible(remove, R)} and \texttt{abducible(add, R)} respectively.
       \item The set \removable\ can be directly obtained with rule
-       \lstinline[language=clingos]{abducible(remove, R):- tag(reference, R, program(removeable))}.
+            \lstinline[language=clingos]{abducible(remove, R):- tag(reference, R, removable)}.
       \item On the other hand, the rules in \addable,
-      should not be part of the original program,
-      but they must, however, be grounded together with the program to link and identify them correctly.
-      To keep them separate,
-    we include such rules in separate program directive under \texttt{\#program addable}.
-    \item Then, using the built in tag for the program directive,
-    we obtain the set with rule \lstinline[language=clingos]{abducible(add, R):- tag(reference, R, program(addable))}.
-          %
-    \item Some tags can't be directly added in the program, for instance,
-          we might want to tag rules coming from the instance as removable,
-          but we don't want the user to have to modify the instance file.
-         For this, in \asplain,
-          we provide the option to include a separate file where tags are created dynamically based on the input via rules.
-          Some built in dynamic tags included in in our implementation help easily identify facts and constraints.
+            should not be part of the original program,
+            but they must, however, be grounded together with the program to link and identify them correctly.
+            To keep them separate,
+            we include such rules in separate program directive under \texttt{\#program addable}.
+      \item Then, using the built in tag for the program directive,
+            we obtain the set with rule \lstinline[language=clingos]{abducible(add, R):- tag(reference, R, program(addable))}.
+      \item Notice that this is not enough to latter integrate rule \texttt{R} into \pf,
+            as it lacks the information about the edges connected to \texttt{R}.
+            For this, we include additional facts
+            \lstinline[language=clingos]{abducible(add, edge(R,A))}
+            and \lstinline[language=clingos]{abducible(add, edge(A,R))}
+            for every edge that would be added if rule \texttt{R}
+            were to be included in the foil program.
+            %
+      \item Some tags can't be directly added in the program, for instance,
+            we might want to tag rules coming from the instance as removable,
+            but we don't want the user to have to modify the instance file.
+            For this, in \asplain,
+            we provide the option to include a separate file where tags are created dynamically based on the input via rules.
+            Some built in dynamic tags included in our implementation help easily identify facts and constraints.
 \end{itemize}
 
 \lstinputlisting[caption={Section of example program P1 with tags}, language=clingos, label={lst:ex:tags}, numbers=left]{encodings/example-tags.lp}
 \lstinputlisting[caption={Tag facts extending \pg{P1}}, language=clingos, label={lst:ex:tags-facs}, numbers=left]{encodings/example-tags-facs.lp}
 
+\subsection{Assumptions for interactivity}
+
+\begin{itemize}
+      \item Following our example, the rule \texttt{r7: :- not h.}
+      included in $P2$ is a common way to represent user input in ASP.
+      \item This representation of user input via integrity constraints
+      corresponds to the internal representation of \emph{assumptions} in \clingo.
+      \item Such constraints ensure that certain atoms are included or excluded in the answer set.
+      \item In in an interactive setting,
+      this represents a crucial feature to allow user interaction.
+      \item As such, in an explanation system,
+      we want to give special treatment to user selections in the obtained explanations.
+      \item \asplain\ supports assumptions
+      by adding them to the program as integrity constraints (as done for rule \texttt{r7}).
+      Additionally, we mark them with a special tag \texttt{@assume(true)} and \texttt{@assume(false)}.
+      This way, we can identify their corresponding nodes in the program graph.
+      As part of the encoding, we dynamically tag them as removable rules,
+      and give them a natural langue description.
+      \item The facts generated for the assumption in rule \texttt{r7} are shown in Listing~\ref{lst:ex:assumption}.
+\end{itemize}
+
+
+\lstinputlisting[caption={Facts for assumption}, language=clingos, label={lst:ex:assumption}, numbers=left]{encodings/example-assumption-pg.lp}
+
 \subsection{Abduction}
 
 \begin{itemize}
-    \item The abduction process is implemented by providing
-          the facts representing \pr\,
-          optional facts for the \mgpi{\pr}{\m},
-          and facts \texttt{query(A, exclude/include)} for the query atoms that must be excluded or included in the foil.
-    \item The sets for \removable and \addable are defined by tags.
-    \item To construct \pf\ we add choices that allow for choosing which rules to remove from \pr\ and which rules to add from \addable.
-          Then the facts for the foil program graph \pf are constructed using the identifier \texttt{foil}.
-    \item We use the same encoding as before for obtaining stable models for \pf.
-          Additionally, we include rules that make sure the query holds in the obtained model.
-    \item Example of the abduction encoding.
-    \item After calling clingo with these files, each stable model will correspond to an element $(\pf, \m_f)$ of \foils,
-          defined by graph facts with \texttt{foil} for \pf\ and \texttt{model(foil)} for $\m_f$.
+      \item The abduction process is also implemented using ASP.
+      \item As input we provide:
+            the fact representation of \pr\,
+            the facts defining \removable\ and \addable,
+            and
+            facts \texttt{query(A, exclude)} and \texttt{query(A, include)}
+            for the query atoms that must be excluded or included in the foil, respectively.
+      \item To obtain the set of foils \foils,
+            we use the encoding in Listing~\ref{lst:ex:model-subgraph},
+            with \texttt{graph = foil}
+            together with the encoding in Listing~\ref{lst:construct-foil}.
+      \item The choices in Line~\ref{foil:remove} and \ref{foil:add}
+            decide which rules to remove/add from \pr.
+            Based on these choices,
+            the rules in Lines \ref{foil:node} to \ref{foil:edge}
+            construct the facts for the foil program graph \pf.
+      \item Finally, the integrity constraints in Lines \ref{foil:exclude} and \ref{foil:include}
+            ensure that the query holds in the obtained model.
+      \item With this program, each stable model will correspond to an element $(\pf, \m_f)$ of \foils,
+            defined by graph facts with \texttt{foil} for \pf\ and \texttt{model(foil)} for $\m_f$.
+      % \item The facts for the first element of $\foils(P2, \emptyset, \{r6, r7\}, \{ \neg p \})$,
+      % namely $(P2\setminus \{r7\}, \{w, d, a\})$ are shown in Listing~\ref{lst:ex:pf}.
 \end{itemize}
 
-\subsection{Contrastive Explanation}
+\lstinputlisting[caption={Encoding to construct \pf\ (\texttt{construct-foil.lp})}, language=clingos, label={lst:construct-foil}, numbers=left]{encodings/construct-foil.lp}
 
-\begin{itemize}
-    \item Using the facts for \pr, $\mgpi{\pr}{\m}$ and foil $(\pf, \m_f)$,
-          we can construct the contrast graph \cg{\pr}{\m_r}{\pf}{\m_f}
-          using the identifier \texttt{contrast}.
-    \item This process only requires combining the facts from the program graphs and model subgraphs and calculating the constraints that would have fired.
-\end{itemize}
+% \lstinputlisting[caption={Facts for $(P2\setminus \{r7\}, \{w, d, a\})$}, language=clingos, label={lst:ex:pf}, numbers=left]{encodings/example-f1.lp}
+
+
 
 
 \subsection{Preferences for best foils}
 
 \begin{itemize}
-    \item The user can also provide preferences to obtain \bestfoils\ by using a minimize statement \comment{Not yet implemented, we need to decide on the name for these predicates}
+      \item The user can also provide preferences to obtain \bestfoils\ using \clingo's optimization features.
+      \item This is done via atoms of the form \texttt{cost(Name, Value, Level)},
+      where \texttt{Name} is an identifier for a penalization,
+      \texttt{Value} is a numeric value indicating the cost amount,
+      and \texttt{Level} indicates the priority level of the cost.
+      \item Notice that the level was not part of the formalization of the foul cost function,
+      but it is a useful feature provided by \clingo\ to express lexicographic optimization.
+      \comment{Son: Can we aregue something here about it mapping back to a single level?}
+      \item The costs are optimized with the weak constraint in Listing~\ref{lst:costs},
+      which is grounded for each cost previded by the user.
+      \item The program-difference cost function \pdiff\ is encoded in Listing~\ref{lst:ex:costs}.
+      The first rule penalizes each removed rule from the reference program,
+      while the second rule penalizes each added rule, both with cost 1 at level 2.
+      \item Another interesting cost function is to penalize the removal of rules that are not assumptions,
+      as done in Listing~\ref{lst:ex:costs}. This encourages the system to first remove rules corresponding to user input.
+      By giving this costs a higher priority level (3) than \pdiff\ (2), both costs can be combined.
+      \item Notice that this functions can also make use of the foil and reference model subgraphs.
 \end{itemize}
+
+\lstinputlisting[caption={Weak constraint for costs (\texttt{cost.lp})},language=clingos, label={lst:costs}, numbers=left]{encodings/cost.lp}
+
+\lstinputlisting[caption={Encoding for program-difference cost function \pdiff }, language=clingos, label={lst:ex:costs}, numbers=left]{encodings/example-program-difference.lp}
+
+\lstinputlisting[caption={Encoding penalizing the removal of rules that are not assumptions}, language=clingos, label={lst:ex:costs}, numbers=left]{encodings/example-cost-assumption.lp}
+
+
+\subsection{Contrastive Explanation}
+
+\begin{itemize}
+      \item Using the fact representation of \pr, $\mgpi{\pr}{\m}$ and foil $(\pf, \m_f)$,
+            we can construct the contrast graph \cg{\pr}{\m_r}{\pf}{\m_f}
+            using the identifier \texttt{contrast}.
+      \item This is done by a simple encoding that combines the nodes in both models
+      and includes the rule nodes for the constraints that would have fired.
+\end{itemize}
+
+\comment{Prunning and selecting a single explanation are not done yet.}
