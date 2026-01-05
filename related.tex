@@ -4,6 +4,44 @@
 
 \def\asplain{ASPLAIN}
 
+\section{Related work}
+
+\comment{This section might be moved to the end of the paper}
+
+
+\begin{itemize}
+
+\item With the recent increase of interest in general XAI,
+it is not surprising to observe a similar recent trend in applying explanation in ASP,
+which can be noticeable in the survey~\cite{fansch19a}.
+
+\subsection{Relation to Cabalar, Fandinno and Muñiz}
+
+\item
+Many related work focus on developing tools and theories for explanation and debugging in ASP.
+Some of them focus on explaining why an atom is in an answer set, as it is the case of~\cite{cafamu20a} and \cite{cabmun24a}.
+In it, the authors propose the notion of support graphs, which serve as a general explanation for the answer set, including the atoms from the answer set as vertices.
+The tool \xclingo\, and its latest version \xclingo2\, can explain why an atom is in an answer set by computing graph based derivation of the atom from a support graph.
+Their approach does not consider explanations about why an atom is not in a particular answer set.
+%
+Our approach generates similar graph based explanations, extended to make contrasts with foil models.
+This allows us to explain why an atom is not in the reference answer set and to include atoms that are not in the reference answer set as vertices of our graphs.
+%
+Additionally, the modeler using \xclingo\ can annotate the input logic program
+in order to generate human-readable natural language explanations.
+This is similar to what we can achieve via natural language tags (see Section~\ref{sec:tags}).
+Additionally, we rely on LLMs as a more flexible way to generate natural language explanations.
+
+\item
+\cite{cabfan17a} defines algebraic notation that can represent supporting and preventing conditions for an atom in an answer set.
+These conditions are rooted in literals appearing negatively in the input logic program.
+Our approach also incorporates negative information as briefly mentioned above regarding the structure of the resulting explanation graph.
+Note that contrastive graphs may include special edges pointing to rules having negative body literals.
+This comes handy to blend ASP constraint rules into the explanation graph,
+which are valuable source of information for answering contrastive explanation queries with debugging intent.
+
+
+\subsection{Relation to xASP and s(CASP)}
 
 The present paper is related closely related to work in the research on xAI in ASP or
 Prolog such as the xASP systems \cite{ly:iclp,ly:spie,trieu2022xasp,alviano2024xai} and
@@ -69,7 +107,8 @@ atoms in $M$, i.e., atoms that do not belong to $M$. By design, the present pape
 explanation for $a \not\in M$ by identifying a contrastive model that supports $a$.  
 
 
-\subsection{Constructing Explanation Graphs for Negative Literals}     
+\subsubsection{Constructing Explanation Graphs for Negative Literals}
+\comment{Son: I do not think that we need to include it  in the paper but maybe for discussion}
 
 Given a program $P$, an answer set $M$ of $P$, and $a \not\in M$.   
 We next construct a graph $T_a = (V_a, E_a)$, where $V_a = \bigcup_{i=0}^\infty (V_i^+ \cup
@@ -189,47 +228,13 @@ Some observations about $T_a$:
 % explanation graphs of $a$ in $M$ and  
 % derivations of $a$ in $M$, and thus, 
 % subgraphs explaining $a$ of the model subgraph $MG^M_P$.
-\section{Related work}
 
-\comment{This section might be moved to the end of the paper}
-
-
-\begin{itemize}
-
-\item With the recent increase of interest in general XAI,
-it is not surprising to observe a similar recent trend in applying explanation in ASP,
-which can be noticeable in the survey~\cite{fansch19a}.
-
-\item
-Many related work focus on developing tools and theories for explanation and debugging in ASP.
-Some of them focus on explaining why an atom is in an answer set, as it is the case of~\cite{cafamu20a} and \cite{cabmun24a}.
-In it, the authors propose the notion of support graphs, which serve as a general explanation for the answer set, including the atoms from the answer set as vertices.
-The tool \xclingo\, and its latest version \xclingo2\, can explain why an atom is in an answer set by computing graph based derivation of the atom from a support graph.
-Their approach does not consider explanations about why an atom is not in a particular answer set.
-%
-Our approach generates similar graph based explanations, extended to make contrasts with foil models.
-This allows us to explain why an atom is not in the reference answer set and to include atoms that are not in the reference answer set as vertices of our graphs.
-%
-Additionally, the modeler using \xclingo\ can annotate the input logic program
-in order to generate human-readable natural language explanations.
-This is similar to what we can achieve via natural language tags (see Section~\ref{sec:tags}).
-Additionally, we rely on LLMs as a more flexible way to generate natural language explanations.
-
-\comment{O: Maybe mentioning that our work also supports explaining a whole model as support graphs (but not sure since xclingo cant do this, right?)}
-
-\item
-\cite{cabfan17a} defines algebraic notation that can represent supporting and preventing conditions for an atom in an answer set.
-These conditions are rooted in literals appearing negatively in the input logic program.
-Our approach also incorporates negative information as briefly mentioned above regarding the structure of the resulting explanation graph.
-Note that contrastive graphs may include special edges pointing to rules having negative body literals.
-This comes handy to blend ASP constraint rules into the explanation graph,
-which are valuable source of information for answering contrastive explanation queries with debugging intent.
-
-\item Another related approach is \textit{xASP2} ...\comment{O: We can move Son's text about xASP here?}
 %
 \begin{proposition}
   There should be a 1:1 correspondance between model subgraphs and xASP explanations \cite{altrsoba23a} \comment{Son: xASP uses only one of the alternative for each atom, CHECK}
 \end{proposition}
+
+\subsection{Relation to other contrastive explanation approaches}
 
 \item A noteworthy related research effort deals with increasing the coverage of the syntactic constructs of logic programs
 supported by an explanation framework.
