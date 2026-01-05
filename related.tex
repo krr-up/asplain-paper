@@ -11,21 +11,22 @@ which can be noticeable in the survey~\cite{fansch19a}.
 
 \item
 Many related work focus on developing tools and theories for explanation and debugging in ASP.
-The tool \xclingo\ can explain why an atom is in an answer set by computing graph based derivation of the atom~\cite{cafamu20a}.
-The resulting explanation is a support graph~\cite{cabmun24a} whose vertices are atoms from the answer set including the query atom.
+Some of them focus on explaining why an atom is in an answer set, as it is the case of~\cite{cafamu20a} and \cite{cabmun24a}.
+In it, the authors propose the notion of support graphs, which serve as a general explanation for the answer set, including the atoms from the answer set as vertices.
+The tool \xclingo\, and its latest version \xclingo2\, can explain why an atom is in an answer set by computing graph based derivation of the atom from a support graph.
+Their approach does not consider explanations about why an atom is not in a particular answer set.
 %
-Our approach generates also graph based explanations that have not only contrastive nature,
-but also a richer structure by including vertices of atoms
-that do not belong to answer sets corresponding to reference or foil models\comment{O: just to be sure if this is the case}.
+Our approach generates similar graph based explanations, extended to make contrasts with foil models.
+This allows us to explain why an atom is not in the reference answer set and to include atoms that are not in the reference answer set as vertices of our graphs.
 %
 Additionally, the modeler using \xclingo\ can annotate the input logic program
 in order to generate human-readable natural language explanations.
-In our approach, we rely on LLMs as a more flexible way to generate natural language explanations.
+This is similar to what we can achieve via natural language tags (see Section~\ref{sec:tags}).
+Additionally, we rely on LLMs as a more flexible way to generate natural language explanations.
 
 \comment{O: Maybe mentioning that our work also supports explaining a whole model as support graphs (but not sure since xclingo cant do this, right?)}
 
 \item
-The approaches generating causal or support graphs as explanations do not incorporate negative information in general.
 \cite{cabfan17a} defines algebraic notation that can represent supporting and preventing conditions for an atom in an answer set.
 These conditions are rooted in literals appearing negatively in the input logic program.
 Our approach also incorporates negative information as briefly mentioned above regarding the structure of the resulting explanation graph.
@@ -42,7 +43,7 @@ which are valuable source of information for answering contrastive explanation q
 \item A noteworthy related research effort deals with increasing the coverage of the syntactic constructs of logic programs
 supported by an explanation framework.
 To this end \cite{eitgei23a} defines abstract constraint atoms and the way to explain them to cover constructs like choice rules or aggregates.
-Although our work accepts programs with choice rules, aggregates are not supported yet.\comment{O: this is the case, right?}
+Although our work accepts programs with choice rules, aggregates are not generally supported yet, as explained in detail in~\ref{sec:background}.
 
 \item
 Focusing on more human-centric explanations as mentioned in \cite{miller19},
