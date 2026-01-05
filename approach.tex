@@ -1,6 +1,7 @@
 \section{Approach}\label{sec:approach}
 
 \subsection{Syntax Scope and Grounder Simplifications}
+\label{sec:syntax-scope}
 
 %
 \begin{itemize}
@@ -67,14 +68,16 @@ Given a rule $r$ like \eqref{f:disjunctive-rule} or \eqref{f:choice-rule}, we de
 %
 and so, we denote the rule $r$ corresponding to a label $\ell$ as $\InvLb{\ell}$.
 %
-Finally, we denote $\Lbs{P} \eqdef \{ \Lb{r} \mid r \in P \}$ as the set of all labels of the rules in a labelled program $P$.
-\medskip
-\comment{S: Brais will change this to all be sets.}
+We denote $\Lbs{P} \eqdef \{ \Lb{r} \mid r \in P \}$ as the set of all labels of the rules in a labelled program $P$.
 %
-$\isdisj{r}$: denotes that rule $r$'s head is a disjunction, that is, a rule of the form \eqref{f:disjunctive-rule}.
-$\iscons{r}$: denotes that a disjunctive rule $r$'s head is empty, that is, a constraint rule.
-$\ischoice{r}$: denotes that rule $r$'s head is a choice, that is, a rule of the form \eqref{f:choice-rule}.
-$\atoms{P}$ is the set of all the atoms occuring in $P$.
+$\isdisj{P} \subseteq P$ is the set of rules whose head is a (non-empty) disjunction,
+whereas
+$\iscons{P} \subseteq P$ is the set of rules whose head is an empty disjunction, that is, constraint rules.
+Therefore, rules in $\isdisj{P} \cup \iscons{P}$ are rules of the form \eqref{f:disjunctive-rule} and $\isdisj{P} \cap \iscons{P} = \emptyset$.
+$\ischoice{P} \subseteq P$ is the set of ulres whose head is a choice, that is, rules of the form \eqref{f:choice-rule}.
+Finally, $\atoms{P}$ is the set of all the atoms occuring in $P$.
+%
+As usual, we will denote the set of answer sets of labelled program $P$ as $AS(P)$.
 %
 
 
@@ -93,8 +96,8 @@ where
 %
 $\Vc$, $\Vd$ and $\Va$ are nodes in the graph following the definitions below:
 \begin{itemize}
-    \item $\Vd = \{ \Lb{r} \mid r \in P \land (\isdisj{r} \vee \iscons{r})      \}$ is the set of rules's labels, whose head is a dijunction;
-    \item $\Vc = \{ \Lb{r} \mid r \in P \land \ischoice{r}    \}$ is the set of rules's labels, whose head is a choice;
+    \item $\Vd = \{ \Lb{r} \mid r \in P \cap (\isdisj{P} \cup \iscons{P}) \}$ is the set of rules's labels, whose head is a dijunction;
+    \item $\Vc = \{ \Lb{r} \mid r \in P \cap \ischoice{P} \}$ is the set of rules's labels, whose head is a choice;
     \item $\Va = \{ a      \mid a \in \atoms{P} \}$ is the set atoms which occur within any head of any rule in $P$.
 \end{itemize}
 
@@ -120,15 +123,15 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 %
 \begin{example}[Program Graph]\label{ex:example1}
-  This is a modified version of the James Bond example from Fandinno
+  This is an extension of the introductory example from~\cite{cabfan17a}.
   A drug $d$ in James Bond’s drink causes his paralysis $p$
-  \comment{ırais will fix this example and add reference}
   provided that he was not given an antidote $a$ that day.
   We know that Bond’s enemy, Dr. No, poured the drug. He gets the antidote if he is not on holiday $h$.
   Unlike in the original example, we add $w$ to indicate a working day,
   and a choice to decide if James is on holiday or working,
   where the constraints in rules 2 and 3 ensuring exactly one of them is true.
-  \comment{Note that adding the choice with bounds would have introduced auxiliary atoms as explained before, and would not be part of our restricted input.}
+  %
+  Note that adding the choice with bounds would have introduced auxiliary atoms as explained before in Section~\ref{sec:syntax-scope}.
   %%
   \lstinputlisting[caption={Modified James Bond Example. Program $P1$}, language=clingos, label={lst:example1}]{encodings/example1.lp}
   %%
@@ -260,8 +263,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item Example: \textit{Why isn’t James poisoned?} — the asker \emph{assumes} or \emph{expects} a hypothetical world where James is poisoned.
   %
-  \item This expectation is called \emph{foil} or \emph{foil world} in the literature, whereas the \emph{reference world} or \emph{fact world} is the asker’s interpretation of observed events where James is not poioned.
-  \comment{Brais will re-think these terms to make them more clear and consistent.}
+  \item This hypothetical world is called \emph{foil}, whereas the \emph{reference world} is the asker’s interpretation of observed events where James is not poisoned.
   %
   \item In ASP context, this happens, for instance, when the users expects something that does not happen in the shown solution.
   %
@@ -272,26 +274,28 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item User expected $a$ to be in the answer, but there is no answer (UNSAT).
   \end{itemize}
   %
-  \item Abduction is the process we refer to find the \emph{foil answer} that satisfies the query.
-  \comment{S: Below we have foil pair, and just foil, I think we need to clearly distinguish this.
-  The bellow it would be "an a foil answer set ...".
-  In this part I guess foil world would be the \pf and foil answer set would be $\m_f$? }
+  \item The way human answer this type of questions, accoring to social sciences literature~\cite{miller19}, is by finding and presenting foils which match the expectations.
   %
-  \item However, other processes could be used to find a valid \emph{foil answer}, and we may study its relation with our notion of abduction.
-  \comment{S: What kind of process?}
+  \item Our approach mimics this process, by finding alternative answer sets (and even alternative programs if needed) which satisfy the user unsatisfied expectations.
+  %
+  \item However, other notions as for instance unsatisfiable-cores~?
+  \comment{TODO: find best reference for usnat cores}
+  could be used to find a valid \emph{foil answer}, and we may study its relation with our notion of abduction.
+  
 \end{itemize}
 %
 
 \paragraph{Assumptions}
 \begin{itemize}
   %
-  \item We start from a \emph{reference} program $\pr$.
+  \item We start from a \emph{reference} program $\pr$,
   %
-  \item Query $Q$ is a set of literals.
+  \item and a Query $Q$ which represents the user's unmet expectations about the program and/or any of its answer sets.
   %
-  \item \emph{Abduction} is the process of finding a \emph{foil program} $\pf$ and an answer set $\m_f$ of $\pf$ such that $\m_f \models Q$.
+  \item From there, we add and remove rules from $\pr$ in a controlled way so that we find a new program $\pf$, such that 
+        an answer set $\m_f$ of $\pf$ such that $\m_f \models Q$.
   %
-  \item The way we obtain $\pf$ and $\m_f$ is by adding and removing rules from $\pr$ in a controlled way.
+  \item We refer to the new program $\pf$ as the \emph{foil program}, we use the term \emph{abduction} to refer to the process of finding it and finally, we refer to $\m_f$ as the \emph{foil model}.
   %
 \end{itemize}
 %
@@ -306,22 +310,20 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item a \emph{reference program} $\pr$,
     %
     \item a set of \emph{removable} labelled rules $\removable \subseteq \pr$
-    \DEL{of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule}},
-    \comment{If we say the the vertex are labels then these should also be labels?}
+    \comment{If we say the the vertex are labels then these should also be labels?
+    \textbf{Brais:} no, we add rules to form $P_f$, and this rules will have its own label in $P_f$ }
     %
     \item and
     %
-    \item a set of \emph{addable} labelled rules $\addable$ \DEL{of the form \eqref{f:disjunctive-rule} and \eqref{f:choice-rule}},
+    \item a set of \emph{addable} labelled rules $\addable$.
     %
   \end{itemize}
   %
-  % we say the model subgraph $MG_{\pf}^{\m_f}$
   we say the pair $(\pf, \m_f)$
   is a \emph{valid foil for $\pr$ with respect to some $\addable$, $\removable$ and $Q$} iff:
   \begin{itemize}
     \item $ \pr \setminus \removable \subseteq \pf \subseteq (\pr \cup \addable)$
     \item $\m_f \in AS(\pf)\ \land\ \m_f \models Q$
-    \comment{Make sure AS is well defined before.}
   \end{itemize}
   Additionally, we denote $\foils(\pr, \addable, \removable, Q)$ as the set of \emph{all valid foils for $\pr$ with respect to $\addable$, $\removable$, and $Q$}.
 \end{definition}
@@ -342,8 +344,8 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   % \item Regarding contrastive explanations, from a \emph{reference program} and a query $Q$, the idea is to find a \emph{foil valid subgraph} $MG_{\pf}^{\m_f}$ with with respect to $Q$, that will be later used to compute a contrast graph $CG_{\pr, \pf}^{\m_r, \m_f}$.
   %
   \item {\color{blue} This definition does not impose the existence of a \emph{reference model} $\m_r \models \pr$}
-  This allows finding foils for unsatisfiable reference programs, $AS(\pr) = \emptyset$.
-  If $Q = \emptyset$ then we are simply recovering satisfiability.
+  This allows finding foils for unsatisfiable reference programs.
+  This is the case when $AS(\pr) = \emptyset$ and $Q = \emptyset$, which intuitively means that we are simply recovering satisfiability.
   Otherwise, if $Q \neq \emptyset$, we are recovering satisfiability and forcing something to be true in the process.
   \item {\color{blue} This definition does not impose that $\m_r \nvDash Q$.}
   Therefore, the reference and foil models may collide $\m_r = \m_f$,
@@ -351,12 +353,11 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   In other words, $\m_r$ already satisfy the query.
   Analyzing the the model subgraph $\mgpi{\pr}{\m_r}$ in comparison to $\pg{P}$,
   can then provide a causal explanation for \emph{why} $Q$.
-  \comment{S: This would be like the other approaches, right brais?}
   %
   \item The sets $\removable$ and $\addable$ is what we informally call them \emph{abducibles}, that is, rules that we can add or remove to the original program in order to satisfy the query.
   %
   \item The most natural example of the abducibles is \emph{user input}, but any other notion can be abducible if it makes sense for the application.
-  \item For instance, one could set the removable rules as all constraints, $\removable=\{r \mid r\in P\wedge\iscons{r}\}$, for debugging purposes to find out why the program is unsatisfiable.
+  \item For instance, one could set the removable rules as all constraints, $\removable=\{r \mid r \in \iscons{r}\}$, for debugging purposes to find out why the program is unsatisfiable.
   %$
   \item The set $\removable$ (\emph{removables}) is restricted to be a subset of $\pr$, while the set $\addable$ (\emph{addables}) is free, since we want to give full flexibility.
   %
@@ -378,7 +379,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \begin{example}[Abduction]\label{ex:example2}
   Consider $P2$ as the extension of $P1$ with the following rule which ensures that James is on holiday.
-  \comment{S: This rule works like an assumption which can be a user input}
   \begin{lstlisting}[language=clingos]
     r7: :- not h.
   \end{lstlisting}
@@ -400,7 +400,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   $(P2\setminus \{r6, r7\}, \{w, a\})$.
   These foils can be visualized using their corresponding model subgraphs as shown in Figure~\ref{fig:foils}.
   %
-  We use the color green to highlight foil models to latter distinguish them from the reference model.
+  We use the color green to highlight foil models to latter distinguish them from the reference model which is always shown in purple color.
 
 \end{example}
 %
@@ -482,7 +482,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \paragraph{Motivation and Context}
 \begin{itemize}
-  \item Among all possible explanations, humans tend to select the most suitable ones according to different criteria.
+  \item Among all possible foils, humans tend to select the most suitable ones according to different criteria.
   %
   \item Since our framework allows full flexibility in generating possible foils, we also need a good way to identify the most appropriate ones.
   %
@@ -522,7 +522,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item and a set of addable labelled rules $\addable$,
   \end{itemize}
   %
-  a \emph{foil cost function} for $(\pr, \addable, \removable, Q)$ is a function
+  a \emph{foil cost function} is a function
   %
   \[
     \foilcost_{\pr,\addable,\removable,Q} :
@@ -566,10 +566,18 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 
 \begin{example}[Program-difference cost function]\label{ex:program-difference-cost-function}
-  For a given abduction setup $(\pr, \addable, \removable, Q)$.
-  \comment{S: This abduction setup is something we use a lot before already, perhaps we want to define it before}
+   Given
+  \begin{itemize}
+    \item a query $Q$,
+    %
+    \item a reference program $\pr$,
+    %
+    \item a set of removable labelled rules $\removable \subseteq \pr$,
+    %
+    \item and a set of addable labelled rules $\addable$,
+  \end{itemize}
   %
-  We define the particular foil cost function \emph{program difference} $\varphi$,
+  we define the particular foil cost function \emph{program difference} $\varphi$,
   % \[
   %   \pdiff_{\pr,\addable,\removable,Q} :
   %   \foils(\pr,\addable,\removable,Q) \rightarrow^{} \mathbb{N}
@@ -632,7 +640,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item A contrastive explanation compares this \emph{reference world} with an \emph{foil world} where the outcome differs.
   %
-  \item With this comparison we  will be able to use causal relations \emph{hidden} in constraints by using \emph{existential satisfaction}, defined below.
+  \item With this comparison we will be able to use causal relations \emph{hidden} in constraints by using \emph{existential satisfaction}, defined below.
   %
 \end{itemize}
 
@@ -696,7 +704,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   where
   \begin{itemize}
-    \item  $\Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in \pr \cup \pf) \land (\iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
+    \item  $\Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in (\pr \cup \pf) \cap \iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
     \comment{
       {\bf Son:} what about other rules whose body is existentially satisfied by $\m_r$ and $\m_f$, but not by $\m_r$ nor $\m_f$ alone?
     }
@@ -716,15 +724,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \end{itemize}
 \end{proposition}
 %
-
-%% contrastive
-% pg1 --> model mask1 (all alternative justifications) --> causal mask1
-% pg2 --> model mask2                                  --> causal mask2
-
-% causal mask1 --> pg2 ?? % could be a distance function that ensures we keep as close as possible to the alternative chosen in causal mask1
-
-% UnionGraph + causal mask1 + causal mask2 -->  Contrastive Graph  (asplain)
-% UnionGraph + model mask1  + model mask2 -->  Contrastive Graph  (paper)
 
 \paragraph{Discussion Points}
 \begin{itemize}
@@ -755,7 +754,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item Then the user wonders why some query $Q$ is not true in the reference.
   %
-  \item We use abduction to find a $\mgpi{\pf}{\m_f} \in Foil(\pr, \addable, \removable, Q)$, for some $\removable$ and $\addable$.
+  \item We use abduction to find a $\mgpi{\pf}{\m_f} \in \foils(\pr, \addable, \removable, Q)$, for some $\removable$ and $\addable$.
   %
   \item Sets $\removable$ and $\addable$ can vary depending on the particular application.
   %
@@ -885,7 +884,19 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \end{definition}
 
 \begin{example}[Model-difference cost function]\label{ex:model-difference-cost-function}
-  For a given abduction setup $(\pr, \addable, \removable, Q)$ with reference model $\m_r$,
+
+  Given
+  \begin{itemize}
+    \item a query $Q$,
+    %
+    \item a reference program $\pr$,
+    %
+    \item a set of removable labelled rules $\removable \subseteq \pr$,
+    %
+    \item a set of addable labelled rules $\addable$,
+    %
+    \item and a reference model $\m_r \in AS(\pr)$,
+  \end{itemize}
   we define the \emph{model-difference} contrast cost function as
   \[
    \mdiff_{(\pr, \m_r),\addable,\removable,Q}(\pf, \m_f)
