@@ -14,7 +14,7 @@
             Python integration details are omitted for brevity.
       \item \asplain\ also provides a user interface for visualizing program graphs, model subgraphs, and contrast graphs.
       \item The implementation is available at \url{https://github.com/potassco/asplain}.
-      \item An overview of the system workflow is illustrated in Figure~?.
+      \item An overview of the system workflow is illustrated in Figure~\ref{fig:asplain}.
 \end{itemize}
 
 
@@ -56,6 +56,7 @@
       For simplicity, we replace the rule identifiers, by the labels used in the formalization, $r1$ to $r6$.
       \comment{S: We might want to put this in an appendix and I am not sure about this simplification, makes the fact format easier to read but also harder to compare to the actual encoding.}
       \item These facts are generated using the encoding in Listing~\ref{lst:reify-to-pg}.
+      \comment{B: maybe reorder listings 2 and 3? (and listings 4 and 5)}
       \item Line \ref{reify:rule} creates nodes in $\Vd$ and $\Vc$ from the rules in the reification,
             while line \ref{reify:atom} generates nodes for the atoms using an auxiliary predicate \texttt{symbol\_literal}
             mapping atom names into internal literal numbers which are used in the reification.
@@ -102,6 +103,7 @@
 \lstinputlisting[caption={Facts representing model subgraph $\mgpi{P1}{\m 1}$}, language=clingos, label={lst:ex:model-subgraph}, numbers=left]{encodings/example-m1.lp}
 
 \subsection{Tags for user preferences}
+\label{sec:implementation:tags}
 
 \emph{Motivation}
 \begin{itemize}
@@ -114,7 +116,7 @@
 
 \begin{itemize}
       \item Tags are specified as comments in the encoding starting with \texttt{\% @}.
-      \item These comments are internally translated into a special theory atom similarly to the approach of \xclingo in \cite{cafamu20a}.
+      \item These comments are internally translated into a special theory atom similarly to the approach of \xclingo\ in \cite{cafamu20a}.
       \item Using an ASP encoding, the reification of the theory atoms is translated into facts that extend the usual reification of the program.
             %
       \item Listing~\ref{lst:ex:tags} shows some tags that can be added to our program P1 from Listing~\ref{lst:ex:pg}.
