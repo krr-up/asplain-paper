@@ -17,6 +17,7 @@
       \item An overview of the system workflow is illustrated in Figure~\ref{fig:asplain}.
 \end{itemize}
 
+\comment{TODO SUSANA: Improve image with numbers. Reference workflow in text below. Improve UNSAT.}
 
 \begin{figure}[!h]
     \includegraphics[width=\textwidth]{diagrams/asplain.pdf}
@@ -54,9 +55,8 @@
             \end{itemize}
       \item The facts representing the program graph from Figure~\ref{fig:program-graph} are shown in Listing~\ref{lst:ex:pg}.
       For simplicity, we replace the rule identifiers, by the labels used in the formalization, $r1$ to $r6$.
-      \comment{S: We might want to put this in an appendix and I am not sure about this simplification, makes the fact format easier to read but also harder to compare to the actual encoding.}
+      \comment{TODO SUSANA: Motivate simplification.}
       \item These facts are generated using the encoding in Listing~\ref{lst:reify-to-pg}.
-      \comment{B: maybe reorder listings 2 and 3? (and listings 4 and 5)}
       \item Line \ref{reify:rule} creates nodes in $\Vd$ and $\Vc$ from the rules in the reification,
             while line \ref{reify:atom} generates nodes for the atoms using an auxiliary predicate \texttt{symbol\_literal}
             mapping atom names into internal literal numbers which are used in the reification.
@@ -131,7 +131,6 @@
             %
       \item The system in charge of tags, also provides some useful automatic tags for
             the first order representation of the rule, the location in the source file, and the program directive where they appear.
-            \comment{Background should mention program directives}
       \item Using these built-in tags, ensures that all rules are tagged.
       \item Since tags are treated as theory atoms, this also serves as a mean to avoid simplification when grounding,
             keeping a distinct body for each rule.
@@ -169,6 +168,7 @@
 
 \subsection{Assumptions for interactivity}
 
+\comment{TODO SUSANA: Rephrase using the inteactivity in the end and talk more about the concept of assumptions}
 \begin{itemize}
       \item Following our example, the rule \texttt{r7: :- not h.}
       included in $P2$ is a common way to represent user input in ASP.
@@ -235,7 +235,7 @@
       and \texttt{Level} indicates the priority level of the cost.
       \item Notice that the level was not part of the formalization of the foul cost function,
       but it is a useful feature provided by \clingo\ to express lexicographic optimization.
-      \comment{Son: Can we aregue something here about it mapping back to a single level?}
+      \comment{TODO SON: Can we aregue something here about it mapping back to a single level?}
       \item The costs are optimized with the weak constraint in Listing~\ref{lst:costs},
       which is grounded for each cost previded by the user.
       \item The program-difference cost function \pdiff\ is encoded in Listing~\ref{lst:ex:costs}.
@@ -264,4 +264,4 @@
       and includes the rule nodes for the constraints that would have fired.
 \end{itemize}
 
-\comment{Prunning and selecting a single explanation are not done yet.}
+\comment{TODO SUSANA: Add implementation for a single explanation}

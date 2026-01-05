@@ -1,7 +1,10 @@
 \section{Approach}\label{sec:approach}
 
+\comment{TODO BRAIS: simplify approach section}
+
 \subsection{Syntax Scope and Grounder Simplifications}
 \label{sec:syntax-scope}
+
 
 %
 \begin{itemize}
@@ -11,8 +14,7 @@
   \item This is to avoid the simplifications that grounders do, which can be hard to track back to the original program.
   \item One of the reason for this simplifications is to have a simple normal form that can be interpreted by the solver.
   %
-  \item This normal form allows disjunction or choices in the head, and either a sum aggregate with a lower bound or a conjunction of literals in the body.
-  \cite{kamrom23a} \comment{S: perhaps there is a better reference for this? but I am not sure}
+  \item This normal form allows disjunction or choices in the head, and either a sum aggregate with a lower bound or a conjunction of literals in the body \citep{kamrom23a}.
   \item To transform all available constructs in clingo into this normal form, the grounder introduces auxiliary atoms.
   \item This means that we will get auxiliary atoms when using
   $\#sum$ or $\#count$ aggregates, as well as
@@ -30,7 +32,8 @@
 
 %
 \begin{itemize}
-  \item We refer to labelled logic programs because the program graph gives IDs to the bodies.
+  \item We use labelled logic programs to use the label as identifier in the program graph.
+  \item We also only use the labels in the examples to avoid writing the full rule.
 \end{itemize}
 %
 
@@ -84,14 +87,12 @@ As usual, we will denote the set of answer sets of labelled program $P$ as $AS(P
 \subsection{Program Graph}
 \label{sec:program-graph}
 
-\comment{I am worried about this graph definition,
-because if you have a program graph $\langle V, E \rangle$ then we can't know the types of nodes and edges.
-Perhaps having $\pg{P} = \langle (\Vc , \Vd , \Va), (\Epos , \Eneg) \rangle$?}
 %
 \begin{definition}[Program Graph]
 %
-Given a labelled logic program $P$, its corresponding \emph{program graph} is a directed graph
-$\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos \cup \Eneg \rangle$
+Given a labelled logic program $P$, its corresponding \emph{program graph} is
+defined as
+$\pg{P} = \pgfull$
 where
 %
 $\Vc$, $\Vd$ and $\Va$ are nodes in the graph following the definitions below:
@@ -116,7 +117,9 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \paragraph{Discussion points}
 \begin{itemize}
   \item
-  A program graph is a directed graph that syntactically represents a logic program,
+  A program graph can be seen as a directed graph
+  \ensuremath{\langle \Vc \cup \Vd \cup \Va, \Epos \cup \Eneg \rangle}
+  that syntactically represents a logic program,
   capturing all details specified by the ASP developer.
   It serves as the foundational structure for generating explanations.
 \end{itemize}
@@ -187,7 +190,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \label{sec:model-subgraph}
 
 \begin{definition}[Model Subgraph from Model]
-  Given a program graph $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos \cup \Eneg \rangle$,
+  Given a program graph $\pg{P} = \pgfull$,
   and an answer set $\m \subseteq \Va$ of $P$,
   a \emph{model subgraph} is a pair $\mgpi{P}{\m} = \langle V, E \rangle$ such that
   \begin{itemize}
@@ -278,10 +281,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item Our approach mimics this process, by finding alternative answer sets (and even alternative programs if needed) which satisfy the user unsatisfied expectations.
   %
-  \item However, other notions as for instance unsatisfiable-cores~?
-  \comment{TODO: find best reference for usnat cores}
-  could be used to find a valid \emph{foil answer}, and we may study its relation with our notion of abduction.
-  
+
 \end{itemize}
 %
 
@@ -292,7 +292,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   \item and a Query $Q$ which represents the user's unmet expectations about the program and/or any of its answer sets.
   %
-  \item From there, we add and remove rules from $\pr$ in a controlled way so that we find a new program $\pf$, such that 
+  \item From there, we add and remove rules from $\pr$ in a controlled way so that we find a new program $\pf$, such that
         an answer set $\m_f$ of $\pf$ such that $\m_f \models Q$.
   %
   \item We refer to the new program $\pf$ as the \emph{foil program}, we use the term \emph{abduction} to refer to the process of finding it and finally, we refer to $\m_f$ as the \emph{foil model}.
@@ -310,8 +310,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \item a \emph{reference program} $\pr$,
     %
     \item a set of \emph{removable} labelled rules $\removable \subseteq \pr$
-    \comment{If we say the the vertex are labels then these should also be labels?
-    \textbf{Brais:} no, we add rules to form $P_f$, and this rules will have its own label in $P_f$ }
     %
     \item and
     %
@@ -622,9 +620,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \]
   %
   Minimizing $\pdiff$ thus selects the two top foils from Figure~\ref{fig:foils},
-  which represent the \emph{cardinality}-minimal deviations \comment{S2B: What do you mean here?} from the reference program needed to recover satisfiability.
-  %
-  This example illustrates the use of the preferences to select the foils which made the least changes to the original program.
+  which are the foils that made the least changes to the original program.
 \end{example}
 
 
@@ -669,6 +665,10 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \begin{itemize}
   \item Will be used to identify the conflict constraints among the masks used for a contrast.
   \item Is a relaxed notion of satisfaction that can be read as \emph{this constraint would have been fired}.
+  \item This concept can be extended to other rules that are not integrity constraints,
+  however, this is more complex as we would need to consider their head with different semantics.
+  This remains future work.
+  For now, we focus on constraints only as this is the information that we want to laverage from common programming practices.
 \end{itemize}
 
 \begin{definition}[Contrastive Subgraph]
@@ -680,16 +680,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     %
     \item sets $\addable$ and $\removable$, of \emph{addable} (respectively \emph{removable}) rules, a \emph{valid foil program-model pair} $(\pf, \m_f) \in \foils(\pr, \addable, \removable, Q)$, and its correspondant model subgraph $\mgpi{\pf}{\m_f} = \langle V_f, E_f \rangle$.
     %
-    \item a program graph $\pg{\pr \cup \pf} = \langle \Vc\cup \Vd\cup \Va, \Epos\cup \Eneg \rangle$,
-    \comment{
-    {\bf Brais:} the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.
-    \\
-    {\bf Son:} This is interesting but how do you know that a specific source of knowledge is appropiate for a query and not another one?
-    It might be better to require that same rule must have the same label?
-    \\
-    {\bf Brais:} we might define a distance function that prefers the contrastive graph that includes a particular label (labels become the box node IDs).
-    But then the distance function has to have access to that...
-    }
+    \item a program graph $\pg{\pr \cup \pf} = \pgfull$
   \end{itemize}
   then
   %
@@ -705,10 +696,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   where
   \begin{itemize}
     \item  $\Vcon = V_r \cup V_f \cup  \{ \Lb{r} \mid (r \in (\pr \cup \pf) \cap \iscons{r}) \land (\m_r, \m_f \models \Bd{r}) \}$
-    \comment{
-      {\bf Son:} what about other rules whose body is existentially satisfied by $\m_r$ and $\m_f$, but not by $\m_r$ nor $\m_f$ alone?
-    }
-
     \item $\Eposcon = \{(v1, v2) \mid (v1, v2) \in \Epos \land v1,v2 \in \Vcon\}$
     \item $\Enegcon = \{(v1, v2) \mid (v1, v2) \in \Eneg \land v1,v2 \in \Vcon\}$
     \item $\Enegcon = \{ (a, \ell) \mid (a, \ell) \in \Eneg \land [ (\m_r \models a) \oplus (\m_f \models a)]\}$
@@ -923,6 +910,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \item Note, now that we can have alternative and hypothetical explanations.
   \item We can consider different priorities among those cost functions.
   In our case, \rdiff\ gives equal importance to both syntactic and semantic differences, but we could also define a weighted sum to prioritize one over the other.
+  \comment{TODO BRAIS: Include phrase to moticate that model difference might make more sense for end user vs program difference for debugging.}
 \end{itemize}
 
 \begin{example}[Selecting the best contrastive explanations]\label{ex:best-contrastive-explanations}
@@ -942,7 +930,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %
   In short, the second explanation would be the preferred explanation since the hypothetical contrastive world is closer to the reference.
   \comment{
-    Brais -- my intuition was that for this cost function (1) and (2) would collide
+    TODO Brais -- my intuition was that for this cost function (1) and (2) would collide
     however, strange effect: when we use this cost function, removing fact $d.$ effectively leads to increasing of $2$ units in the cost, since we remove the rule and the atom as well...
     Nevertheless, this effect can be interesting in other cases, where the atom could be derived by other rule?
   }
@@ -952,595 +940,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 
 \end{example}
 
-% \subsection{Relation to Support Graphs~\cite{cabmun24a}}
-% %
-% We refer back to~\cite{cabmun24a}, where the notion of \emph{support graph} or \emph{explanation} of an answer set with respect to a program is defined.
-% %
-% There, the nodes of the graph are only the atoms in the answer set, rules are not included as they are a technical detail of the program that might be hard to understand for the end-user.
-% %
-% The edges between the atoms, however, are obtained from the body of the rules in the program, connecting body literals with the the atoms in the head head and following some conditions.
-% %
-% Those conditions are used as the semantics for \emph{Justified Models}, whose relation with other approaches have been partly discussed in \cite{cabmun24a}.
-% %
-% Perhaps the most important condition is that the graphs have to \emph{select} one and only one rule to justify each atom in the answer set by defining an injective $\lambda$ function that maps each atom to the rule that justifies it.
-% %
-% Both an answer set of the program and the $\lambda$ function can be seen as a mask that can be applied on top of the program graph, obtaining a corresponding \emph{support graph}.
-% %
-% In~\cite{cabmun23a} two operations to select the relevant information within an explanation are introduced:
-% first an operation to remove nodes, but preserving the transitive connection of the remaining nodes;
-% and a second operation to prune edges, to remove non causal relations from the program.
-% %
-% We will use this two operations to obtain the all the corresponding support graph with respect to each answer set and a valid $\lambda$ function, from the program graph which is unique for each program.
-% %
-% However, in the case of the edge-prunning operation, it can be too weak for our purposes.
-% %
+\subsubsection{Selecting reason}
+\label{sec:contrast-reasons}
 
-% %
-% \begin{definition}[Mask]
-%   Given a program graph $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos, \Eneg \rangle$,
-%   and an answer set $\m \subseteq \Va$ of $P$,
-%   an \emph{mask} of $\pg{P}$ under $\addable$ is a function $\lambda: \m \rightarrow \Vc \cup \Vd$ such that:
-%   \begin{itemize}
-%     \item $\lambda$ is injective {\color{blue} in $\lambda^{-1}(\Vd)$}
-%     \item $\forall a \in \m, \lambda(a) = r \rightarrow \m \models r$ \comment{TODO: allow non-injective mask for choice rules}
-%     \comment{Note: We check cycles after inducing the subgraph.}
-%   \end{itemize}
-% \end{definition}
-% %
-% Notes:
-% %
-% \begin{itemize}
-%   \item Intuitively, is a function that selects one supported rule for each atom in the answer set.
-%   \item It can be applied to the program graph which gives us a subgrap that justifies each atom in the answer set.
-% \end{itemize}
-% %
-% % \begin{definition}[Edges Mask]
-% %   Given a program graph $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos, \Eneg \rangle$,
-% %   and an answer set $\m \subseteq \Va$ of $P$,
-% %   an \emph{mask} of $\pg{P}$ under $\addable$ is a function $\lambda: \m \rightarrow \Epos$ such that:
-% %   \begin{itemize}
-% %     % Lambda maps each atom to one of its incoming edges
-% %     \item $\forall a \in \m, \lambda(a) = (l, a) \land l \in \Epos$
-% %     % Disjunctive rules can only justify one atom
-% %     \item $\forall a1, a2 \in \m$ such that $\lambda(a1) = (l1, a1)$ and $\lambda(a2) = (l2, a2)$, then $l1 = l2 \rightarrow a1 = a2$.
-% %     % The selected rule must be satisfied by the answer set
-% %     \item $\forall a \in \m, \lambda(a) = (l, a) \rightarrow \m \models \InvLb{l}r$
-% %     \comment{Note: We check cycles after inducing the subgraph.}
-% %   \end{itemize}
-% % \end{definition}
-% %
-% \begin{definition}[Edge Mask]
-%   Given a program graph $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos, \Eneg \rangle$,
-%   and an answer set $\m \subseteq \Va$ of $P$,
-%   a \emph{mask} of $\pg{P}$ explaining $\m$ is a set $EM \subseteq \Epos$ such that:
-%   \begin{itemize}
-%     % There is an edge justifying each atom in the answer set such that the rule it comes from is satisfied by the answer set
-%     \item $\forall a \in \m, \exists (l, a) \in EM$ such that $\m \models \InvLb{l}$.
-%     % If a rule is used to satisfy an atom, then all its incoming edges are in the mask
-%     \item $forall (l, a) \in EM$, such that $\m \models \InvLb{l}$, then $\forall (a', l) in \Epos$ it must hold that $(a', l) \in EM$.
-%     % Only one incoing edge per atom
-%     \item $\forall  (l1, a1),(l2, a2) \in EM$, it must hold $(a1 = a2) \rightarrow (l1 = l2)$
-%     % Disjunctive rules can only justify one atom
-%     \item $\forall (l1, a1),(l2, a2) \in EM$, it must hold $(l1 = l2) \land (l1 \in \Vd) \rightarrow (a1 = a2)$.
-%   \end{itemize}
-% \end{definition}
-% %
-% Notes:
-% %
-% \begin{itemize}
-%   \item \addable mask then would be a subset of edges of the program graph that selects one edge for each atom in the answer set.
-%   \item This alternative definition of mask may better fit the current implementation.
-%   \item It's equivalent to the previous.
-% \end{itemize}
-% %
-
-% %
-% \begin{definition}[Answer Set Explanation Graph]
-%   Given a program graph
-%   $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos, \Eneg \rangle$,
-%   corresponding to a ASP program $P$,
-%   and an answer set $\m \subseteq \Va$ of $P$,
-%   and a \emph{mask} $\lambda: \m \rightarrow \Vc \cup \Vd$ of $\pg{P}$ under $\m$,
-%   an explanation of $\m$ under $P$ is a directed graph
-%   \[    G_{\lambda} = \langle V, E \rangle    \]
-%   where:
-%   \begin{itemize}
-%     \item $V = \m \cup Im(\lambda)$
-%     \item $E = \{ (\ell, a) \in \Epos \mid \lambda(a) = \ell \} \cup \{ (a, \ell) \in \Epos \mid \ell \in Im(f) \}$
-%     \item {\color{red} There is no cycles in $G_{\lambda}$.}
-%   \end{itemize}
-% \end{definition}
-% %
-% Notes:
-% \begin{itemize}
-%   \item Intuitively, this graph is a subgraph of the support graph, where we only keep the nodes in the answer set and the rules that justify them following a particular $\lambda$.
-%   \item It only contains positive edges.
-%   \item Find an example of a mask and the corresponding answer set explanation in Figure~\ref{fig:mask}.
-%   \item For any answer set $\m$ of a program $P$ there is always at least one mask $\lambda$ such that the technical explanation $G_{\lambda}$ is a directed acyclic graph (DAG) (pontentially many). \comment{\m have to prove this by proving the correspondance with Justified Models.}
-%   \item In Figure~\ref{fig:mask}, note that there is another mask $\lambda_2$ for explaining $\m_1$ that justifies the atom $a$ with rule $5$, that is $\lambda_2(a) = 5$.
-% \end{itemize}
-% %
-% \begin{definition}[Answer Set Explanation Graph with Edges Mask]
-%   Given a program graph
-%   $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos, \Eneg \rangle$,
-%   corresponding to a ASP program $P$,
-%   and an answer set $\m \subseteq \Va$ of $P$,
-%   and a \emph{edge mask} $EM \subseteq \Epos$ explaining $\m$,
-%   an explanation of $\m$ under $P$ is a directed graph
-%    \[    G_{EM} = \langle V, EM \rangle    \]
-%   where
-%   % v is any origin or destination of an edge in $EM$
-%   $V = \{ v \mid \exists (v, w) \in EM \vee \exists (w, v) \in EM \}$
-% \end{definition}
-% %
-
-% %
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=0.9\textwidth]{resources/mask.png}
-%   \caption{Mask.
-%   The entire program graph $G_{P_{1}} = \{\Vc, \Vd, \Va, \Epos, \Eneg\}$ can be seen, but the highlighted part of the graph explains the answer set $\m_1 = \{s,w,a,d\}$.
-%   This subgraph is the techincal explanation $G_{\lambda} = \langle V, E \rangle$ induced from a mask $\lambda: \m_1: \rightarrow $ where $\lambda(s) = 1$, $\lambda(w) = 4$, $\lambda(a) = 2$ and $\lambda(a) = 3$.}
-%   \label{fig:mask}
-% \end{figure}
-% %
-
-% {\color{gray}
-% %
-% \begin{definition}[Technical Non-Causal Explanation]
-%   Given a program graph
-%   $\pg{P} = \langle \Vc \cup \Vd \cup \Va, \Epos, \Eneg \rangle$,
-%   corresponding to a ASP program $P$,
-%   and an answer set $\m \subseteq \Va$ of $P$,
-%   and an injective function $\lambda: \m \rightarrow \Vc \cup \Vd$ such that selecting a rule $r$ such that $\m \models r$ to justify each atom,
-%   a techincal explanation of $\m$ under $P$ is a directed graph
-%   \[    G_t = \langle V_{+}, V_{-}, E_{t}^{+}, E_{t}^{-} \rangle    \]
-%   where:
-%   \begin{itemize}
-%     \item $V_{+} = \m \cup Im(\lambda)$
-%     \item $V_{-} = \bigcup_{l \in Im(\lambda)}{\Bdn{\InvLb{l}}}$
-%     \item $E_{t}^{+} = \{ (\ell, a) \in \Epos \mid \lambda(a) = \ell \} \cup \{ (a, \ell) \in \Epos \mid \ell \in Im(\lambda) \}$
-%     \item $E_{t}^{-} = \{ (a, \ell) \in \Eneg \mid \ell \in Im(\lambda) \land a \in \Bdn{\InvLb{l}} \}$
-%     \item {\color{red} There is no cycles in $G_t$.}
-%   \end{itemize}
-%   %
-%   \comment{TODO: this version is intended to be used for correspondance with xASP, left for future work}
-% \end{definition}
-% %
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=0.9\textwidth]{resources/tech-non-causal.jpg}
-%   \caption{Technical Non Causal Explanation}
-%   \label{fig:gt_noncausal}
-% \end{figure}
-% }
-% %
-
-
-% % % TODO: the correspondance
-% % Moreover, a proper support graph is obtained by applying the node forgetting operation to the technical explanation, effectively removing any rule referencing node and keeping only nodes referencing atoms.
-% % %
-% % That is $G = forget(G^t, \Vc \cup \Vd)$.
-% % %
-% % \begin{proposition}
-% %     Let $G_{P} = \{\Vc, \Vd, \Va, \Epos, \Eneg\}$ be the program graph for program $P$,
-% %     and a mask \lambda $G_{\lambda} = \langle V_t, E_t \rangle$ be a causal technical explanation of an answer set $\m$ under a program $P$,
-% %     then graph $G^s = forget(G_{\lambda}, \Vc \cup \Vd)$ is a valid support graph of $\m$ under $P$.
-% % \end{proposition}
-% % %
-
-% % %
-% % In~\cite{cabmun24a} support graphs are introduced as a way to globally explain a particular answer set of a program.
-% % %
-% % Then, authors explain how to obtain \emph{local explanaitions} or \emph{proofs} for particular atoms from the suppport graph.
-% % %
-% % This is done by recursively traversing the graph backwards from the explained atom.
-% % %
-% % It is trivial to see how this can also be done from the technical explanation although this time the obtained \emph{tree} or \emph{proof} will also include the rule nodes.
-% % %
-
-
-
-
-
-% \subsection{Whynot queries}
-
-% %
-% Three different concepts:
-% \begin{itemize}
-%     \item \textbf{Natural language question}:
-%     %
-%     human users express they information needs in natural language.
-%     %
-%     It's inherently ambiguous and the same expression can be interpreted in many ways, that is, the relation between an expression and a formalized query it's $N:N$.
-%     %
-%     \item \textbf{Query}:
-%     %
-%     a formal/mathematical object that encodes an infromation need.
-%     %
-%     Dependant of the system.
-%     %
-%     \item \textbf{Answer}:
-%     %
-%     deterministic and replicable with respect to the query and system.
-%     %
-%     It fulfils the information need of the original natural language question.
-%     %
-% \end{itemize}
-
-% %
-% From social sciences~\cite{miller19} we know that human explanations are:
-% %
-% \begin{enumerate}
-%     \item \textbf{Selected}:
-%     %
-%     a good explanation only include the relevant information and exclude irrelevant details.
-%     %
-%     This filter is highly relative to the persons involved and their contexts which connects with point 2.
-%     %
-%     \item \textbf{Social}:
-%     %
-%     in an explanation, we have at least two involved entities: the \emph{explainer} and the \emph{explainee}.
-%     %
-%     In our case, asplain and the user respectively.
-%     %
-%     The explanation is always \emph{social interaction}, even if one of the entities is a non-human system.
-%     %
-%     As a social interaction, it's highly dependant of the context, and the entities's contexts.
-%     %
-%     Naturally, the contents (what info is included/excluded) and the form (language, tone, extension, etc.) of the explanation are set by the \emph{explainer}.
-%     %
-%     But in the case of humans, the explainer is able to \textbf{adapt} both to the \emph{explainee} context.
-%     %
-%     For instance, when explaining the reasons behind the disease of a patient, the doctor (\emph{explainer}) will not provide the same explanation to her colleges than to the patient.
-%     %
-%     This adjustments include the language (which words are chosen), the tone, the length but also which info is included/excluded and the importance given to each piece of information (this could even affect the order the information is presented, but we are not controlling that in asplain).
-%     %
-%     \item \textbf{Contrastive}:
-%     %
-%     this point mainly speaks about which type of queries humans often ask, and how do they ask them.
-%     %
-%     We can synthetise this in two points.
-%     \begin{itemize}
-%         \item \textbf{Most queries are a ''why not´´}:
-%         %
-%         humans often ask for an explanation when they are surprised by an unexpected event and ask for explanation of why their expectations weren't fulfilled.
-%         %
-%         That is, the \emph{explainee} pressuposes a world / expects an outcome / has a mental model (from now on the \emph{default world}) that is broken by the real events (that Miller refers to as \emph{fact}, and we as the \emph{reference world}).
-%         %
-%         For instance, let's say that Q goes to visit James Bond expecting him to be fine, only to find out that he died poisoned.
-%         %
-%         There, Q asks \emph{Why did James died poisoned?} or \emph{\textbf{Why} is \textbf{not} James alive?}.
-%         %
-%         According to Miller, both questions actually map to the same query \textbf{Why not alive} since, disregarding how Q formulated his information need in natural language, what is important what was assumed by Q's default world (James should have been alive).
-%         %
-%         Human
-%         %
-
-%         %
-%         This does not apply to the 100\% of the questions made by humans,
-%         %
-
-%     \end{itemize}
-%     %
-
-%     %
-%     \item \textbf{Causal}:
-% \end{enumerate}
-% %
-
-% \subsection{Contrastive explanations}
-
-% \begin{itemize}
-%     \item \addable contrastive explanation compares a reference model to a contrasted model.
-%     \item It can cover also cases for justifying something that is true in the model.
-%     So it might subsume other types of explanations that are only causal.
-%     \item Can be formalized as a graph.
-%     But has to add a lot of information into the edges and nodes.
-%     \item \textbf{Query:} Identifies what atoms should/shouldn't be part of the model.
-%     \item \textbf{Reference model:}
-%     The provided model that is considered the current truth.
-%     \item \textbf{Contrasted model:}
-%     The model found which fulfils the query.
-%     \begin{itemize}
-%         \item \textbf{Same as reference model}
-%         When the query is true in the current model, then the contrasted and reference model are the same.
-%         The output is something like the current output of xclingo or ucorexplain\cite{alhasawe24a}.
-%         \item \textbf{Alternative model}
-%         When the query is not true in the current model but it is true without having to change the input (no abducible needed).
-%         This is the case where another model of the same program (with the same input) satisfies the query.
-
-%         The explanation would compare both models without need of abduction.
-%         \item \textbf{Hypothetical model}
-%         When the query can't be satisfied with the current input
-%         Parts of the input can be abducted (changed) to achieve the query
-%     \end{itemize}
-% \end{itemize}
-
-
-% \begin{definition}[Contrastive Explanation (preliminary)]
-%     Let $P_{ref}$ and $P_{alt}$ be two labelled logic programs,
-%     $\m_{ref} \in CM(P_{ref})$ and $\m_{alt} \in CM(P_{alt})$ be two classical models of $P_{ref}$ and $P_{alt}$ respectively,
-%     let
-%     $G_{ref} = \langle \m_{ref}, E_{ref}, \lambda_{ref} \rangle$ be a support graph explanation of $\m_{ref}$ with respect to $P_{ref}$,
-%     and
-%     $G_{alt} = \langle \m_{alt}, E_{alt}, \lambda_{alt} \rangle$ be a support graph explanation of $\m_{alt}$ with respect to $P_{alt}$.
-
-
-%     \addable \emph{contrastive explanation graph} is a tuple:
-%     \[
-%     G = \langle V, \lambda_{ref}, \lambda_{alt}, E^c, E^i \rangle
-%     \]
-%     where:
-%     \[
-%     V  = \m_{ref} \cup \m_{alt} \cup \{ \lambda_{ref}(r) \mid r \in \text{CONSUP}(P_{ref}, \m_{ref}, \m_{alt}) \}
-%     \],
-%     \begin{align*}
-%         E^c = {} &
-%         E_{ref} \cup E_{alt}\\
-%         & \cup
-%         \left\{
-%           (con, r) \in V \times V \mid
-%           \begin{array}{l}
-%             r \in CONSUP(P_{ref}, \m_{ref}, \m_{alt}), \\
-%             con \in B^+(r) \\
-%             con \in \m_{ref} \cup \m_{alt}
-%           \end{array}
-%         \right\}
-%     \end{align*}
-%     \begin{align*}
-%         E^i = {} &
-%         \left\{
-%           (i, e) \in V \times V \mid
-%           \begin{array}{l}
-%             e \in \m_{ref} \setminus \m_{alt},
-%             i \in \m_{alt} \setminus \m_{ref}, \\
-%             \lambda_{ref}(e) = Lb(P_{ref}, r), \\
-%             r \in SUP(P_{ref}, \m_{ref}, e), \\
-%             i \in B^-(r)
-%           \end{array}
-%         \right\} \\
-%         & \cup
-%         \left\{
-%           (i, e) \in V \times V \ \mid
-%           \begin{array}{l}
-%             e \in \m_{alt} \setminus \m_{ref},
-%             i \in \m_{ref} \setminus \m_{alt}, \\
-%             \lambda_{alt}(e) = Lb(P_{alt}, r), \\
-%             r \in SUP(P_{alt}, \m_{alt}, e), \\
-%             \text{not } i \in B^-(r)
-%           \end{array}
-%         \right\} \\
-%         & \cup
-%         \left\{
-%           (con, r) \in V \times V \mid
-%           \begin{array}{l}
-%             r \in CONSUP(P_{ref}, \m_{ref}, \m_{alt}), \\
-%             \text{not } con \in B^-(r) \\
-%             con \notin \m_{ref} \cap \m_{alt}
-%           \end{array}
-%         \right\}
-%     \end{align*}
-%     % \[
-%     % E^{c}_{con} = {} &
-%     %     \left\{
-%     %       (con, r) \in V \times V \mid
-%     %       \begin{array}{l}
-%     %         r \in CONSUP(P_{ref}, \m_{ref}, \m_{alt}), \\
-%     %         con \in B^+(r) \\
-%     %         con \in \m_{ref} \cup \m_{alt}
-%     %       \end{array}
-%     %     \right\}
-%     % \]
-%     % \[
-%     % E^{i}_{con} = {} &
-%     %     \left\{
-%     %       (con, r) \in V \times V \mid
-%     %       \begin{array}{l}
-%     %         r \in CONSUP(P_{ref}, \m_{ref}, \m_{alt}), \\
-%     %         \text{not } con \in B^-(r) \\
-%     %         con \in \m_{ref} \triangle \m_{alt}
-%     %       \end{array}
-%     %     \right\}
-%     % \]
-
-% \end{definition}
-
-
-% % \begin{definition}[Contrastive Explanation]
-% %     Let $P_{ref}$ and $P_{alt}$ be two labelled logic programs,
-% %     $\m_{ref} \in CM(P_{ref})$ and $\m_{alt} \in CM(P_{alt})$ be two classical models of $P_{ref}$ and $P_{alt}$ respectively,
-% %     let
-% %     $G_{ref} = \tuple{\m_{ref}, E_{ref}, \lambda_{ref}}$ be a support graph explanation of $\m_{ref}$ with respect to $P_{ref}$,
-% %     and
-% %     $G_{alt} = \tuple{\m_{alt}, E_{alt}, \lambda_{alt}}$ be a support graph explanation of $\m_{alt}$ with respect to $P_{alt}$.
-
-
-% %     \addable \emph{contrastive explanation graph} is a tuple:
-% %     \[
-% %     G = \tuple{V, \lambda_{ref}, \lambda_{alt}, E^c, E^i, E^{con}}
-% %     \]
-% %     where:
-% %     \[
-% %     V  = \m_{ref} \cup \m_{alt}
-% %     \],
-% %     \begin{align*}
-% %         E^c = {} &
-% %         E_{ref} \cup E_{alt}\\
-% %         & \cup
-% %         \left\{
-% %           (con, r) \in V \times V \mid
-% %           \begin{array}{l}
-% %             r \in CONSUP(P_{ref}, \m_{ref}, \m_{alt}), \\
-% %             con \in B^+(r) \\
-% %             con \in \m_{ref} \cup \m_{alt}
-% %           \end{array}
-% %         \right\}
-% %     \end{align*}
-% %     \begin{align*}
-% %         E^i = {} &
-% %         \left\{
-% %           (i, e) \in V \times V \mid
-% %           \begin{array}{l}
-% %             e \in \m_{ref} \setminus \m_{alt},
-% %             i \in \m_{alt} \setminus \m_{ref}, \\
-% %             \lambda_{ref}(e) = Lb(P_{ref}, r), \\
-% %             r \in SUP(P_{ref}, \m_{ref}, e), \\
-% %             i \in B^-(r)
-% %           \end{array}
-% %         \right\} \\
-% %         & \cup
-% %         \left\{
-% %           (i, e) \in V \times V \ \mid
-% %           \begin{array}{l}
-% %             e \in \m_{alt} \setminus \m_{ref},
-% %             i \in \m_{ref} \setminus \m_{alt}, \\
-% %             \lambda_{alt}(e) = Lb(P_{alt}, r), \\
-% %             r \in SUP(P_{alt}, \m_{alt}, e), \\
-% %             \text{not } i \in B^-(r)
-% %           \end{array}
-% %         \right\}
-% %     \end{align*}
-% %     \begin{align*}
-% %         E^{con} = {} &
-% %         \left\{
-% %           (c2, c1) \in V \times V \mid
-% %           \begin{array}{l}
-% %             r \in CONSUP(P_{ref}, \m_{ref}, \m_{alt}), \\
-% %             \text{not } con \in B^-(r) \\
-% %             con \notin \m_{ref} \cap \m_{alt}
-% %           \end{array}
-% %         \right\}
-% %     \end{align*}
-% % \end{definition}
-
-% \begin{itemize}
-%     \item $CONSUP(P,\m_1,\m_2,\removable) \stackrel{\text{df}}{=} \{r \in P \mid Head(r) = \bot \land \forall \text{lit } \in Body(r), \m_1 \models \text{lit } \vee \m_2 \models \text{lit }\}$
-%     \item \addable contrastive explanation answers a query $Q$ if $\m_{alt} \models Q$
-%     \item (abduction) Given two sets of facts: $Add$ and $Rm$. $P_{alt}$ is obtained by considering subsets $\addable \subseteq Add$ and $\removable \subseteq Rm$ such that: $P_{alt} = (P_{ref} \setminus \removable) \cup \addable$. $\addable = \removable  \rightarrow P_{alt} = P_{ref}$, that is, no abduction was needed (alternative explanation).
-%     \begin{itemize}
-%         \item \textbf{why} queries. When $\m_{ref} = \m_{alt}$ and $P_{ref} = P_{alt}$ ($\addable = \removable$ and possibly $\addable = \removable = \emptyset $) and $\lambda_{ref} = \lambda_{alt}$, the query is true in the reference model.
-%         \item \textbf{whynot} contrastive (non counterfactual, alternative). When $P_{ref} = P_{alt}$ and $\m_{ref} \neq \m_{alt}$
-%         \item \textbf{whynot} contrastive and counterfactual (hypothetical). When $P_{alt} \neq P_{ref}$ and $\m_{ref} \neq \m_{alt}$.
-%     \end{itemize}
-%     \item
-%         IMPORTANT: constraints are only got from reference model.
-%         Does it makes sense to add constraints in the hypothetical world?
-%         Maybe to select hypothetical worlds. Like: in the query we could say "never abduce this and this".
-%         But, never for explanation, as introducing constraints in $P_{alt}$ only prunes $P_{ref}$ models which never helps in satisfying queries.
-% \end{itemize}
-
-% \begin{definition}[Asplain's Contrastive Explanation]
-%     Define a function that takes a Contrastive Explanation and
-%     \begin{itemize}
-%         \item Hides nodes (constraint nodes are always hidden)
-%         \item Prunes edges.
-%         \item \textbf{Enablers may now appear}
-%     \end{itemize}
-% \end{definition}
-
-% \begin{definition}[Using only reachability]
-%     \item Using the defined function
-%     \item Reverse traverse the graph from the
-% \end{definition}
-
-% \subsection{Selecting the contrasted model}
-
-% \begin{itemize}
-%     \item Notice that the minimization we might impose is not subset minimal like for MUS.
-%     The subset minimality can't be encoding in ASP directly.
-%     \item We can think of this selection as explanation preferences that define the contrastive model.
-%     This preference can be encoded in an ASP program.
-%     At the moment this is very general, since we use any program\comment{TODO: how do we formalize this?}
-%     \item We don't see so many papers talk about preferences on explanations.
-%     In \cite{alhasawe24a}  there is the option to move up and down rules to prefer some more than others, but that is it. \comment{TODO: Check if this is really the case}
-
-% \end{itemize}
-
-
-% \subsubsection{Abducibles}
-
-
-% \begin{itemize}
-%     \item Things that will change from the reference model to the hypothetical one.
-%     They can be either added or removed in the contrasted model.
-%     \item The possible atoms to abduce are defined for each application.
-%     \item There is a difference between abducing a predicate in the whole program,
-%     which means that even if it comes from a rule, if it is abduced then it wont be generated,
-%     vs an option where only the facts are abduced. This boils down to the question of abducing rules vs abducing facts.
-%     \item What is abducible or not is defined by the \emph{explanation-preference} ASP program.
-%     Depending on what is abducible we may be giving different types of explanations/answers.
-%     For instance: in the case of an reasoning agent, it does not make sense to abduce thing that were observed, but only beliefs or possible actions.
-%     Similar in the case of diagnosis.
-%     For sudoku or configuration, it does makes sense to abduce the user's input.
-% \end{itemize}
-
-% \subsection{Implementation}\label{sec:approach:implementation}
-
-% \begin{itemize}
-%     \item We use several transformers to create new rules and add information. \comment{TODO: Perhaps part of this can be done with clingos reification?}
-%     \item The intention is to also make this Transformers available for future explanation tasks. \comment{TODO: Where do we want to make this available? clingoexplaid?}
-%     \item The explanation preference is encoded as an additional ASP encoding.
-%     \item The contrastive graph is defined as a set of facts. Where attributes on edges and nodes give the contrastive semantics.
-%     \item We give the full graph, although the relevant information for the query might be in just one part.
-%     Creating a reduced reachable graph is possible, but we will try to leave this to the LLM.
-%     \item Accepted language fragment \comment{TODO: Brais is adding count}
-%     \item Facts defining the contrastive graph:
-
-
-%         \begin{itemize}
-%             \item \texttt{node(\addable)}: Defines a node in the graph
-%             \begin{itemize}
-%                 \item \textbf{\addable}: the node identifier (atom)
-%             \end{itemize}
-%             \item \texttt{edge(N,N',ID)}: Defines an edge in the graph. They represent the causal relationships between nodes, as well as negative relationships (inhibitors).
-%             \begin{itemize}
-%                 \item \textbf{N}: the origin node
-%                 \item \textbf{N'}: the destination node
-%                 \item \textbf{ID}: the identifier of the edge (Required for multi-edges)
-%             \end{itemize}
-%             \item \texttt{attr(T,N,\addable,V)}: Defines an attribute for a node or edge.
-%             \begin{itemize}
-%                 \item \textbf{T}: the type of the element (\texttt{node} or \texttt{edge})
-%                 \item \textbf{N}: the node or edge identifier
-%                 \item \textbf{\addable}: the attribute name
-%                 \item \textbf{V}: the attribute value
-%             \end{itemize}
-%             \begin{itemize}
-%                 \item \textbf{T=\texttt{node}}:
-%                 \begin{itemize}
-%                     \item \texttt{\addable=origin}: \texttt{V} = either \texttt{real} or \texttt{hypothetical}
-%                     \item \texttt{\addable=abduced}: \texttt{V} = either \texttt{rm} or \texttt{add}
-%                     \item \texttt{\addable=query}: \texttt{V} = either \texttt{include} or \texttt{exclude}
-%                 \end{itemize}
-%                 \item \textbf{T=\texttt{edge}}:
-%                 \begin{itemize}
-%                     \item \texttt{\addable=origin}: \texttt{V} = either \texttt{real} or \texttt{hypothetical}
-%                     \item \texttt{\addable=type}: \texttt{V} = either \texttt{inhibitor} \texttt{reciprocal\_inhibitor} or \texttt{cause}
-%                 \end{itemize}
-%             \end{itemize}
-%         \end{itemize}
-% \end{itemize}
-
-% \subsection{Interactivity}
-
-% \begin{itemize}
-%     \item We can integrate this system into an interactive setting where we make a difference between user selections and input.
-%     \item In this case we can change the explanation preference encoding, to prefer abducing user input before the input for the problem.
-%     For instance, in a sudoku, you would first say that in order to put a 1 in a cell you would have to change the 1 you put on that road,
-%     rather than saying that there would have to have to change the 1 that was an initial input value somewhere else, which the user can't change themselve.
-% \end{itemize}
-
-
-% \subsection{LLM}
-
-% \begin{itemize}
-%     \item We use the LLM to interpret our graph into natural language.
-%     \item Do we want to use also the LLM to generate the query atoms? Like in \cite{gekaoe24a}?
-%     \item The only input for the LLM is the computed graph as facts.
-%     \item The LLM could have a more structured output, like a JSON structure that gives more information.
-%     For instance, the atoms that are relevant for the natural language explanation provided.
-%     This would be useful in a system like clinguin to highlight sections of the UI.
-% \end{itemize}
-
-
+\comment{TODO BRAIS: Formalize Select a single reason for each atom}

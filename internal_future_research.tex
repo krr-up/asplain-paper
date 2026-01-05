@@ -1,0 +1,147 @@
+\section{Future Research Directions}
+
+\subsection{Unsatcore}
+\begin{itemize}
+    \item Unsatisfiable-cores
+  could be used to find a valid \emph{foil answer}, and we may study its relation with our notion of abduction.
+    \item A preference function that does the same as UNSAT CORE subset minimization might be a good example here, if it is even possible.
+At the moment this is in the future work.
+\end{itemize}
+
+\subsection{Diferent input via labels}
+
+\begin{itemize}
+    \item Brais: the labels of the rules in the programs might not coincide, so that if we do the union we might end up having repeated rules, different boxes. That's fine, in fact, we might want that. In labelled programs you sometimes want to have the same rule with different labels because they represent differnt knowledge sources.
+    \item Son: This is interesting but how do you know that a specific source of knowledge is appropiate for a query and not another one?
+    It might be better to require that same rule must have the same label?
+    \item Brais: we might define a distance function that prefers the contrastive graph that includes a particular label (labels become the box node IDs).
+    But then the distance function has to have access to that...
+\end{itemize}
+
+
+\subsection{Satisfaction of other rules than constraints}
+\begin{itemize}
+    \item Investigate what would happen if the contrast has a similar notion for existential satisfaction that is not for constraints.
+\end{itemize}
+
+\subsection{Applications using the system}
+
+
+
+\subsection{Constructing Explanation Graphs for Negative Literals}
+\comment{Son: I do not think that we need to include it  in the paper but maybe for discussion}
+
+Given a program $P$, an answer set $M$ of $P$, and $a \not\in M$.
+We next construct a graph $T_a = (V_a, E_a)$, where $V_a = \bigcup_{i=0}^\infty (V_i^+ \cup
+V_i^-)$ and  $E_a = \bigcup_{i=0}^\infty E_i$,  that explains ``why $a \not\in M$?.''
+Let $V_i = V_i^+ \cup V_i^-$ and $\Omega = \emptyset$.
+Intuitively, $V^+_i$ (resp. $V^-_i$) contains atoms that are true (resp. false) in $M$
+whose explanations are needed for explaining why $a \not\in M$. $\Omega$ contains atoms
+whos explanations have been constructed.
+
+\begin{itemize}
+    \item $V^+_0 = V^-_0 = \emptyset$ and $E_0 = \emptyset$;
+    \item $V^+_1 = \emptyset$, $V^-_1 = \{a\}$, and $E_1 = \emptyset$; and
+    \item for $i > 1$, let $x \in V_{i} \setminus (V_{i-1} \cup \Omega)$,
+      \begin{itemize}
+        \item if $x \in V^+_{i}$, then let $T_x = (V_x, E_x)$ be a $MG^M_P(a)$, a subgraph of $MG^M_P$
+        that explains $x \in M$, and $R(x) = \{r \mid r \in P, Lb(r) \in V_x\}$.
+        Let
+        \begin{itemize}
+            \item $V_{i+1}^+ = V_i^+ \cup V_x$,
+            \item $V_{i+1}^- = V_i^- \cup \bigcup_{r \in R(x)} B^-(r)$,
+            \item $E_{i+1} = E_i \cup E_x \cup \{(y, Lb(r)) \mid r \in R(x), y \in B^-(r)\}$, and
+            \item $\Omega = \Omega \cup V_x$;
+        \end{itemize}
+        \comment{
+        $V^+$ (resp. $V^-$) contains atoms that are true (resp. false)
+        in $M$ and needed for the explaination of $a \not\in M$;
+        $\Omega$ is the set of atoms that have been explained, i.e., the
+        construction upto $V_i$ contains the explaination for every $z \in \Omega$;
+        $V_x$ in this case are already explained by $T_x$;
+        $B^-(r)$ are atoms that are false in $M$ and needed for the explaination of $x$
+        which need to be explained because $T_x$ only explains positive atoms;
+        $(y, Lb(r))$ is added to $E_{i+1}$ because $y \in B^-(r)$ and $Lb(r) \in V_x$.
+        }
+
+        \item if $x \in V^-_{i}$, then let $R(x) = \{r \mid r \in P, x \in H(r), M
+          \not\models B(r)\}$ and $C(x) = \{r \mid r \in P, x \in H(r), M
+          \models B(r)\}$.
+        %   For each $r \in R(x)$, we have that there exists some
+        %   $y \in B^+(r)$ such that $y \not\in M$ or $y \in B^-(r)$ such that $y \in M$.
+          Let $Y$ be a minimal (w.r.t. set inclusion) set of atoms such that for each $r \in R(x)$,
+          there existis at least one $y \in Y$ such that $y \in B^+(r) \setminus M$
+          or $y \in B^-(r) \cap M$.
+        \begin{itemize}
+            \item $V_{i+1}^+ = V_i^+ \cup (Y \cap \bigcup_{r \in R(x)} B^-(r)) \cup (\bigcup_{r \in C(x)} B^+(r))$,
+            \item $V_{i+1}^- = V_i^- \cup (Y \cap \bigcup_{r \in R(x)} B^+(r)) \cup (\bigcup_{r \in C(x)} B^-(r))$, and
+            \item $E_{i+1} = E_i \cup \{(y, Lb(r)) \mid r \in R(x), y \in Y, (y, Lb(r)) \in E_+
+            \cup E_{-}\} \cup \{(Lb(r), x) \mid r \in C(x)\} \cup
+            \{(y, Lb(r)) \mid r \in C(x), y \in B^+(r) \cup B^-(r), (y, Lb(r)) \in E_+ \cup E_{-}\}  $.
+        \end{itemize}
+        \comment{
+        Atoms in $Y$ represent the reasons for the inapplicability of rules in $R(x)$;
+        $C(x)$ is the set of rules whose head contains $x$ and are applicable in $M$.
+        $x$ is not selected to be in $M$.
+        If $y \in B^+(r) \setminus M$, then $y$ is added to $V^-$ because it is false in $M$;
+        If $y \in B^-(r) \cap M$, then $y$ is added to $V^+$ because it is true in $M$;
+        $(y, Lb(r))$ is added to $E_{i+1}$.
+        }
+      \end{itemize}
+      Finally, update $\Omega = \Omega \cup \{x\}$.
+\end{itemize}
+$T_a$ has the following properties:
+\begin{itemize}
+    \item $T_a$ is well-defined: because $P$ is finite, the construction terminates
+    after finitely many steps.
+    \item for each atom $x \in V_a$,
+    \begin{itemize}
+    \item if $x \in M$ then there exists  some $MG^M_P(x)$
+    which is a subgraph of $T_a$.
+    \item if $x \not\in M$ then for every rule $r \in P$ such that $x \in H(r)$,
+    if $M \not\models B(r)$ then there exists some $y \in V_a$ such that
+    $y \in B^+(r) \setminus M$ or $y \in B^-(r) \cap M$ and $(y, Lb(r)) \in E_a$;
+    if $M \models B(r)$ then $Lb(r) \in V_a$ and $(Lb(r), x) \in E_a$;
+    \item $V_i^+ \cap V_i^- = \emptyset$.
+    \end{itemize}
+\end{itemize}
+Some observations about $T_a$:
+
+% Let $a_0 = a$ and $i = 0, \ldots, $ and $S^-_0 = \{a_0\}$,
+% and we construct a sequence of sets
+% \begin{itemize}
+%     \item $R^+_i$ is the set of rules that can be used to derive some atom in $S^-_i$ but are not applicable in $M$
+%   $R^+_i = \{r \mid r \in P, \exists x \in S^-_i, x \in H(r), M \not\models B(r)\}$
+% --- these are the rules that are not applicable in $M$ and so $(Lb(r), x) \not\in MG^M_P$
+% becaus $Lb(r) \not\in MG^M_P$;
+
+%     \item $R^-_i$ is the set of rules that can be used to derive some atom in $S^-_i$ and are applicable in $M$
+%   $R_i = \{r \mid r \in P, \exists x \in S^-_i, x \in H(r), M \models B(r)\}$
+%   --- these are the rules that are applicable in $M$ and but $x \in S^-i$ implies that
+%     $(Lb(r), x) \not\in MG^M_P$.
+
+%     \item
+% \end{itemize}
+
+% \begin{observation}
+% \begin{itemize}
+%   \item every explanation graph of $a$ in $M$ is a subgraph of the model subgraph $MG^M_P$.
+%   \item every explanation graph of $a$
+%   for every derivation
+% \ned{itemize}
+% \end{observation}
+% Furthermore, $(V_a, E_a)$ represents, possibly many, explanation graphs of $a$ according to the
+% definition in \cite{ly:iclp,ly:spie,trieu2022xasp} which is later restricted\footnote{The
+% notion of explanation derivation in \cite{alviano2024xai} considers only explanations
+% derived from minimal assumption sets of the answer set.} in
+% \cite{alviano2024xai}.
+% Because $(V_a, E_a)$ does not include explanations for negative atoms in $M$ whose non-presence
+% supports the presence of $a$ in $M$, it
+
+% only correponds to the positive part of an
+% explanation graph of $a$ in $M$.
+
+% herefore, we have that there is a one-to-one correspndence between
+% explanation graphs of $a$ in $M$ and
+% derivations of $a$ in $M$, and thus,
+% subgraphs explaining $a$ of the model subgraph $MG^M_P$.
