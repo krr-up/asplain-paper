@@ -148,7 +148,7 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
     \includegraphics[scale=0.05]{resources/pg.png}
     \label{fig:program-graph}
     \caption{Program graph $G_{P_{1}}$ corresponding to program in Listing~\ref{lst:example1}. }
-  \end{figure}\comment{What do we do with optional nodes, that is abduction...}
+  \end{figure}
   %
   Circle-nodes in graph $G_{P_{1}}$ represent atoms appearing in $P1$, that is, the set $\Va = \{d,a,h,w,p\}$.
   %
@@ -915,10 +915,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \]
 \end{example}
 
-\comment{Brais2All: do you feel this example is too much? we can also add another function where we penalize removing/adding more than semantic differences
-  S: I liked the example and tried to make it simpler, but could be made even simpler,
-  perhaps we leave the \mdiff\ and  just make a comment about creating another combined function and introduce the need for priorities.}
-
 \paragraph{Discussion}
 \begin{itemize}
   \item The setup for finding the best contrastive explanations is the same as for selecting the best foil.
@@ -927,7 +923,6 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   \item Note, now that we can have alternative and hypothetical explanations.
   \item We can consider different priorities among those cost functions.
   In our case, \rdiff\ gives equal importance to both syntactic and semantic differences, but we could also define a weighted sum to prioritize one over the other.
-  \comment{S: Can we argue that this can be mapped into a single function @Son perhaps you can help with this?}
 \end{itemize}
 
 \begin{example}[Selecting the best contrastive explanations]\label{ex:best-contrastive-explanations}
