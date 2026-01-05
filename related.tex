@@ -1,9 +1,78 @@
 \section{Related work}
 
-\comment{Orkunt will look into this section and copy relevant reference from https://github.com/krr-up/asp-explanations-proposal }
 \comment{This section might be moved to the end of the paper}
 
 
+\begin{itemize}
+
+\item With the recent increase of interest in general XAI,
+it is not surprising to observe a similar recent trend in applying explanation in ASP,
+which can be noticeable in the survey~\cite{fansch19a}.
+
+\item
+Many related work focus on developing tools and theories for explanation and debugging in ASP.
+The tool \xclingo\ can explain why an atom is in an answer set by computing graph based derivation of the atom~\cite{cafamu20a}.
+The resulting explanation is a support graph~\cite{cabmun24a} whose vertices are atoms from the answer set including the query atom.
+%
+Our approach generates also graph based explanations that have not only contrastive nature,
+but also a richer structure by including vertices of atoms
+that do not belong to answer sets corresponding to reference or foil models\comment{O: just to be sure if this is the case}.
+%
+Additionally, the modeler using \xclingo\ can annotate the input logic program
+in order to generate human-readable natural language explanations.
+In our approach, we rely on LLMs as a more flexible way to generate natural language explanations.
+
+\comment{O: Maybe mentioning that our work also supports explaining a whole model as support graphs (but not sure since xclingo cant do this, right?)}
+
+\item
+The approaches generating causal or support graphs as explanations do not incorporate negative information in general.
+\cite{cabfan17a} defines algebraic notation that can represent supporting and preventing conditions for an atom in an answer set.
+These conditions are rooted in literals appearing negatively in the input logic program.
+Our approach also incorporates negative information as briefly mentioned above regarding the structure of the resulting explanation graph.
+Note that contrastive graphs may include special edges pointing to rules having negative body literals.
+This comes handy to blend ASP constraint rules into the explanation graph,
+which are valuable source of information for answering contrastive explanation queries with debugging intent.
+
+\item Another related approach is \textit{xASP2} ...\comment{O: We can move Son's text about xASP here?}
+%
 \begin{proposition}
   There should be a 1:1 correspondance between model subgraphs and xASP explanations \cite{altrsoba23a} \comment{Son: xASP uses only one of the alternative for each atom, CHECK}
 \end{proposition}
+
+\item A noteworthy related research effort deals with increasing the coverage of the syntactic constructs of logic programs
+supported by an explanation framework.
+To this end \cite{eitgei23a} defines abstract constraint atoms and the way to explain them to cover constructs like choice rules or aggregates.
+Although our work accepts programs with choice rules, aggregates are not supported yet.\comment{O: this is the case, right?}
+
+\item
+Focusing on more human-centric explanations as mentioned in \cite{miller19},
+there are recent works on generating contrastive explanations for ASP.
+\cite{eigeoe23a} formalizes contrastive explanations for ASP and
+emphasizes concise explanations generated for contrastive queries by considering the crucial elements
+comprising the difference of factual and foil programs.
+The contrastive explanation is defined via counterfactual reasoning that tries to change
+the input program in order to satisfy the foil.
+This is similar to our approach that relies on abduction to generate a foil program.
+% and at the same time achieves concise explanations pinpointed in the resulting explanation graph.
+%
+However, our contrastive explanation definition is more general by allowing various definitions of closeness
+between the reference and foil world instead of a fixed minimality criteria.
+Additionally, our approach can be applied for explaining inconsistent programs.
+Moreover, \textit{asplain} is the implementation of our approach where \cite{eigeoe23a} lacks one.
+%
+\comment{O: this part needs a closer look and verification. - do they really allow any rule addition? - check example 4, can we find an explanation for that one?}
+
+\item
+Another work addressing contrastive explanations for ASP is \cite{gekaoe24a} where LLMs
+are utilized to generate explanations in natural language.
+It leverages the structure of the input logic program following the guess-and-check methodology,
+when computing the formal explanation and prompting the LLM for the resulting explanation.
+Our approach supports the usage of LLMs for generating natural language explanations also,
+but unlike ours, this work uses LLMs also for interpreting explanation queries expressing in natural language.
+
+\item
+Contrastive explanations are also handled in formalisms other than ASP.
+\cite{kimushagsh19a} generates a temporal logic specification as a contrastive explanation of
+the difference of two sets of plan traces.
+
+\end{itemize}
