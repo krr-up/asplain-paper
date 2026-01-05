@@ -1,9 +1,272 @@
+% Relationship with Alviano et al. 
+
+%\subsection{}
+
+\def\asplain{ASPLAIN}
+
 \section{Related work}
 
-\comment{Orkunt will look into this section and copy relevant reference from https://github.com/krr-up/asp-explanations-proposal }
-\comment{This section might be moved to the end of the paper}
+\begin{itemize}
+
+\item With the recent increase of interest in general XAI,
+it is not surprising to observe a similar recent trend in applying explanation in ASP,
+which can be noticeable in the survey~\cite{fansch19a}.
+
+\subsection{Relation to Cabalar, Fandinno and Muñiz}
+
+\item
+Many related work focus on developing tools and theories for explanation and debugging in ASP.
+Some of them focus on explaining why an atom is in an answer set, as it is the case of~\cite{cafamu20a} and \cite{cabmun24a}.
+In it, the authors propose the notion of support graphs, which serve as a general explanation for the answer set, including the atoms from the answer set as vertices.
+The tool \xclingo\, and its latest version \xclingo2\, can explain why an atom is in an answer set by computing graph based derivation of the atom from a support graph.
+Their approach does not consider explanations about why an atom is not in a particular answer set.
+%
+Our approach generates similar graph based explanations, extended to make contrasts with foil models.
+This allows us to explain why an atom is not in the reference answer set and to include atoms that are not in the reference answer set as vertices of our graphs.
+%
+Additionally, the modeler using \xclingo\ can annotate the input logic program
+in order to generate human-readable natural language explanations.
+This is similar to what we can achieve via natural language tags (see Section~\ref{sec:implementation:tags}).
+Additionally, we rely on LLMs as a more flexible way to generate natural language explanations.
+
+\item
+\cite{cabfan17a} defines algebraic notation that can represent supporting and preventing conditions for an atom in an answer set.
+These conditions are rooted in literals appearing negatively in the input logic program.
+Our approach also incorporates negative information as briefly mentioned above regarding the structure of the resulting explanation graph.
+Note that contrastive graphs may include special edges pointing to rules having negative body literals.
+This comes handy to blend ASP constraint rules into the explanation graph,
+which are valuable source of information for answering contrastive explanation queries with debugging intent.
 
 
+\subsection{Relation to xASP and s(CASP)}
+
+The present paper is related closely related to work in the research on xAI in ASP or
+Prolog such as the xASP systems \cite{ly:iclp,ly:spie,trieu2022xasp,alviano2024xai} and
+the systen  
+s(CASP) \cite{AriasCCG20}. 
+Since xASP2 is a signficant enhancement of its predecesssors described in
+\cite{ly:iclp,ly:spie,trieu2022xasp},  we will discuss the relationship of \asplain{} with
+xASP2 and s(CASP). 
+
+xASP2 provides explanations for atoms in an answer set (true atoms) and
+atoms not in an answer set (false atoms) by computing a justification for the existence or
+(non existence) of an atom in an answer set. 
+xASP2 comes with a user interface that allows users to explore the explanations
+interactively while s(CASP) does not provide such feature.   
+Similar to xASP2, \asplain{} provides a graphical interface that allows users to explore
+different traces of a query.  
+Furthermore, \asplain{} works with propositional programs, and hence, will need to ground
+programs with variables before providing explanations. 
+The most significant difference between \asplain{} and xASP2 or s(CASP) is that \asplain{}
+focuses on  contrastive explanations. 
+
+Consider a program $P$ and an answer set $M$ of $P$. 
+A derivation of $a$ in $MG^M_P$ is a sequence of rules 
+$\langle r_1, \ldots, r_n \rangle$ such that 
+(\emph{i}) $B^+(r_1) = \emptyset$;   
+(\emph{ii}) for $1 \le i\le n$, 
+$Lb(r_i)$ is a node of $MG^M_P$ and  
+$B^+(r_i) \subseteq \bigcup_{1 \le j< i} (H(r_j) \cap M)$; and
+(\emph{iii}) $a \in head(r_n)$. 
+
+It is easy to see that a derivation of $a$ in $MG^M_P = (V,E_+ \cup E_-)$ creates 
+a subgraph $(V_a, E_a)$ of $MG^M_P$ 
+where  $V_a = Lb(r_i) \cup \bigcup_{1 \le j \le n} B^+(r_i) \cup \{a\}$ 
+and $E_a = \{(v,v') \mid v, v' \in V_a, (v,v') \in E_+\}$. 
+We will denote this subgraph by $MG^M_P(a)$.
+This graph explains why $a$ belongs to $M$ which is similar to an \emph{explaination
+graph} 
+defined in \cite{ly:iclp,ly:spie,trieu2022xasp}, which we will
+refer to as \emph{exp-graph} of $a$ in $M$.  
+$MG^M_P(a)$ differs from an exp-graph of $a$ in $M$ in that it contains the nodes
+corresponding to the rules in $P$. Moreover,  
+because $(V_a, E_a)$ does not include explanations for negative atoms in $M$ whose non-presence
+supports the presence of $a$ in $M$, it corresponds, therefore, to possibly many,
+exp-graphs of $a$ in $M$. 
+Since the notion of explanation derivation in \cite{alviano2024xai} considers only
+explanation graphs derived from minimal assumption sets of $M$,  
+we can conclude that $(V_a, E_a)$ correponds to potentially many explanation derivations
+of $a$ in $M$ as defined in \cite{alviano2024xai}. 
+
+s(CASP) is a top-down, goal-directed system, and works at the predicate level. 
+Built on top of Prolog with ASP features such as constraints or choice atoms, s(CASP)
+inherits the advantages of Prolog such as the ability to work with non-grounded atoms,
+avoiding the grounding bottleneck of ASP solvers. It searches for an explanation for an
+atom by constructing one of its justification trees or a Prolog-style proof trees.
+Therefore, s(CASP) does not require an answer set as a part of the input and . 
+can provide explanations for atoms with variables.
+However, due to its Prolog-based implementation, this process may
+return different explanations for the same query when the order of rules or literals in
+rules is changed. 
+
+It is worth mentioing that xASP2 or s(CASP) also provide explanations for false
+atoms in $M$, i.e., atoms that do not belong to $M$. By design, the present paper provides
+explanation for $a \not\in M$ by identifying a contrastive model that supports $a$.  
+
+
+\subsubsection{Constructing Explanation Graphs for Negative Literals}
+\comment{Son: I do not think that we need to include it  in the paper but maybe for discussion}
+
+Given a program $P$, an answer set $M$ of $P$, and $a \not\in M$.   
+We next construct a graph $T_a = (V_a, E_a)$, where $V_a = \bigcup_{i=0}^\infty (V_i^+ \cup
+V_i^-)$ and  $E_a = \bigcup_{i=0}^\infty E_i$,  that explains ``why $a \not\in M$?.'' 
+Let $V_i = V_i^+ \cup V_i^-$ and $\Omega = \emptyset$. 
+Intuitively, $V^+_i$ (resp. $V^-_i$) contains atoms that are true (resp. false) in $M$
+whose explanations are needed for explaining why $a \not\in M$. $\Omega$ contains atoms
+whos explanations have been constructed. 
+
+\begin{itemize} 
+    \item $V^+_0 = V^-_0 = \emptyset$ and $E_0 = \emptyset$; 
+    \item $V^+_1 = \emptyset$, $V^-_1 = \{a\}$, and $E_1 = \emptyset$; and 
+    \item for $i > 1$, let $x \in V_{i} \setminus (V_{i-1} \cup \Omega)$,   
+      \begin{itemize} 
+        \item if $x \in V^+_{i}$, then let $T_x = (V_x, E_x)$ be a $MG^M_P(a)$, a subgraph of $MG^M_P$ 
+        that explains $x \in M$, and $R(x) = \{r \mid r \in P, Lb(r) \in V_x\}$. 
+        Let 
+        \begin{itemize} 
+            \item $V_{i+1}^+ = V_i^+ \cup V_x$, 
+            \item $V_{i+1}^- = V_i^- \cup \bigcup_{r \in R(x)} B^-(r)$, 
+            \item $E_{i+1} = E_i \cup E_x \cup \{(y, Lb(r)) \mid r \in R(x), y \in B^-(r)\}$, and
+            \item $\Omega = \Omega \cup V_x$; 
+        \end{itemize}    
+        \comment{
+        $V^+$ (resp. $V^-$) contains atoms that are true (resp. false) 
+        in $M$ and needed for the explaination of $a \not\in M$;
+        $\Omega$ is the set of atoms that have been explained, i.e., the 
+        construction upto $V_i$ contains the explaination for every $z \in \Omega$; 
+        $V_x$ in this case are already explained by $T_x$; 
+        $B^-(r)$ are atoms that are false in $M$ and needed for the explaination of $x$ 
+        which need to be explained because $T_x$ only explains positive atoms;
+        $(y, Lb(r))$ is added to $E_{i+1}$ because $y \in B^-(r)$ and $Lb(r) \in V_x$.         
+        }
+
+        \item if $x \in V^-_{i}$, then let $R(x) = \{r \mid r \in P, x \in H(r), M
+          \not\models B(r)\}$ and $C(x) = \{r \mid r \in P, x \in H(r), M
+          \models B(r)\}$. 
+        %   For each $r \in R(x)$, we have that there exists some 
+        %   $y \in B^+(r)$ such that $y \not\in M$ or $y \in B^-(r)$ such that $y \in M$.
+          Let $Y$ be a minimal (w.r.t. set inclusion) set of atoms such that for each $r \in R(x)$, 
+          there existis at least one $y \in Y$ such that $y \in B^+(r) \setminus M$ 
+          or $y \in B^-(r) \cap M$. 
+        \begin{itemize} 
+            \item $V_{i+1}^+ = V_i^+ \cup (Y \cap \bigcup_{r \in R(x)} B^-(r)) \cup (\bigcup_{r \in C(x)} B^+(r))$, 
+            \item $V_{i+1}^- = V_i^- \cup (Y \cap \bigcup_{r \in R(x)} B^+(r)) \cup (\bigcup_{r \in C(x)} B^-(r))$, and 
+            \item $E_{i+1} = E_i \cup \{(y, Lb(r)) \mid r \in R(x), y \in Y, (y, Lb(r)) \in E_+
+            \cup E_{-}\} \cup \{(Lb(r), x) \mid r \in C(x)\} \cup 
+            \{(y, Lb(r)) \mid r \in C(x), y \in B^+(r) \cup B^-(r), (y, Lb(r)) \in E_+ \cup E_{-}\}  $.  
+        \end{itemize}    
+        \comment{
+        Atoms in $Y$ represent the reasons for the inapplicability of rules in $R(x)$; 
+        $C(x)$ is the set of rules whose head contains $x$ and are applicable in $M$. 
+        $x$ is not selected to be in $M$. 
+        If $y \in B^+(r) \setminus M$, then $y$ is added to $V^-$ because it is false in $M$;
+        If $y \in B^-(r) \cap M$, then $y$ is added to $V^+$ because it is true in $M$;
+        $(y, Lb(r))$ is added to $E_{i+1}$.          
+        }
+      \end{itemize} 
+      Finally, update $\Omega = \Omega \cup \{x\}$.
+\end{itemize}
+$T_a$ has the following properties: 
+\begin{itemize} 
+    \item $T_a$ is well-defined: because $P$ is finite, the construction terminates 
+    after finitely many steps.  
+    \item for each atom $x \in V_a$, 
+    \begin{itemize} 
+    \item if $x \in M$ then there exists  some $MG^M_P(x)$ 
+    which is a subgraph of $T_a$.  
+    \item if $x \not\in M$ then for every rule $r \in P$ such that $x \in H(r)$,  
+    if $M \not\models B(r)$ then there exists some $y \in V_a$ such that 
+    $y \in B^+(r) \setminus M$ or $y \in B^-(r) \cap M$ and $(y, Lb(r)) \in E_a$;
+    if $M \models B(r)$ then $Lb(r) \in V_a$ and $(Lb(r), x) \in E_a$;    
+    \item $V_i^+ \cap V_i^- = \emptyset$.  
+    \end{itemize}         
+\end{itemize}
+Some observations about $T_a$: 
+\begin{itemize} 
+    \item 
+\end{itemize} 
+ 
+
+% Let $a_0 = a$ and $i = 0, \ldots, $ and $S^-_0 = \{a_0\}$, 
+% and we construct a sequence of sets  
+% \begin{itemize} 
+%     \item $R^+_i$ is the set of rules that can be used to derive some atom in $S^-_i$ but are not applicable in $M$ 
+%   $R^+_i = \{r \mid r \in P, \exists x \in S^-_i, x \in H(r), M \not\models B(r)\}$  
+% --- these are the rules that are not applicable in $M$ and so $(Lb(r), x) \not\in MG^M_P$
+% becaus $Lb(r) \not\in MG^M_P$;  
+  
+%     \item $R^-_i$ is the set of rules that can be used to derive some atom in $S^-_i$ and are applicable in $M$ 
+%   $R_i = \{r \mid r \in P, \exists x \in S^-_i, x \in H(r), M \models B(r)\}$  
+%   --- these are the rules that are applicable in $M$ and but $x \in S^-i$ implies that 
+%     $(Lb(r), x) \not\in MG^M_P$. 
+
+%     \item   
+% \end{itemize}
+
+% \begin{observation}
+% \begin{itemize} 
+%   \item every explanation graph of $a$ in $M$ is a subgraph of the model subgraph $MG^M_P$. 
+%   \item every explanation graph of $a$ 
+%   for every derivation 
+% \ned{itemize}   
+% \end{observation} 
+% Furthermore, $(V_a, E_a)$ represents, possibly many, explanation graphs of $a$ according to the
+% definition in \cite{ly:iclp,ly:spie,trieu2022xasp} which is later restricted\footnote{The
+% notion of explanation derivation in \cite{alviano2024xai} considers only explanations
+% derived from minimal assumption sets of the answer set.} in 
+% \cite{alviano2024xai}. 
+% Because $(V_a, E_a)$ does not include explanations for negative atoms in $M$ whose non-presence
+% supports the presence of $a$ in $M$, it  
+
+% only correponds to the positive part of an
+% explanation graph of $a$ in $M$. 
+
+% herefore, we have that there is a one-to-one correspndence between  
+% explanation graphs of $a$ in $M$ and  
+% derivations of $a$ in $M$, and thus, 
+% subgraphs explaining $a$ of the model subgraph $MG^M_P$.
+
+%
 \begin{proposition}
   There should be a 1:1 correspondance between model subgraphs and xASP explanations \cite{altrsoba23a} \comment{Son: xASP uses only one of the alternative for each atom, CHECK}
 \end{proposition}
+
+\subsection{Relation to other contrastive explanation approaches}
+
+\item A noteworthy related research effort deals with increasing the coverage of the syntactic constructs of logic programs
+supported by an explanation framework.
+To this end \cite{eitgei23a} defines abstract constraint atoms and the way to explain them to cover constructs like choice rules or aggregates.
+Although our work accepts programs with choice rules, aggregates are not generally supported yet, as explained in detail in~\ref{sec:background}.
+
+\item
+Focusing on more human-centric explanations as mentioned in \cite{miller19},
+there are recent works on generating contrastive explanations for ASP.
+\cite{eigeoe23a} formalizes contrastive explanations for ASP and
+emphasizes concise explanations generated for contrastive queries by considering the crucial elements
+comprising the difference of factual and foil programs.
+The contrastive explanation is defined via counterfactual reasoning that tries to change
+the input program in order to satisfy the foil.
+This is similar to our approach that relies on abduction to generate a foil program.
+% and at the same time achieves concise explanations pinpointed in the resulting explanation graph.
+%
+However, our contrastive explanation definition is more general by allowing various definitions of closeness
+between the reference and foil world instead of a fixed minimality criteria.
+Additionally, our approach can be applied for explaining inconsistent programs.
+Moreover, \textit{asplain} is the implementation of our approach where \cite{eigeoe23a} lacks one.
+%
+\comment{O: this part needs a closer look and verification. - do they really allow any rule addition? - check example 4, can we find an explanation for that one?}
+
+\item
+Another work addressing contrastive explanations for ASP is \cite{gekaoe24a} where LLMs
+are utilized to generate explanations in natural language.
+It leverages the structure of the input logic program following the guess-and-check methodology,
+when computing the formal explanation and prompting the LLM for the resulting explanation.
+Our approach supports the usage of LLMs for generating natural language explanations also,
+but unlike ours, this work uses LLMs also for interpreting explanation queries expressing in natural language.
+
+\item
+Contrastive explanations are also handled in formalisms other than ASP.
+\cite{kimushagsh19a} generates a temporal logic specification as a contrastive explanation of
+the difference of two sets of plan traces.
+
+\end{itemize}
