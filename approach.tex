@@ -132,8 +132,9 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
   %%
   \lstinputlisting[caption={Modified James Bond Example. Program $P1$}, language=clingos, label={lst:example1}]{encodings/example1.lp}
   %%
-  $P1$ has two models, namely $\m_1 = \{w, d, a\}$ and $\m_2 = \{h, d, p\}$,
-  where James is not poisoned in $\m_1$ since he is working and gets the antidote, and he is poisoned in $\m_2$ since he is on holiday and does not get the antidote.
+  $P1$ has two models, namely $\m_1 = \{h, d, p\}$ and $\m_2 = \{w, d, a\}$,
+  where James is not poisoned in $\m_2$ since he is working and gets the antidote,
+  and he is poisoned in $\m_1$ since he is on holiday and does not get the antidote.
   %
   Figure~\ref{fig:program-graph} shows the program graph corresponding to program $P1$.
   %
@@ -773,18 +774,18 @@ and $\Epos$ and $\Eneg$ are the sets of edges of the graph such that:
 \end{figure}
 
 \begin{example}[Contrastive Explanations for a query]\label{ex:example4}
-  Following our examples, let be $(P2_f, \m 2_f)$ be a foil in
+  Following our examples, let be $(P2_f, \m 1_f)$ be a foil in
   $\bestfoils(P2, \emptyset, \{r6, r7\}, \{ \neg p \}, \pdiff)$
   %
-  we can build a contrastive graph $\cg{P2}{P2_f}{\m 2}{\m 2_f}$.
+  we can build a contrastive graph $\cg{P2}{P2_f}{\m 1}{\m 1_f}$.
   The visualization of these graphs is shown in Figure~\ref{fig:contrastive}.
   %
-  The first contrastive graph (left) corresponds to the foil that removes rule $7$,
+  The first contrastive graph (left) corresponds to the foil that removes rule $r7$,
   and can be read as if James had not been forced to be on holiday,
   he would have been working, otherwise it would have violated the constraint of being either on holiday or working.
   If he had been working, he would have taken the antidote and therefore not been poisoned.
   %
-  The second contrastive graph (right) corresponds to the foil that removes rule $6$,
+  The second contrastive graph (right) corresponds to the foil that removes rule $r6$,
   and can be read as if James had not drunk the poison,
   he would not have been poisoned.
   % %
