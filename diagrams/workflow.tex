@@ -37,7 +37,12 @@
 \draw[arrw] (constructpg.east) |- (abd.west);
 
 \begin{pgfonlayer}{sections}
-\node[subsection, fit=(enc)(inst)(ass)(reify)(reifypg)(dyn)(constructpg)(pg)(abd), label=above:{Construct \pg{P}}] (pgbox) {};
+\node[subsection, fit=(enc)(inst)(ass)(reify)(reifypg)(dyn)(constructpg)(pg)(abd),
+  label=above:{%
+    \raisebox{0.1ex}{\tikz[baseline=-0.3ex]\node[draw,circle,inner sep=1pt,fill=white]{1};}~%
+    \raisebox{1ex}{Construct $\pg{\pr}$}
+  }
+] (pgbox) {};
 \end{pgfonlayer}
 
 % ================= Reference Model (top right) =================
@@ -50,17 +55,22 @@
   \textit{clingo}
 };
 
-\node[element, right=30mm of subg] (mgref) {$\mgpi{\pr}{\m_r}$ \\\texttt{node/2}\\\texttt{edge/3}};
-\node[ above= 15mm of mgref] (unsat) {No model};
+\node[element, right=40mm of subg] (mgref) {$\mgpi{\pr}{\m_r}$ \\\texttt{node/2}\\\texttt{edge/3}};
+\node[ above= 15mm of mgref, color=red] (unsat) {   No model for \pr};
 
 \draw[subarrw] (model.east) -| (constructref);
 \draw[subarrw] (pgforce.east) -| (constructref);
 \draw[arrw] (subg) -| (constructref);
-\draw[arrw] (constructref.east) -- ++(0.5,0) |-  node[below]{SAT} (mgref);
-\draw[arrw] (constructref.east) -- ++(0.5,0) |- node[above]{UNSAT} (unsat.west);
+\draw[arrw] (constructref.east) -- ++(0.5,0) |-  node[below, font=\tiny]{SAT} (mgref);
+\draw[arrw, color=red] (constructref.east) -- ++(0.5,0) |- node[above, font=\tiny]{UNSAT} (unsat.west);
 
 \begin{pgfonlayer}{sections}
-\node[subsection, fit=(model)(pgforce)(subg)(constructref)(mgref)(unsat), label=above:{Construct $\mgpi{P}{\m}$}] (refbox) {};
+\node[subsection, fit=(model)(pgforce)(subg)(constructref)(mgref)(unsat),
+  label=above:{%
+    \raisebox{0.1ex}{\tikz[baseline=-0.3ex]\node[draw,circle,inner sep=1pt,fill=white]{2};}~%
+    \raisebox{1ex}{Construct$\mgpi{\pr}{\m_r}$}
+  }
+] (refbox) {};
 \end{pgfonlayer}
 
 % ================= Foils (bottom left) =================
@@ -74,7 +84,7 @@
 \node[ctl, right=10mm of query] (clingofoil) {\textit{clingo}};
 
 \node[element, right=25mm of constructfoil] (pgfoil) {$(\pg{\pf}, \mgpi{\pf}{\m_f})$ \\\texttt{node/2}\\\texttt{edge/3}};
-\node[ below=10mm of pgfoil] (noex) {No explanation};
+\node[ below=10mm of pgfoil, color=red] (noex) {No foil};
 % \node[element, below=of pgfoil] (mgfoil) {$\mgpi{\pf}{\m_f}$ \\\texttt{node/2}\\\texttt{edge/3}};
 
 \draw[arrw] (subgfoil) -| (clingofoil);
@@ -82,13 +92,20 @@
 \draw[arrw] (query) -- (clingofoil);
 \draw[subarrw] (cost) -| (clingofoil);
 \draw[subarrw] (costfn) -| (clingofoil);
-\draw[arrw] (clingofoil.east) -- ++(0.5,0) |- node[above]{SAT} (pgfoil);
-\draw[arrw] (clingofoil.east) -- ++(0.5,0) |- node[below]{UNSAT} (noex.west);
+\draw[arrw] (clingofoil.east) -- ++(0.5,0) |- node[above, font=\tiny]{SAT} (pgfoil);
+\draw[arrw, color=red] (clingofoil.east) -- ++(0.5,0) |- node[below, font=\tiny]{UNSAT} (noex.west);
 
 % \draw[arrw] (clingofoil) -- (mgfoil);
 
 \begin{pgfonlayer}{sections}
-\node[subsection, fit=(subgfoil)(constructfoil)(query)(cost)(costfn)(clingofoil)(pgfoil), label=above:{Construct $\bestfoils(\pr, \addable, \removable, Q, \foilcost)$}] (foilbox) {};
+\node[subsection, fit=(subgfoil)(constructfoil)(query)(cost)(costfn)(clingofoil)(pgfoil),
+label=above:{%
+    \raisebox{0.1ex}{\tikz[baseline=-0.3ex]\node[draw,circle,inner sep=1pt,fill=white]{3};}~%
+    \raisebox{1ex}{Construct $\bestfoils(\pr, \addable, \removable, Q, \foilcost)$}
+  }
+] (foilbox) {};
+
+
 \end{pgfonlayer}
 
 % ================= Contrastive (bottom right) =================
@@ -99,7 +116,12 @@
 \draw[arrw] (contrastenc) -| (contrast);
 
 \begin{pgfonlayer}{sections}
-\node[subsection, fit=(contrastenc)(contrast)(cg),  label=above:{Construct \cg{\pr}{\m_r}{\pf}{\m_f}}] (contrastbox) {};
+\node[subsection, fit=(contrastenc)(contrast)(cg),
+  label=above:{%
+    \raisebox{0.1ex}{\tikz[baseline=-0.3ex]\node[draw,circle,inner sep=1pt,fill=white]{4};}~%
+    \raisebox{1ex}{Construct $\cg{\pr}{\m_r}{\pf}{\m_f}$}
+  }
+] (contrastbox) {};
 \end{pgfonlayer}
 
 
