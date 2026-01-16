@@ -7,3 +7,9 @@
 [submodule "include/asplain-paper"]
 	path = include/asplain-paper
 	url = ../asplain-paper
+[submodule "include/asp-macros"]
+	path = include/asp-macros
+	url = ../asp-macros.git
+[submodule "include/latex-class-tlp"]
+	path = include/latex-class-tlp
+	url = ../latex-class-tlp.git
